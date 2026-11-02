@@ -1,0 +1,8 @@
+# Supabase CLI 로컬 설정 (최소). 프로젝트 참조: supabase link --project-ref <ref>
+project_id = "haru-korea"
+
+[functions.generate-itinerary]
+verify_jwt = true
+
+[functions.concierge-chat]
+verify_jwt = true

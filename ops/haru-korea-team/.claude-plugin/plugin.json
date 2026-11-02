@@ -1,0 +1,9 @@
+{
+  "name": "haru-korea-team",
+  "version": "0.2.0",
+  "description": "국내·해외 여행 AI 컨시어지 앱 'Haru Korea'(일정 + 항공권·호텔 검색)를 출시·운영하는 팀 플러그인 — 운영총괄PM, 앱·백엔드 개발, AI 품질·비용, 제휴·광고주 영업, 장소 데이터·로컬라이즈, 광고·마케팅(인스타·틱톡·샤오홍슈), CS·신뢰·규제 7개 담당 스킬",
+  "author": {
+    "name": "Peter"
+  },
+  "keywords": ["travel", "korea", "inbound", "flights", "hotels", "affiliate", "supabase", "anthropic", "capacitor", "하루코리아", "여행컨시어지", "어필리에이트"]
+}
