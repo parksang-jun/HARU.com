@@ -1,6 +1,6 @@
 // 항공권 검색 — 출발·도착 공항, 날짜, 인원, 좌석 → 결과 목록 + 제휴 파트너 비교 링크
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { BookTabs } from '../components/BookTabs'
 import { SearchSelect, type SelectItem } from '../components/SearchSelect'
 import { Stepper } from '../components/Stepper'
@@ -43,7 +43,7 @@ export function FlightsPage() {
   const [roundTrip, setRoundTrip] = useState(params.get('oneway') !== '1')
   const [ret, setRet] = useState(params.get('return') ?? addDays(params.get('depart') ?? addDays(today(), 21), 4))
   const [adults, setAdults] = useState(Math.min(9, Math.max(1, Number(params.get('adults')) || 1)))
-  const [cabin, setCabin] = useState<Cabin>('economy')
+  const [cabin, setCabin] = useState<Cabin>(CABINS.includes(params.get('cabin') as Cabin) ? (params.get('cabin') as Cabin) : 'economy')
   const [results, setResults] = useState<FlightOffer[] | null>(null)
   const [lastQuery, setLastQuery] = useState<FlightQuery | null>(null)
   const [busy, setBusy] = useState(false)
@@ -127,6 +127,14 @@ export function FlightsPage() {
         <h1>{t('flights.title')}</h1>
         <p className="muted small">{t('flights.sub')}</p>
       </div>
+      <Link to="/flights/deals" className="deal-banner" data-testid="deals-link">
+        <span className="deal-banner__tag">BUSINESS</span>
+        <span className="deal-banner__text">
+          <strong>{t('deals2.banner')}</strong>
+          <span className="xs">{t('deals2.bannerSub')}</span>
+        </span>
+        <span aria-hidden="true">›</span>
+      </Link>
 
       <section className="card list">
         <div className="seg seg--sm" role="radiogroup">

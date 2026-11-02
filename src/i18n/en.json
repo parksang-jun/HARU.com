@@ -311,5 +311,25 @@
     "unsupported": "A live hotel list isn't available for this city yet. Search directly on our partners:",
     "noticeSample": "Sample hotels and prices for demo — not real listings. Search the partner sites for actual availability.",
     "noticeLive": "Prices from partners, per room per night, before taxes and fees. Final price on the partner site."
+  },
+  "deals2": {
+    "title": "Business class deals",
+    "sub": "Last-minute and discounted business fares from your airport, biggest savings first.",
+    "banner": "Business class deals",
+    "bannerSub": "Last-minute business fares, sorted by discount",
+    "window": "Departing within",
+    "withinDays": "{n} days",
+    "sort": {
+      "discount": "Biggest discount",
+      "price": "Lowest price",
+      "soonest": "Departing soonest"
+    },
+    "empty": "No business deals in this window. Try a longer period or another airport.",
+    "today": "Today",
+    "perPersonRt": "Round trip, per person",
+    "perPersonOw": "One way, per person",
+    "compare": "Compare",
+    "noticeSample": "Sample deals for demo — not live prices. Discounts are estimated against typical business fares for the route.",
+    "noticeLive": "Business fares found by partners recently. Discounts are estimated against typical fares for the route; seats are limited and prices change — the final price is on the partner site."
   }
 }

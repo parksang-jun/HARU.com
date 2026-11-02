@@ -25,7 +25,7 @@ const ICONS = {
 }
 
 /** 배너 광고를 보여줄 목록 화면 */
-const BANNER_ROUTES = ['/', '/deals', '/hotels', '/flights']
+const BANNER_ROUTES = ['/', '/deals', '/hotels', '/flights', '/flights/deals']
 const BOOK_ROUTES = ['/flights', '/hotels', '/deals']
 
 export function Layout() {
@@ -57,7 +57,7 @@ export function Layout() {
             {t('nav.trips')}
           </NavLink>
           <ItineraryTab label={t('nav.itinerary')} />
-          <NavLink to="/flights" className={() => `tabbar__item${BOOK_ROUTES.includes(location.pathname) ? ' is-active' : ''}`} data-testid="tab-book">
+          <NavLink to="/flights" className={() => `tabbar__item${BOOK_ROUTES.some((r) => location.pathname.startsWith(r)) ? ' is-active' : ''}`} data-testid="tab-book">
             <Icon d={ICONS.book} />
             {t('nav.book')}
           </NavLink>

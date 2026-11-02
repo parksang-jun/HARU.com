@@ -36,6 +36,7 @@ supabase functions deploy concierge-chat
 # 항공권 (Travelpayouts 대시보드 → API token)
 supabase secrets set TRAVELPAYOUTS_TOKEN=xxxxxxxx SEARCH_DAILY_CAP=60
 supabase functions deploy search-flights
+supabase functions deploy flight-deals      # 비즈니스 특가 (같은 토큰 사용)
 
 # 호텔 (Agoda Partners Hub → Site ID / API key, HTTPS 엔드포인트는 계정 매니저에게 요청)
 supabase secrets set AGODA_SITE_ID=123456 AGODA_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx

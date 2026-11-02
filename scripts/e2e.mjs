@@ -222,6 +222,31 @@ try {
   await page.screenshot({ path: join(shots, '15-home-ko.png'), fullPage: true })
   await page.locator('header select').selectOption('en')
 
+  // ---------- 비즈니스 특가·땡처리 ----------
+  await page.goto(`${BASE}/#/flights`)
+  await page.getByTestId('deals-link').click()
+  await page.getByTestId('deal-results').waitFor({ timeout: 10000 })
+  const deals30 = await page.getByTestId('deal-card').count()
+  assert(deals30 >= 5, `business deals list ${deals30} deals (30 days)`)
+  await page.getByTestId('window-7').click()
+  const deals7 = await page.getByTestId('deal-card').count()
+  assert(deals7 <= deals30, `7-day window narrows deals (${deals7})`)
+  await page.getByTestId('window-45').click()
+  await page.screenshot({ path: join(shots, '16-business-deals.png'), fullPage: true })
+  await page.evaluate(() => {
+    window.__haruLog = []
+    window.__opened = []
+  })
+  await page.getByTestId('deal-book').first().click()
+  await page.waitForTimeout(300)
+  ev = (await page.evaluate(() => window.__haruLog)).filter((e) => e.kind === 'affiliate_click')
+  urls = await page.evaluate(() => window.__opened)
+  assert(ev[0]?.clickKind === 'flight' && ev[0]?.query.startsWith('BUSINESS DEAL'), 'business deal click logged')
+  assert(urls[0]?.includes('aviasales.com/search/') && urls[0]?.includes('trip_class=1'), `deal link is business class: ${urls[0]}`)
+  await page.getByTestId('deal-compare').first().click()
+  await page.getByTestId('flight-results').waitFor({ timeout: 10000 })
+  assert((await page.locator('select').filter({ hasText: 'Business' }).inputValue()) === 'business', 'compare opens flight search in business class')
+
   // 법적 고지
   await page.goto(`${BASE}/#/legal/ai`)
   await page.locator('.prose').waitFor()

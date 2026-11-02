@@ -5,6 +5,7 @@ import { ensureSession } from './lib/supabase'
 import { AdminPage } from './pages/AdminPage'
 import { ChatPage } from './pages/ChatPage'
 import { DealsPage } from './pages/DealsPage'
+import { BusinessDealsPage } from './pages/BusinessDealsPage'
 import { FlightsPage } from './pages/FlightsPage'
 import { HotelsPage } from './pages/HotelsPage'
 import { HomePage } from './pages/HomePage'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/trip/:id/chat" element={<ChatPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/flights" element={<FlightsPage />} />
+        <Route path="/flights/deals" element={<BusinessDealsPage />} />
         <Route path="/hotels" element={<HotelsPage />} />
         <Route path="/deals" element={<DealsPage />} />
         <Route path="/more" element={<MorePage />} />

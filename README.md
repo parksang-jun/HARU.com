@@ -10,6 +10,7 @@ v0.1(방한 여행자 전용) → v0.2 에서 전 세계 여행지 93곳(국내 
 | 국내·해외 여행지 | `src/lib/destinations.ts` 카탈로그(좌표·공항·통화·시간대), 검색·지역 탭, 최대 5개 도시 순서대로 | AI 가 전 세계 실제 장소로 일정 생성(도시 반경 검증, 현지 통화 비용) | 도쿄·오사카·후쿠오카·타이베이·방콕·다낭·파리 큐레이션 + 그 외 도시는 일반 샘플 |
 | 항공권 검색 | 왕복/편도, 공항 검색, 인원·좌석, 정렬·직항 필터, 파트너 비교(Trip.com·Skyscanner·Aviasales·Google 항공권·네이버 항공권[ko]) | Edge Function `search-flights` → Travelpayouts(Aviasales) Data API 운임 캐시 | 거리·항공사 유형 기반 결정적 샘플 운임 |
 | 호텔 검색 | 여행지·체크인/아웃·인원/객실, 정렬·성급·무료취소 필터, 아고다 예약 + 부킹닷컴·트립닷컴·익스피디아 비교 | Edge Function `search-hotels` → Agoda Affiliate Lite API(landingURL 에 제휴 추적 포함) | 도시 물가 지수 기반 샘플 호텔(실존 아님, "샘플" 표기) |
+| 비즈니스 특가·땡처리 | 출발 공항 기준 45일 이내 출발 비즈니스석을 할인율·가격·출발 임박 순으로, 기간·지역 필터, Aviasales(비즈니스) 예약 + 항공권 검색 비교 | Edge Function `flight-deals` → Travelpayouts `get_latest_prices`(trip_class=1, 전 노선) | 결정적 샘플 특가 |
 | 일정 연계 | 일정 상단 "항공권·호텔" 카드: 홈 공항→첫 도시 항공권(국내선은 김포), 도시별 숙박 구간 호텔 검색(날짜·인원 자동). 숙소 정류지 → "호텔 찾기" | — | — |
 | 수익 로그 | `affiliate_clicks.kind` = activity / flight / hotel, 관리자 화면에 종류·파트너별 클릭 | — | — |
 
@@ -30,7 +31,7 @@ v0.1(방한 여행자 전용) → v0.2 에서 전 세계 여행지 93곳(국내 
 npm install
 npm run dev          # http://localhost:5173  (목업 AI 모드)
 npm run build        # tsc + vite build → dist/
-npm test             # vitest 단위 테스트 (41개)
+npm test             # vitest 단위 테스트 (43개)
 npm run e2e          # Playwright 스모크 (vite preview :4181) + screenshots/*.png
 ```
 
@@ -150,6 +151,7 @@ tests/             vitest
 ```
 
 ## 9. 알려진 공백 / 리스크
+- **비즈니스 할인율은 추정치** — API 가 정가를 주지 않아 노선 거리 기반 평소 비즈니스 운임 추정치 대비로 계산(화면에 명시). 항공사 공식 땡처리·마일리지 특가 전부를 모으는 단일 API 는 없음.
 - **항공 운임은 캐시 데이터**(Travelpayouts, 최근 48시간) — 인기 노선 외에는 결과가 비거나 실제가와 다를 수 있음. 실시간 좌석·발권이 필요하면 Duffel 등 NDC API 와 별도 계약 검토.
 - **Agoda cityId 매핑**이 비어 있으면 해당 도시는 호텔 목록 대신 파트너 검색 링크만 표시됨(`_shared/agoda-cities.ts` 채우기). Agoda Lite API 기본 엔드포인트는 HTTP — HTTPS 엔드포인트는 계정 매니저에게 요청.
 - 목업 항공·호텔 결과는 데모용 샘플(가상의 호텔명·대략 운임)로 "샘플" 라벨을 붙였다. 라이브 모드에서는 목업으로 대체하지 않는다.

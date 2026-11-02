@@ -177,3 +177,40 @@ describe('stay segments', () => {
     ])
   })
 })
+
+import { buildMockBusinessDeals, dealBookUrl, normalizeRemoteDeals, typicalBusinessUsd } from '../src/lib/flightDeals'
+
+describe('business deals', () => {
+  it('mock deals are deterministic, international, near-term and discounted', () => {
+    const a = buildMockBusinessDeals('ICN', '2027-03-01', 'ko')
+    expect(a).toEqual(buildMockBusinessDeals('ICN', '2027-03-01', 'ko'))
+    expect(a.length).toBeGreaterThan(15)
+    for (const d of a) {
+      expect(d.cityId).not.toMatch(/^(seoul|busan|jeju)$/)
+      expect(d.price).toBeLessThan(d.usualPrice)
+      expect(d.discountPct).toBeGreaterThanOrEqual(15)
+      expect(d.depart >= '2027-03-03' && d.depart <= '2027-04-15').toBe(true)
+    }
+    for (let i = 1; i < a.length; i++) expect(a[i].discountPct).toBeLessThanOrEqual(a[i - 1].discountPct)
+  })
+
+  it('normalizes Travelpayouts business fares, keeps best per city and drops far/undiscounted ones', () => {
+    const usualTokyo = Math.round(typicalBusinessUsd(1160) * 1400)
+    const list = normalizeRemoteDeals(
+      [
+        { value: 600000, origin: 'SEL', destination: 'HND', depart_date: '2027-03-05', return_date: '2027-03-09', number_of_changes: 0, trip_class: 1 },
+        { value: 900000, origin: 'SEL', destination: 'NRT', depart_date: '2027-03-06', return_date: '2027-03-10', number_of_changes: 0 },
+        { value: 100, destination: 'CDG', depart_date: '2027-06-01' },
+        { value: 99999999, destination: 'BKK', depart_date: '2027-03-04' },
+        { value: 1, destination: 'XXX', depart_date: '2027-03-04' },
+      ],
+      'ICN',
+      '2027-03-01',
+      'KRW',
+    )
+    expect(list).toHaveLength(1)
+    expect(list[0]).toMatchObject({ cityId: 'tokyo', to: 'HND', price: 600000, source: 'travelpayouts' })
+    expect(Math.abs(list[0].usualPrice - usualTokyo)).toBeLessThan(usualTokyo * 0.05)
+    expect(dealBookUrl(list[0])).toBe('https://www.aviasales.com/search/ICN0503HND09031?trip_class=1')
+  })
+})

@@ -47,6 +47,15 @@ export function HomePage() {
         </Link>
       </section>
 
+      <Link to="/flights/deals" className="deal-banner" data-testid="home-deals">
+        <span className="deal-banner__tag">BUSINESS</span>
+        <span className="deal-banner__text">
+          <strong>{t('deals2.banner')}</strong>
+          <span className="xs">{t('deals2.bannerSub')}</span>
+        </span>
+        <span aria-hidden="true">›</span>
+      </Link>
+
       <section className="list">
         <h2>{t('home.popular')}</h2>
         <div className="chips">
