@@ -166,5 +166,5 @@ tests/             vitest
 
 ## 저장소·CI (GitHub `parksang-jun/HARU.com`)
 
-- 바이너리(앱 아이콘·스플래시 PNG, gradle-wrapper.jar)는 GitHub 에 올리지 않는다. 클론 후 `npm install` 이 `tools/assets-b64/` 를 풀어 jar 를 복원하고, `npm run assets` 가 `public/icon.svg` 에서 아이콘·스플래시 PNG 를 만든다(`scripts/make-icons.mjs` + `@capacitor/assets`).
+- 네이티브 프로젝트(`android/`, `ios/`)와 아이콘·스플래시 이미지까지 저장소에 들어 있다. 아이콘을 바꾸면 `public/icon.svg` 를 고치고 `npm run assets`(`scripts/make-icons.mjs` + `@capacitor/assets`).
 - CI(`.github/workflows/ci.yml`): push·PR 마다 `npm ci → build → vitest → e2e(실패해도 통과)`.
