@@ -1,0 +1,11 @@
+{
+  "note": "GitHub 에는 텍스트만 올린다. 바이너리 자산은 여기 base64 로 두고 scripts/unpack-assets.mjs(postinstall) 가 복원한다. 바꾸면 node scripts/pack-assets.mjs",
+  "files": [
+    {
+      "path": "android/gradle/wrapper/gradle-wrapper.jar",
+      "b64": "android__gradle__wrapper__gradle-wrapper.jar.b64",
+      "sha256": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172",
+      "bytes": 43764
+    }
+  ]
+}

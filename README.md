@@ -163,3 +163,8 @@ tests/             vitest
 - AdMob 통합은 실기기에서만 검증 가능(샌드박스에서는 웹 빌드·단위·e2e 까지만 검증함). Android Gradle/Xcode 빌드는 로컬에서 수행.
 - 일일 한도는 사용자 단위라 다계정 남용에는 취약 — IP·기기 기준 제한은 추후 과제.
 - 번들 약 570KB(gzip 172KB): supabase-js 비중이 큼. 필요 시 동적 import 로 분리.
+
+## 저장소·CI (GitHub `parksang-jun/HARU.com`)
+
+- 바이너리(앱 아이콘·스플래시 PNG, gradle-wrapper.jar)는 GitHub 에 올리지 않는다. 클론 후 `npm install` 이 `tools/assets-b64/` 를 풀어 jar 를 복원하고, `npm run assets` 가 `public/icon.svg` 에서 아이콘·스플래시 PNG 를 만든다(`scripts/make-icons.mjs` + `@capacitor/assets`).
+- CI(`.github/workflows/ci.yml`): push·PR 마다 `npm ci → build → vitest → e2e(실패해도 통과)`.
