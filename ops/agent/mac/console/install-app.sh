@@ -110,6 +110,7 @@ if [ -n "${HARU_FROM_CONSOLE:-}" ]; then echo "✓ 앱을 다시 만들었습니
 echo "3/3 실행"
 # 이미 떠 있던 예전 서버가 있으면 내리고 새로 띄운다
 curl -s -m 1 -X POST -H 'X-HARU: 1' http://127.0.0.1:4778/api/quit >/dev/null 2>&1 || true
+pkill -f "$DEST/server.mjs" >/dev/null 2>&1 || true   # 종료 요청을 못 알아듣는 예전 서버도 확실히 내린다
 sleep 0.5
 open "$HOME/Desktop/$APP_NAME.app"
 echo
