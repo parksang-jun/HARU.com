@@ -107,7 +107,22 @@
       "early": "early start",
       "noshop": "no shopping",
       "nonight": "no nightlife"
-    }
+    },
+    "stay": "Where you stay",
+    "stayQ": "Will you change hotels during the trip?",
+    "stayOpt": {
+      "1": "One place throughout",
+      "2": "Split across two",
+      "3": "Split across three"
+    },
+    "stayN": "Stay {n}",
+    "stayNights": "{n} nights",
+    "stayAreaPh": "Area or hotel name (optional), e.g. Myeongdong",
+    "stayTotal": "{m} of {n} nights assigned",
+    "stayNeed": "You can split stays on trips of 2 nights or more.",
+    "stayLess": "Fewer nights",
+    "stayMore": "More nights",
+    "errStays": "Nights per stay must add up to the total nights."
   },
   "itin": {
     "loading": "Preparing your days…",
@@ -334,7 +349,10 @@
     "compare": "Compare on other sites",
     "unsupported": "A live hotel list isn't available for this city yet. Search directly on our partners:",
     "noticeSample": "Sample hotels and prices for demo — not real listings. Search the partner sites for actual availability.",
-    "noticeLive": "Prices from partners, per room per night, before taxes and fees. Final price on the partner site."
+    "noticeLive": "Prices from partners, per room per night, before taxes and fees. Final price on the partner site.",
+    "viewReal": "See real hotels in {area}",
+    "viewRealCity": "See real hotels",
+    "sampleTop": "These are sample listings for testing, so no hotel with these names exists. The button opens real hotel results for the same area and dates."
   },
   "deals2": {
     "title": "Business class deals",
@@ -553,5 +571,27 @@
   },
   "ads": {
     "slot": "Banner ad space · real ads appear in the app"
+  },
+  "meals": {
+    "title": "Today’s meals",
+    "pick": "Pick one for each meal",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "near": "near {area}",
+    "find": "Find on map",
+    "undecided": "Not chosen ({n} options)",
+    "sampleNote": "Sample mode suggests typical local dishes instead of restaurants. The live service recommends restaurants near your route for that day."
+  },
+  "reserve": {
+    "title": "How to book a restaurant",
+    "apps": "Booking services people use in this country",
+    "note": "Haru does not make reservations for you. Check availability and terms with each service.",
+    "step": {
+      "need": "First check whether you need a booking. Popular places, dinners and weekends usually do; markets and street food do not.",
+      "app": "Search the restaurant name on one of the services below, then pick the date, time and party size.",
+      "hotel": "If the app does not work, ask your hotel front desk to call for you, or phone the number shown on the map.",
+      "tell": "When you book, say how many people, whether children are coming, and any vegetarian or allergy needs.",
+      "cancel": "Cancel if you cannot go. Some restaurants take a deposit or charge a no-show fee."
+    }
   }
 }

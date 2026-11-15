@@ -57,6 +57,11 @@ try {
   await page.getByTestId('generate').waitFor()
   await page.getByTestId('city-busan').click() // 서울 + 부산
   assert((await page.getByTestId('interest-chip').count()) === 20, 'setup offers 20 interests')
+  // 숙소 나누기: 3박을 두 곳으로 (2박 + 1박)
+  await page.getByTestId('stay-count').nth(1).click()
+  assert((await page.getByTestId('stay-row').count()) === 2, 'two stay rows appear when splitting')
+  assert((await page.getByTestId('stay-total').innerText()).includes('3'), 'stay nights add up to the trip')
+  await page.getByTestId('stay-area').first().fill('Jongno')
   assert((await page.getByTestId('notes-help').innerText()).toLowerCase().includes('keyword'), 'setup asks for keywords')
   await page.getByTestId('note-keyword').nth(0).click() // vegetarian
   await page.getByTestId('note-keyword').nth(6).click() // no shopping
@@ -86,6 +91,20 @@ try {
   assert((await page.getByTestId('packing-list').innerText()).length > 0, 'packing list is shown')
   await page.screenshot({ path: join(shots, '03-itinerary.png'), fullPage: true })
 
+  // 숙소 나누기 결과: 숙소 구간이 도시·숙소 경계마다 나뉜다 (서울 2박 → 서울/부산 경계 포함 3구간 이하)
+  const hotelRows = await page.getByTestId('plan-hotels').count()
+  assert(hotelRows >= 2, `stay plan shows ${hotelRows} hotel segments`)
+  assert((await page.getByTestId('plan-hotels').first().innerText()).includes('Jongno'), 'first stay shows the chosen area')
+
+  // 점심·저녁 고르기 + 식당 예약 방법
+  assert((await page.locator('[data-testid="meals-lunch"] [data-testid="meal-option"]').count()) === 3, 'three lunch options')
+  assert((await page.locator('[data-testid="meals-dinner"] [data-testid="meal-option"]').count()) === 3, 'three dinner options')
+  await page.locator('[data-testid="meals-dinner"] [data-testid="meal-option"]').nth(1).click()
+  assert((await page.locator('[data-testid="meals-dinner"] [aria-checked="true"]').count()) === 1, 'one dinner is selected')
+  await page.getByTestId('reserve-guide').locator('summary').click()
+  assert((await page.locator('[data-testid="reserve-platform"][data-platform="catchtable"]').count()) === 1, 'Korean reservation service is offered')
+  await page.screenshot({ path: join(shots, '19-meals.png'), fullPage: true })
+
   // 추가 요청 반영 내역
   const reqItems = page.getByTestId('request-item')
   assert((await reqItems.count()) === 2, 'both special requests are listed')
@@ -102,6 +121,7 @@ try {
   assert((await page.getByTestId('report-day').count()) === dayTabs, 'report lists every day')
   assert((await page.getByTestId('report-prep').innerText()).includes('2/'), 'report shows prep progress')
   assert((await page.getByTestId('report-costs').innerText()).includes('₩'), 'report totals costs')
+  assert((await page.locator('[data-testid="report-meal"][data-chosen="true"]').count()) === 1, 'the chosen dinner appears in the report')
   await page.screenshot({ path: join(shots, '16-report.png'), fullPage: true })
   await page.goBack()
 

@@ -1,6 +1,7 @@
 // 결정적(deterministic) 샘플 일정 — 키 없이 UI·e2e 검증용 (국내·해외 공통)
 import { getDestination } from '../destinations'
-import { addDays, daysBetween, type Itinerary, type ItineraryDay, type Stop, type TripParams } from '../itinerary'
+import { addDays, daysBetween, stayIndexForDay, type Itinerary, type ItineraryDay, type Stop, type TripParams } from '../itinerary'
+import { mockMeals } from './meals'
 import { genericPlaces, MOCK_PLACES, type MockPlace } from './places'
 import { INTEREST_CATEGORIES, parseRequests, START_SLOTS, vegTip } from './requests'
 
@@ -86,7 +87,7 @@ export function buildMockItinerary(params: TripParams): Itinerary {
   // 밤 일정은 관심사로 고르거나 따로 요청했을 때만 넣는다
   if (params.interests.length && !prefer.has('nightlife')) exclude.add('nightlife')
   const days: ItineraryDay[] = []
-  const cursor: Record<string, number> = {}
+  const used: Record<string, Set<MockPlace>> = {}
   const ordered: Record<string, MockPlace[]> = {}
   const usedMeals = new Set<MockPlace>()
 
@@ -96,14 +97,28 @@ export function buildMockItinerary(params: TripParams): Itinerary {
     const list = (ordered[city] ??= orderPool(pool, prefer, exclude, req.mustPlaces))
     const currency = getDestination(city)?.currency ?? 'KRW'
     const firstDayInCity = i === 0 || days[days.length - 1]?.city !== city
-    const stay = pool.find((p) => p.category === 'stay')
+    // 숙소 나누기: 숙소가 바뀌는 날에도 체크인을 넣고, 그 숙소 지역 근처 장소를 먼저 고른다
+    const stayIdx = stayIndexForDay(i, params.stays)
+    const newStay = firstDayInCity || stayIdx !== stayIndexForDay(i - 1, params.stays)
+    const stayArea = params.stays?.[stayIdx]?.area?.trim() ?? ''
+    const stayBase = pool.find((p) => p.category === 'stay')
+    const stay: MockPlace | undefined = stayBase && stayArea ? { ...stayBase, name: { ko: `숙소 체크인 (${stayArea})`, en: `Hotel check-in (${stayArea})`, ja: `ホテルにチェックイン（${stayArea}）`, zh: `飯店入住（${stayArea}）` }, area: stayArea, query: `${localName(city, 'en')} ${stayArea} hotels` } : stayBase
     const picks: MockPlace[] = []
-    // 도시 첫날은 숙소 체크인을 포함, 나머지는 순환 (샘플)
-    let c = cursor[city] ?? 0
-    const want = per - (firstDayInCity && stay ? 1 : 0)
+    const want = per - (newStay && stay ? 1 : 0)
+    const seen = (used[city] ??= new Set<MockPlace>())
+    const near = (p: MockPlace) => Boolean(stayArea) && p.area.toLowerCase().includes(stayArea.toLowerCase())
+    const otherAreas = (params.stays ?? []).filter((_, k) => k !== stayIdx).map((x) => x.area?.trim().toLowerCase() ?? '').filter(Boolean)
+    const nearOther = (p: MockPlace) => otherAreas.some((x) => p.area.toLowerCase().includes(x))
     while (list.length && picks.length < want && picks.length < list.length) {
-      picks.push(list[c % list.length])
-      c++
+      let fresh = list.filter((p) => !seen.has(p) && !picks.includes(p))
+      if (!fresh.length) {
+        seen.clear() // 장소를 다 썼으면 처음부터 다시 (샘플)
+        fresh = list.filter((p) => !picks.includes(p))
+      }
+      // 다른 숙소 근처 장소는 그 숙소 기간을 위해 남겨 둔다
+      const next = fresh.find(near) ?? fresh.find((p) => !nearOther(p)) ?? fresh[0]
+      picks.push(next)
+      seen.add(next)
     }
     // 하루에 식사 한 곳은 들어가게 한다
     if (!exclude.has('food') && picks.length > 1 && !picks.some((p) => p.category === 'food')) {
@@ -112,15 +127,16 @@ export function buildMockItinerary(params: TripParams): Itinerary {
       if (meal) picks[picks.length - 1] = meal
     }
     for (const p of picks) if (p.category === 'food') usedMeals.add(p)
-    cursor[city] = c
-    if (firstDayInCity && stay) picks.splice(Math.min(2, picks.length), 0, stay)
+    if (newStay && stay) picks.splice(Math.min(2, picks.length), 0, stay)
     const cityName = localName(city, 'en')
+    const stops = picks.map((p, j) => toStop(p, i, j, currency, slots, veg))
     days.push({
       day: i + 1,
       date: addDays(params.startDate, i),
       city,
       theme: firstDayInCity ? `Arrival and first taste of ${cityName}` : `Highlights of ${cityName}`,
-      stops: picks.map((p, j) => toStop(p, i, j, currency, slots, veg)),
+      stops,
+      meals: mockMeals(stops, { country: getDestination(city)?.country ?? '', cityEn: cityName, currency, locale: params.locale, vegetarian: req.vegetarian, dayIdx: i }),
     })
   }
 

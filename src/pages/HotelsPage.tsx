@@ -101,7 +101,7 @@ export function HotelsPage() {
   const nights = lastQuery ? nightsOf(lastQuery) : 0
 
   const openPartner = async (partner: HotelPartner, q: HotelQuery, hotel?: Hotel) => {
-    const url = hotel?.bookUrl && partner === 'agoda' ? hotel.bookUrl : hotelPartnerUrl(partner, q, locale, hotel && hotel.source !== 'sample' ? hotel.name : undefined)
+    const url = hotel?.bookUrl && partner === 'agoda' ? hotel.bookUrl : hotelPartnerUrl(partner, q, locale, hotel ? (hotel.source === 'sample' ? hotel.area : hotel.name) : undefined)
     await logAffiliateClick({
       clickKind: 'hotel',
       partner,
@@ -200,6 +200,11 @@ export function HotelsPage() {
             </div>
           )}
 
+          {!unsupported && shown.some((h) => h.source === 'sample') && (
+            <p className="alert alert--info" data-testid="hotel-sample-top">
+              {t('hotels.sampleTop')}
+            </p>
+          )}
           {!unsupported && shown.length === 0 && <p className="muted small">{t('hotels.empty')}</p>}
           {shown.map((h) => (
             <article key={h.id} className="card hotel" data-testid="hotel-card">
@@ -233,7 +238,7 @@ export function HotelsPage() {
                     <div className="xs muted">{t('hotels.total', { total: formatMoney(h.pricePerNight * nights * lastQuery.rooms, h.currency), n: nights })}</div>
                   </div>
                   <button type="button" className="btn btn--primary btn--sm" onClick={() => openPartner('agoda', lastQuery, h)} data-testid="hotel-book">
-                    {t('hotels.view')} · {t('partner.agoda')}
+                    {h.source === 'sample' ? (h.area ? t('hotels.viewReal', { area: h.area }) : t('hotels.viewRealCity')) : t('hotels.view')} · {t('partner.agoda')}
                   </button>
                 </div>
               </div>

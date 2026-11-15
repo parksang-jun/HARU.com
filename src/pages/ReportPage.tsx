@@ -8,7 +8,8 @@ import { pickName } from '../i18n'
 import { getAirport, HOME_AIRPORT_KEY } from '../lib/airports'
 import { defaultHomeAirport, destName } from '../lib/destinations'
 import type { Trip } from '../lib/itinerary'
-import { buildReport, prepLabel, reportText, weatherLine, type ReportFormat } from '../lib/report'
+import { loadMealPicks, type MealPicks } from '../lib/meals'
+import { buildReport, mealLine, prepLabel, reportText, weatherLine, type ReportFormat } from '../lib/report'
 import { getRepo } from '../lib/repo'
 import { loadJson, loadPref } from '../lib/storage'
 import { formatTemps, getTripWeather, ICONS, todayIso, type TripWeather } from '../lib/weather'
@@ -28,6 +29,7 @@ export function ReportPage() {
   const [trip, setTrip] = useState<Trip | null | undefined>(undefined)
   const [weather, setWeather] = useState<TripWeather>({})
   const [done, setDone] = useState<string[]>([])
+  const [picks, setPicks] = useState<MealPicks>({})
   const [home, setHome] = useState(defaultHomeAirport(locale))
   const [copied, setCopied] = useState(false)
 
@@ -49,12 +51,13 @@ export function ReportPage() {
       })
       .catch(() => alive && setTrip(null))
     loadJson<string[]>(`prep:${id}`, []).then((d) => alive && setDone(d))
+    loadMealPicks(id).then((m) => alive && setPicks(m))
     return () => {
       alive = false
     }
   }, [id])
 
-  const report = useMemo(() => (trip ? buildReport(trip, weather, done, home) : null), [trip, weather, done, home])
+  const report = useMemo(() => (trip ? buildReport(trip, weather, done, home, picks) : null), [trip, weather, done, home, picks])
   const fmt: ReportFormat = useMemo(
     () => ({ t, locale, formatDate, formatMoney, cityName: (c) => destName(c, locale), placeName: (n) => pickName(n, locale), temps: (w) => formatTemps(w, locale) }),
     [t, locale, formatDate, formatMoney],
@@ -188,6 +191,11 @@ export function ReportPage() {
                 </li>
               ))}
             </ol>
+            {d.meals.map((m) => (
+              <p key={m.slot} className="small report__meal" data-testid="report-meal" data-chosen={Boolean(m.chosen)}>
+                <span className="muted">{t(`meals.${m.slot}`)}</span> {mealLine(m, fmt)}
+              </p>
+            ))}
           </div>
         ))}
       </section>

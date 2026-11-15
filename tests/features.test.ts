@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { WAIT_TIPS, highlightKeys, loungePassUrl, waitBucket } from '../src/lib/airportGuide'
 import { recommendGear, shopLinks } from '../src/lib/gear'
-import { INTERESTS, normalizeItinerary, type Trip, type TripParams } from '../src/lib/itinerary'
+import { INTERESTS, normalizeItinerary, normalizeMeals, splitNights, stayIndexForDay, validateTripParams, type Trip, type TripParams } from '../src/lib/itinerary'
+import { chosenMeal, togglePick } from '../src/lib/meals'
+import { reservePlatforms } from '../src/lib/reserveGuide'
+import { staySegments } from '../src/lib/plan'
 import { buildMockItinerary } from '../src/lib/mock/itinerary'
 import { INTEREST_CATEGORIES, parseRequests } from '../src/lib/mock/requests'
 import { MOCK_PLACES } from '../src/lib/mock/places'
@@ -169,5 +172,98 @@ describe('request keywords and banner placement', () => {
   it('shows the banner on browsing and trip screens but never on chat, setup or legal pages', () => {
     for (const p of ['/', '/deals', '/hotels', '/flights', '/flights/deals', '/trip/abc', '/trip/abc/report', '/trip/abc/gear', '/trip/abc/airport']) expect(bannerAllowed(p), p).toBe(true)
     for (const p of ['/chat', '/trip/abc/chat', '/setup', '/more', '/legal/privacy', '/admin']) expect(bannerAllowed(p), p).toBe(false)
+  })
+})
+
+describe('lunch and dinner choices', () => {
+  it('offers three lunch and three dinner options every day, rotating between days', () => {
+    const it = buildMockItinerary(base)
+    for (const d of it.days) {
+      expect(d.meals?.lunch).toHaveLength(3)
+      expect(d.meals?.dinner).toHaveLength(3)
+      expect(d.meals?.lunch[0].currency).toBe('KRW')
+      expect(d.meals?.lunch[0].reserve?.provider).toBe('naver')
+    }
+    expect(it.days[0].meals?.lunch[0].name.ko).not.toBe(it.days[1].meals?.lunch[0].name.ko)
+    const tokyo = buildMockItinerary({ ...base, cities: ['tokyo'] })
+    expect(tokyo.days[0].meals?.dinner[0].currency).toBe('JPY')
+    expect(tokyo.days[0].meals?.dinner[0].reserve?.provider).toBe('google')
+    // 큐레이션이 없는 나라는 종류로 추천 (비용 없음)
+    const paris = buildMockItinerary({ ...base, cities: ['paris'] })
+    expect(paris.days[0].meals?.lunch).toHaveLength(3)
+    expect(paris.days[0].meals?.lunch[0].estCost).toBeUndefined()
+  })
+
+  it('puts vegetarian-friendly dishes first when asked', () => {
+    const it = buildMockItinerary({ ...base, notes: '채식' })
+    expect(it.days[0].meals?.lunch[0].name.ko).toBe('비빔밥')
+    expect(it.days[0].meals?.dinner[0].name.ko).toBe('한정식')
+  })
+
+  it('stores one pick per meal, toggles it off, and carries picks into the report and its costs', () => {
+    const trip = tripOf(base)
+    let picks = togglePick({}, 1, 'lunch', 1)
+    picks = togglePick(picks, 1, 'dinner', 0)
+    picks = togglePick(picks, 2, 'lunch', 2)
+    expect(chosenMeal(trip.itinerary!.days[0], 'lunch', picks)).toBe(trip.itinerary!.days[0].meals!.lunch[1])
+    expect(chosenMeal(trip.itinerary!.days[2], 'dinner', picks)).toBeUndefined()
+    expect(togglePick(picks, 1, 'lunch', 1)[1].lunch).toBeUndefined()
+
+    const without = buildReport(trip, {}, [], 'ICN')!
+    const withPicks = buildReport(trip, {}, [], 'ICN', picks)!
+    expect(without.days[0].meals.map((m) => [m.slot, m.chosen, m.options])).toEqual([['lunch', undefined, 3], ['dinner', undefined, 3]])
+    expect(withPicks.days[0].meals[1].chosen?.name.ko).toBe(trip.itinerary!.days[0].meals!.dinner[0].name.ko)
+    const extra = [trip.itinerary!.days[0].meals!.lunch[1], trip.itinerary!.days[0].meals!.dinner[0], trip.itinerary!.days[1].meals!.lunch[2]].reduce((a, m) => a + (m.estCost ?? 0), 0)
+    expect(withPicks.costs[0].perPerson - without.costs[0].perPerson).toBe(extra)
+  })
+
+  it('normalizes AI meal lists and drops malformed entries', () => {
+    const m = normalizeMeals({ lunch: [{ name: { ko: '명동교자', en: 'Myeongdong Kyoja' }, desc: '칼국수', area: 'Myeongdong', query: 'Myeongdong Kyoja Seoul', estCost: 11000, currency: 'krw' }, { desc: 'no name' }, 'x'], dinner: 'bad' }, 'KRW')
+    expect(m?.lunch).toHaveLength(1)
+    expect(m?.lunch[0]).toMatchObject({ estCost: 11000, currency: 'KRW', query: 'Myeongdong Kyoja Seoul' })
+    expect(m?.dinner).toEqual([])
+    expect(normalizeMeals({ lunch: [], dinner: [] })).toBeUndefined()
+    expect(normalizeMeals(null)).toBeUndefined()
+  })
+
+  it('lists reservation services by country', () => {
+    expect(reservePlatforms('KR', 'korea', '고기집 명동').map((p) => p.id)).toEqual(['catchtable', 'naver', 'google'])
+    expect(reservePlatforms('JP', 'japan', 'sushi').map((p) => p.id)).toEqual(['tabelog', 'tablecheck', 'google'])
+    expect(reservePlatforms('FR', 'europe', 'bistro').map((p) => p.id)).toEqual(['thefork', 'google'])
+    expect(reservePlatforms('TH', 'sea', 'pad thai')[0].url).toContain('pad%20thai')
+  })
+})
+
+describe('splitting the stay between hotels', () => {
+  const five: TripParams = { ...base, startDate: '2027-04-10', endDate: '2027-04-14' } // 5일 4박
+
+  it('validates and splits nights', () => {
+    expect(splitNights(4, 2)).toEqual([2, 2])
+    expect(splitNights(5, 3)).toEqual([2, 2, 1])
+    expect(validateTripParams({ ...five, stays: [{ nights: 2 }, { nights: 2 }] })).toBeNull()
+    expect(validateTripParams({ ...five, stays: [{ nights: 1 }, { nights: 2 }] })).toBe('errStays')
+    expect(validateTripParams({ ...five, stays: [{ nights: 4 }] })).toBe('errStays')
+    expect(validateTripParams({ ...five, stays: [{ nights: 0 }, { nights: 4 }] })).toBe('errStays')
+    expect([0, 1, 2, 3, 4].map((i) => stayIndexForDay(i, [{ nights: 2 }, { nights: 2 }]))).toEqual([0, 0, 1, 1, 1])
+    expect(stayIndexForDay(3, undefined)).toBe(0)
+  })
+
+  it('plans around two hotels: 2 nights in one area, then 2 in another', () => {
+    const params: TripParams = { ...five, stays: [{ nights: 2, area: 'Jongno' }, { nights: 2, area: 'Gangnam' }] }
+    const trip = tripOf(params)
+    const segs = staySegments(trip)
+    expect(segs.map((s) => [s.area, s.checkIn, s.checkOut, s.nights])).toEqual([
+      ['Jongno', '2027-04-10', '2027-04-12', 2],
+      ['Gangnam', '2027-04-12', '2027-04-14', 2],
+    ])
+    const stayDays = trip.itinerary!.days.filter((d) => d.stops.some((s) => s.category === 'stay')).map((d) => d.day)
+    expect(stayDays).toEqual([1, 3])
+    expect(trip.itinerary!.days[2].stops.find((s) => s.category === 'stay')?.name.ko).toBe('숙소 체크인 (Gangnam)')
+    // 첫 숙소(종로) 기간에는 종로 장소가 먼저 나온다
+    expect(trip.itinerary!.days[0].stops.filter((s) => s.category !== 'stay')[0].area).toBe('Jongno')
+    expect(trip.itinerary!.days[2].stops.filter((s) => s.category !== 'stay')[0].area).toBe('Gangnam')
+    expect(prepKeys(trip, 'ICN').filter((k) => k.startsWith('hotel:'))).toHaveLength(2)
+    // 나누지 않으면 한 구간
+    expect(staySegments(tripOf(five))).toHaveLength(1)
   })
 })

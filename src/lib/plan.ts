@@ -2,23 +2,29 @@
 import { airportDestination, bestAirportFor, domesticOrigin } from './airports'
 import { getDestination } from './destinations'
 import { distanceKm } from './geo'
-import { addDays, type Trip } from './itinerary'
+import { addDays, stayIndexForDay, type Trip } from './itinerary'
 
 export interface StaySegment {
   city: string
   checkIn: string
   checkOut: string
   nights: number
+  /** 사용자가 정한 지역·호텔 이름 (숙소 나누기) */
+  area?: string
 }
 
-/** 연속된 같은 도시 일자를 묶어 숙박 구간 계산 (마지막 구간 체크아웃 = 여행 종료일) */
+/** 연속된 같은 도시·같은 숙소 일자를 묶어 숙박 구간 계산 (마지막 구간 체크아웃 = 여행 종료일).
+ *  숙소 나누기(params.stays)가 있으면 그 경계에서도 구간을 나눈다 */
 export function staySegments(trip: Trip): StaySegment[] {
   const days = trip.itinerary?.days ?? []
   const segs: StaySegment[] = []
   days.forEach((d, i) => {
     const prev = segs[segs.length - 1]
-    if (prev && prev.city === d.city && days[i - 1]?.city === d.city) return
-    segs.push({ city: d.city, checkIn: d.date, checkOut: d.date, nights: 0 })
+    const stays = trip.params.stays
+    const idx = stayIndexForDay(i, stays)
+    if (prev && prev.city === d.city && days[i - 1]?.city === d.city && idx === stayIndexForDay(i - 1, stays)) return
+    const area = stays?.[idx]?.area?.trim()
+    segs.push({ city: d.city, checkIn: d.date, checkOut: d.date, nights: 0, ...(area ? { area } : {}) })
   })
   segs.forEach((s, i) => {
     const next = segs[i + 1]

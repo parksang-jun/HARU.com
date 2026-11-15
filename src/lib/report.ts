@@ -1,6 +1,7 @@
 // 여행 보고서 — 일정·준비 현황·날씨·예상 비용·준비물을 한 장으로 묶는다 (화면과 복사·공유용 글이 같은 자료를 쓴다)
 import { recommendGear, type GearItem } from './gear'
-import { adultsFor, daysBetween, type LocalizedName, type RequestNote, type StopCategory, type Trip } from './itinerary'
+import { adultsFor, daysBetween, MEAL_SLOTS, type LocalizedName, type MealOption, type MealSlot, type RequestNote, type StopCategory, type Trip } from './itinerary'
+import { chosenMeal, type MealPicks } from './meals'
 import { flightRoute, hotelKey, isAbroad, isPrepDone, prepKeys, staySegments, type StaySegment } from './plan'
 import { packingList, weatherKey, type DayWeather, type Tip, type TripWeather } from './weather'
 
@@ -20,6 +21,8 @@ export interface ReportDay {
   theme: string
   weather?: DayWeather
   stops: ReportStop[]
+  /** 끼니별: 고른 식당(없으면 undefined)과 후보 수 */
+  meals: { slot: MealSlot; chosen?: MealOption; options: number }[]
 }
 
 export interface ReportPrep {
@@ -69,7 +72,7 @@ function kindOf(key: string): ReportPrep['kind'] {
   return key.startsWith('hotel:') ? 'hotel' : (key as ReportPrep['kind'])
 }
 
-export function buildReport(trip: Trip, weather: TripWeather, done: string[], home: string): TripReport | null {
+export function buildReport(trip: Trip, weather: TripWeather, done: string[], home: string, picks: MealPicks = {}): TripReport | null {
   const it = trip.itinerary
   if (!it?.days.length) return null
   const p = trip.params
@@ -84,6 +87,12 @@ export function buildReport(trip: Trip, weather: TripWeather, done: string[], ho
     city: d.city,
     theme: d.theme,
     weather: weather[weatherKey(d.city, d.date)],
+    meals: MEAL_SLOTS.filter((slot) => (d.meals?.[slot].length ?? 0) > 0).map((slot) => {
+      const chosen = chosenMeal(d, slot, picks)
+      // 고른 식당의 비용은 예상 비용에 더한다
+      if (chosen?.estCost && chosen.currency) sums.set(chosen.currency, (sums.get(chosen.currency) ?? 0) + chosen.estCost)
+      return { slot, chosen, options: d.meals?.[slot].length ?? 0 }
+    }),
     stops: d.stops.map((s) => {
       const cost = s.estCost ?? s.estCostKrw
       const currency = s.estCost !== undefined ? (s.currency ?? 'KRW') : s.estCostKrw !== undefined ? 'KRW' : undefined
@@ -138,7 +147,7 @@ export function prepLabel(x: ReportPrep, r: TripReport, f: ReportFormat): string
     case 'flight':
       return r.flight ? `${f.t('itin.flightsTo', { city: f.cityName(r.cities[0]) })} (${r.flight.from} ⇄ ${r.flight.to})` : f.t('nav.flights')
     case 'hotel':
-      return x.stay ? `${f.t('itin.hotelsIn', { city: f.cityName(x.stay.city) })} (${f.formatDate(x.stay.checkIn)} – ${f.formatDate(x.stay.checkOut)})` : f.t('nav.hotels')
+      return x.stay ? `${f.t('itin.hotelsIn', { city: f.cityName(x.stay.city) })}${x.stay.area ? ` · ${x.stay.area}` : ''} (${f.formatDate(x.stay.checkIn)} – ${f.formatDate(x.stay.checkOut)})` : f.t('nav.hotels')
     case 'weather':
       return f.t('prep.weather')
     case 'gear':
@@ -156,6 +165,12 @@ export function weatherLine(w: DayWeather | undefined, f: ReportFormat): string 
   if (!w) return f.t('report.weatherNone')
   const rain = w.rainPct === null ? '' : ` · ${f.t(w.source === 'forecast' ? 'weather.rainForecast' : 'weather.rainNormal', { n: w.rainPct })}`
   return `${f.t(`weather.cond.${w.condition}`)} ${f.temps(w)}${rain} (${f.t(`weather.src.${w.source}`)}${w.sample ? ` · ${f.t('common.sample')}` : ''})`
+}
+
+export function mealLine(m: ReportDay['meals'][number], f: ReportFormat): string {
+  if (!m.chosen) return f.t('meals.undecided', { n: m.options })
+  const cost = m.chosen.estCost && m.chosen.currency ? ` (${f.t('itin.estCost', { cost: f.formatMoney(m.chosen.estCost, m.chosen.currency) })})` : ''
+  return `${f.placeName(m.chosen.name)}${m.chosen.area ? ` · ${m.chosen.area}` : ''}${cost}`
 }
 
 /** 복사·공유용 글 보고서 */
@@ -185,6 +200,7 @@ export function reportText(r: TripReport, f: ReportFormat, today: string): strin
     L.push('', `${f.t('common.day', { n: d.day })} · ${f.formatDate(d.date)} · ${f.cityName(d.city)}`)
     L.push(`  ${weatherLine(d.weather, f)}`)
     for (const s of d.stops) L.push(`  ${s.time} ${f.placeName(s.name)}${s.cost && s.currency ? ` (${f.t('itin.estCost', { cost: f.formatMoney(s.cost, s.currency) })})` : ''}`)
+    for (const m of d.meals) L.push(`  ${f.t(`meals.${m.slot}`)}: ${mealLine(m, f)}`)
   }
 
   h(f.t('report.costs'))

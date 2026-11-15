@@ -1497,3 +1497,119 @@ a.chip {
     display: none !important;
   }
 }
+
+/* 오늘의 식사 (점심·저녁 고르기) */
+.meals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.meals__slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.meals__label {
+  font-weight: 700;
+}
+
+.meals__opt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+
+.meals__opt.is-on {
+  border-color: var(--color-success);
+  background: var(--color-surface-2);
+}
+
+.meals__choose {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.meals__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meals__opt .btn {
+  flex: none;
+}
+
+.report__meal {
+  padding-left: 52px;
+}
+
+.alert--info {
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+  border-color: transparent;
+}
+
+/* 숙소 나누기 */
+.stayrow {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-s);
+  background: var(--color-surface);
+}
+
+.stayrow__label {
+  font-weight: 700;
+}
+
+.stayrow__nights {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stayrow .input {
+  grid-column: 1 / -1;
+}
+
+/* 식당 예약 방법 */
+.reserve {
+  border-top: 1px solid var(--color-line);
+  padding-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.reserve summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: var(--text-s);
+}
+
+.reserve[open] summary {
+  margin-bottom: var(--space-2);
+}
+
+.reserve > * + * {
+  margin-top: var(--space-2);
+}

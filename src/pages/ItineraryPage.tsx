@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Share } from '@capacitor/share'
 import { CouponCard } from '../components/CouponCard'
 import { LAST_TRIP_KEY } from '../components/Layout'
+import { MealPicker } from '../components/MealPicker'
 import { StopCard } from '../components/StopCard'
 import { useI18n } from '../i18n/context'
 import { pickName } from '../i18n'
@@ -13,6 +14,7 @@ import { defaultHomeAirport, destName, getDestination } from '../lib/destination
 import { adultsFor, daysBetween, type Trip } from '../lib/itinerary'
 import { ENV } from '../lib/env'
 import { recommendGear } from '../lib/gear'
+import { hasMeals, loadMealPicks, saveMealPicks, togglePick, type MealPicks } from '../lib/meals'
 import { getRepo } from '../lib/repo'
 import { loadJson, loadPref, saveJson, savePref } from '../lib/storage'
 import { formatTemps, getTripWeather, ICONS, needsRainPlan, packingList, tipsFor, weatherKey, type DayWeather, type TripWeather } from '../lib/weather'
@@ -32,6 +34,7 @@ export function ItineraryPage() {
   const [home, setHome] = useState(defaultHomeAirport(locale))
   const [weather, setWeather] = useState<TripWeather>({})
   const [done, setDone] = useState<string[]>([])
+  const [mealPicks, setMealPicks] = useState<MealPicks>({})
 
   useEffect(() => {
     loadPref(HOME_AIRPORT_KEY).then((v) => {
@@ -69,6 +72,7 @@ export function ItineraryPage() {
   useEffect(() => {
     if (!id) return
     loadJson<string[]>(`prep:${id}`, []).then(setDone)
+    loadMealPicks(id).then(setMealPicks)
   }, [id])
   const toggle = (key: string) => {
     setDone((prev) => {
@@ -107,6 +111,9 @@ export function ItineraryPage() {
     try {
       const it = await generateItinerary(trip.params)
       await getRepo().saveItinerary(trip.id, it)
+      // 일정이 바뀌면 식사 선택도 처음부터
+      setMealPicks({})
+      void saveMealPicks(trip.id, {})
       setTrip({ ...trip, itinerary: it })
       setDayIdx(0)
     } catch (e) {
@@ -241,7 +248,10 @@ export function ItineraryPage() {
                 ⌂
               </span>
               <span className="plan__text">
-                <strong>{t('itin.hotelsIn', { city: destName(seg.city, locale) })}</strong>
+                <strong>
+                  {t('itin.hotelsIn', { city: destName(seg.city, locale) })}
+                  {seg.area ? ` · ${seg.area}` : ''}
+                </strong>
                 <span className="xs muted">
                   {formatDate(seg.checkIn)} – {formatDate(seg.checkOut)} · {t('hotels.nights', { n: seg.nights })}
                 </span>
@@ -405,6 +415,20 @@ export function ItineraryPage() {
             {t('weather.rainPlanCta')}
           </Link>
         </div>
+      )}
+
+      {hasMeals(day.meals) && (
+        <MealPicker
+          meals={day.meals}
+          picked={mealPicks[day.day] ?? {}}
+          country={getDestination(day.city)?.country ?? ''}
+          region={getDestination(day.city)?.region ?? 'korea'}
+          onPick={(slot, idx) => {
+            const next = togglePick(mealPicks, day.day, slot, idx)
+            setMealPicks(next)
+            void saveMealPicks(trip.id, next)
+          }}
+        />
       )}
 
       <div className="timeline">
