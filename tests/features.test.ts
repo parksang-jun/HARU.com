@@ -10,6 +10,9 @@ import { buildReport, reportText, type ReportFormat } from '../src/lib/report'
 import { weatherKey, type DayWeather, type TripWeather } from '../src/lib/weather'
 import en from '../src/i18n/en.json'
 import ko from '../src/i18n/ko.json'
+import ja from '../src/i18n/ja.json'
+import zh from '../src/i18n/zh-TW.json'
+import { bannerAllowed } from '../src/lib/ads'
 
 const base: TripParams = { cities: ['seoul'], startDate: '2027-04-10', endDate: '2027-04-12', travelers: 'couple', interests: ['food', 'history'], budget: 'standard', pace: 'balanced', locale: 'ko' }
 const cats = (p: TripParams) => buildMockItinerary(p).days.flatMap((d) => d.stops.map((s) => s.category))
@@ -142,5 +145,29 @@ describe('gear and airport guide', () => {
     expect(loungePassUrl('ICN')).toContain('ICN%20airport%20lounge')
     const tips = ko.airport.tip as Record<string, string>
     for (const list of Object.values(WAIT_TIPS)) for (const k of list) expect(tips[k]).toBeTruthy()
+  })
+})
+
+describe('request keywords and banner placement', () => {
+  it('understands every keyword chip offered on the setup screen, in all four languages', () => {
+    const dicts: [string, Record<string, string>][] = [['ko', ko.setup.kw], ['en', en.setup.kw], ['ja', ja.setup.kw], ['zh-TW', zh.setup.kw]]
+    for (const [locale, kw] of dicts) {
+      expect(Object.keys(kw)).toHaveLength(8)
+      for (const [id, word] of Object.entries(kw)) {
+        const plan = parseRequests(word, locale, MOCK_PLACES.seoul)
+        expect(plan.notes.length, `${locale}:${id}`).toBeGreaterThan(0)
+        expect(plan.notes.every((n) => n.applied), `${locale}:${id} "${word}"`).toBe(true)
+      }
+      const all = parseRequests(Object.values(kw).join(', '), locale, MOCK_PLACES.seoul)
+      expect(all.vegetarian).toBe(true)
+      expect(all.exclude.has('shopping') && all.exclude.has('nightlife')).toBe(true)
+      expect(all.perDelta).toBe(-1)
+      expect(all.start).not.toBe('normal')
+    }
+  })
+
+  it('shows the banner on browsing and trip screens but never on chat, setup or legal pages', () => {
+    for (const p of ['/', '/deals', '/hotels', '/flights', '/flights/deals', '/trip/abc', '/trip/abc/report', '/trip/abc/gear', '/trip/abc/airport']) expect(bannerAllowed(p), p).toBe(true)
+    for (const p of ['/chat', '/trip/abc/chat', '/setup', '/more', '/legal/privacy', '/admin']) expect(bannerAllowed(p), p).toBe(false)
   })
 })

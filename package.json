@@ -1,7 +1,7 @@
 {
   "name": "haru-korea",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "description": "Haru — AI trip concierge — domestic & international trips, flights and hotels (affiliate + sponsored deals)",
   "scripts": {

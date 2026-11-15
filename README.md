@@ -69,7 +69,7 @@ npm run e2e          # Playwright 스모크 (vite preview :4181) + screenshots/*
 | `VITE_AFF_CREATRIP_URL`, `VITE_AFF_TRAZY_URL`, `VITE_AFF_NOL_URL` | 검색 딥링크 형식이 미확정인 파트너는 승인 후 받은 랜딩 URL 전체 |
 | `VITE_AFF_SKYSCANNER_QS` | Skyscanner 제휴(Impact) 추적 쿼리스트링 |
 | `VITE_TP_MARKER` | Travelpayouts 파트너 marker (Aviasales 링크 추적) |
-| `VITE_ADMOB_ENABLED` | `true` 일 때만 네이티브 배너 표시 |
+| `VITE_ADMOB_ENABLED` | 배너 광고 (기본 `true`, `false` 로 끔). 네이티브 앱에서 실제 배너, 웹 목업에서는 자리 표시만. 홈·예약·혜택·일정·보고서·제품 추천·공항 가이드에 표시하고 컨시어지 대화·여행 만들기·약관에는 넣지 않는다 |
 | `VITE_ADMOB_BANNER_ANDROID/IOS` | 배너 광고 단위 ID (기본값은 Google 테스트 ID) |
 
 Edge Function secret: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL_ITINERARY`(기본 claude-sonnet-5-5), `ANTHROPIC_MODEL_CHAT`(기본 claude-haiku-5-5), `ITINERARY_DAILY_CAP`(3), `CHAT_DAILY_CAP`(40), `TRAVELPAYOUTS_TOKEN`(항공), `AGODA_SITE_ID`·`AGODA_API_KEY`·`AGODA_API_URL`(호텔), `SEARCH_DAILY_CAP`(60), `WEATHER_API_KEY`(선택 — Open-Meteo 유료 플랜).

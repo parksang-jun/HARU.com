@@ -57,11 +57,16 @@ try {
   await page.getByTestId('generate').waitFor()
   await page.getByTestId('city-busan').click() // 서울 + 부산
   assert((await page.getByTestId('interest-chip').count()) === 20, 'setup offers 20 interests')
-  await page.getByTestId('setup-notes').fill('vegetarian, no shopping')
+  assert((await page.getByTestId('notes-help').innerText()).toLowerCase().includes('keyword'), 'setup asks for keywords')
+  await page.getByTestId('note-keyword').nth(0).click() // vegetarian
+  await page.getByTestId('note-keyword').nth(6).click() // no shopping
+  assert((await page.getByTestId('setup-notes').inputValue()) === 'vegetarian, no shopping', 'keyword chips fill the request box')
+  assert((await page.getByTestId('banner-slot').count()) === 0, 'no banner on the setup screen')
   await page.screenshot({ path: join(shots, '02-setup.png'), fullPage: true })
   await page.getByTestId('generate').click()
 
   await page.getByTestId('itin-title').waitFor({ timeout: 15000 })
+  assert((await page.getByTestId('banner-slot').count()) === 1, 'banner slot is shown on the itinerary')
   const dayTabs = await page.getByTestId('day-tab').count()
   assert(dayTabs >= 2, `itinerary renders with ${dayTabs} days (>= 2)`)
   const stops = await page.getByTestId('stop').count()

@@ -32,7 +32,7 @@ export const INTEREST_CATEGORIES: Record<Interest, StopCategory[]> = {
 
 const CAT_WORDS: [StopCategory, RegExp][] = [
   ['shopping', /쇼핑|shopping|買い物|ショッピング|購物|逛街/i],
-  ['nightlife', /술집|술|클럽|나이트|야시장|\bbars?\b|club|nightlife|drink|お酒|バー|酒吧|夜生活|夜店/i],
+  ['nightlife', /술집|술|클럽|나이트|밤\s?일정|야시장|\bbars?\b|club|nightlife|drink|お酒|バー|ナイトライフ|酒吧|夜生活|夜店/i],
   ['cafe', /카페|디저트|caf[eé]|coffee|dessert|カフェ|スイーツ|咖啡|甜點/i],
   ['wellness', /온천|스파|마사지|찜질|onsen|\bspa\b|massage|hot spring|温泉|スパ|マッサージ|溫泉|按摩/i],
   ['activity', /체험|액티비티|테마파크|놀이공원|activity|activities|theme park|体験|テーマパーク|體驗|樂園/i],
@@ -45,9 +45,9 @@ const NEG = /빼|제외|싫|말고|없이|안\s?(가|넣|해)|\bno\b|\bnot\b|wit
 const RULES: [string, RegExp][] = [
   ['veg', /채식|비건|베지|vegetarian|vegan|ベジ|ヴィーガン|ビーガン|菜食|素食|純素/i],
   ['kids', /아이|아기|유아|어린이|유모차|초등|\bkids?\b|child|toddler|baby|stroller|子供|子ども|赤ちゃん|ベビーカー|小孩|孩子|嬰兒/i],
-  ['easy', /부모님|어르신|노약자|많이\s?안\s?걷|걷기\s?힘|무릎|휠체어|거동|elderly|senior|wheelchair|less walking|not much walking|mobility|高齢|車椅子|歩くのが|長輩|輪椅|少走/i],
-  ['late', /늦게|늦잠|느지막|오후부터|late start|sleep in|start late|遅め|朝はゆっくり|晚起|晚點出門/i],
-  ['early', /일찍|새벽|early|早起|早め|早朝/i],
+  ['easy', /부모님|어르신|노약자|많이\s?안\s?걷|걷기\s?적게|적게\s?걷|걷기\s?힘|무릎|휠체어|거동|elderly|senior|wheelchair|less walking|not much walking|mobility|高齢|車椅子|歩くのが|長輩|輪椅|少走/i],
+  ['late', /늦게|늦은|늦잠|느지막|오후부터|late start|sleep in|start late|遅め|朝はゆっくり|晚起|晚點出門/i],
+  ['early', /일찍|이른|새벽|early|早起|早め|早朝/i],
   ['slow', /여유|천천히|느긋|쉬엄|relax|slow|のんびり|ゆったり|悠閒|慢慢/i],
 ]
 

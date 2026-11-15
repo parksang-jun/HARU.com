@@ -1465,3 +1465,35 @@ a.chip {
   gap: 6px;
   font-size: var(--text-s);
 }
+
+/* 배너 광고 자리 (웹 미리보기) — 네이티브 앱에서는 같은 위치에 AdMob 배너가 뜬다 */
+.adslot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 21;
+  height: calc(var(--banner-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--color-surface-2);
+  border-top: 1px dashed var(--color-line);
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+.adslot__tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-line);
+  font-weight: 700;
+}
+
+@media print {
+  .adslot {
+    display: none !important;
+  }
+}

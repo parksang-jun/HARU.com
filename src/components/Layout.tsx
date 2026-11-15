@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
-import { adsAvailable, hideBanner, showBanner } from '../lib/ads'
+import { adsAvailable, bannerAllowed, bannerPreview, hideBanner, showBanner } from '../lib/ads'
 import { loadPref } from '../lib/storage'
 import { LangSwitch } from './LangSwitch'
 
@@ -24,8 +24,6 @@ const ICONS = {
   more: 'M4 6h16M4 12h16M4 18h16',
 }
 
-/** 배너 광고를 보여줄 목록 화면 */
-const BANNER_ROUTES = ['/', '/deals', '/hotels', '/flights', '/flights/deals']
 const BOOK_ROUTES = ['/flights', '/hotels', '/deals']
 
 export function Layout() {
@@ -34,9 +32,16 @@ export function Layout() {
 
   useEffect(() => {
     if (!adsAvailable()) return
-    if (BANNER_ROUTES.includes(location.pathname)) void showBanner()
+    if (bannerAllowed(location.pathname)) void showBanner()
     else void hideBanner()
   }, [location.pathname])
+
+  // 웹 미리보기: 배너가 들어갈 자리를 같은 높이로 보여 준다
+  const preview = bannerPreview() && bannerAllowed(location.pathname)
+  useEffect(() => {
+    if (!bannerPreview()) return
+    document.documentElement.style.setProperty('--banner-h', preview ? '50px' : '0px')
+  }, [preview])
 
   return (
     <div className="app-shell">
@@ -50,6 +55,12 @@ export function Layout() {
       <main className="page">
         <Outlet />
       </main>
+      {preview && (
+        <div className="adslot" data-testid="banner-slot" role="note">
+          <span className="adslot__tag">{t('common.sponsored')}</span>
+          <span>{t('ads.slot')}</span>
+        </div>
+      )}
       <nav className="tabbar" aria-label="Main">
         <div className="tabbar__inner">
           <NavLink to="/" end className={({ isActive }) => `tabbar__item${isActive ? ' is-active' : ''}`}>

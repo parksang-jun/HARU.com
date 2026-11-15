@@ -17,6 +17,9 @@ function today(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
+/** 추가 요청에 바로 넣을 수 있는 키워드 (샘플 모드와 AI 가 모두 이해하는 표현) */
+const NOTE_KEYWORDS = ['veg', 'kids', 'easy', 'slow', 'late', 'early', 'noshop', 'nonight'] as const
+
 export function TripSetupPage() {
   const { t, locale } = useI18n()
   const navigate = useNavigate()
@@ -32,6 +35,12 @@ export function TripSetupPage() {
   const [budget, setBudget] = useState<Budget>('standard')
   const [pace, setPace] = useState<Pace>('balanced')
   const [notes, setNotes] = useState('')
+  // 키워드 칩: 누르면 쉼표로 이어 붙이고, 다시 누르면 뺀다
+  const toggleKeyword = (word: string) => {
+    const parts = notes.split(/[,、，]/).map((x) => x.trim()).filter(Boolean)
+    const next = parts.includes(word) ? parts.filter((x) => x !== word) : [...parts, word]
+    setNotes(next.join(', ').slice(0, 500))
+  }
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -129,6 +138,20 @@ export function TripSetupPage() {
 
       <section className="field">
         <span className="field__label">{t('setup.notes')}</span>
+        <p className="xs muted" data-testid="notes-help">
+          {t('setup.notesHelp')}
+        </p>
+        <div className="chips">
+          {NOTE_KEYWORDS.map((k) => {
+            const word = t(`setup.kw.${k}`)
+            const on = notes.split(/[,、，]/).some((x) => x.trim() === word)
+            return (
+              <button key={k} type="button" className={`chip chip--sm${on ? ' is-on' : ''}`} aria-pressed={on} onClick={() => toggleKeyword(word)} data-testid="note-keyword">
+                {word}
+              </button>
+            )
+          })}
+        </div>
         <textarea className="textarea" data-testid="setup-notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('setup.notesPh')} maxLength={500} />
       </section>
 

@@ -86,8 +86,8 @@
       "balanced": "Balanced",
       "packed": "Packed"
     },
-    "notes": "Anything else? (optional)",
-    "notesPh": "e.g. vegetarian, travelling with a stroller, no shopping, must see Gyeongbokgung, late mornings",
+    "notes": "Extra requests (optional)",
+    "notesPh": "e.g. vegetarian, stroller, no shopping, Gyeongbokgung, late start",
     "generate": "Generate itinerary",
     "generating": "Building your itinerary…",
     "errCity": "Pick 1–5 destinations.",
@@ -96,7 +96,18 @@
     "destSearch": "Search a city or country (e.g. Tokyo, Paris)",
     "cityHint": "Up to {n} cities, in travel order.",
     "remove": "Remove {city}",
-    "interestsHint": "Pick as many as you like"
+    "interestsHint": "Pick as many as you like",
+    "notesHelp": "Enter keywords, separated by commas.",
+    "kw": {
+      "veg": "vegetarian",
+      "kids": "with kids",
+      "easy": "less walking",
+      "slow": "relaxed",
+      "late": "late start",
+      "early": "early start",
+      "noshop": "no shopping",
+      "nonight": "no nightlife"
+    }
   },
   "itin": {
     "loading": "Preparing your days…",
@@ -539,5 +550,8 @@
         "2": "Capsule hotel in Terminal 2"
       }
     }
+  },
+  "ads": {
+    "slot": "Banner ad space · real ads appear in the app"
   }
 }

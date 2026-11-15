@@ -11,7 +11,7 @@ export const ENV = {
   supabaseAnonKey: (e.VITE_SUPABASE_ANON_KEY as string | undefined) ?? '',
   /** Supabase 미설정 시 자동으로 목업 모드 */
   mockAi: bool(e.VITE_MOCK_AI as string | undefined, true) || !(e.VITE_SUPABASE_URL as string | undefined),
-  admobEnabled: bool(e.VITE_ADMOB_ENABLED as string | undefined, false),
+  admobEnabled: bool(e.VITE_ADMOB_ENABLED as string | undefined, true),
   admobBannerAndroid: (e.VITE_ADMOB_BANNER_ANDROID as string | undefined) || 'ca-app-pub-3940256099942544/6300978111',
   admobBannerIos: (e.VITE_ADMOB_BANNER_IOS as string | undefined) || 'ca-app-pub-3940256099942544/2934735716',
   affiliate: {
@@ -32,7 +32,7 @@ export const ENV = {
     /** Travelpayouts(Aviasales) 파트너 marker */
     tpMarker: (e.VITE_TP_MARKER as string | undefined) ?? '',
   },
-  version: '0.4.0',
+  version: '0.4.1',
 } as const
 
 export const hasSupabase = Boolean(ENV.supabaseUrl && ENV.supabaseAnonKey)
