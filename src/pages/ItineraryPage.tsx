@@ -11,9 +11,10 @@ import { airportDestination, bestAirportFor, domesticOrigin, getAirport, HOME_AI
 import { listCoupons, nearbyCoupons, type Coupon } from '../lib/coupons'
 import { defaultHomeAirport, destName, getDestination } from '../lib/destinations'
 import { distanceKm } from '../lib/geo'
-import { adultsFor, type Trip } from '../lib/itinerary'
+import { adultsFor, daysBetween, type Trip } from '../lib/itinerary'
 import { getRepo } from '../lib/repo'
-import { loadPref, savePref } from '../lib/storage'
+import { loadJson, loadPref, saveJson, savePref } from '../lib/storage'
+import { formatTemps, getTripWeather, ICONS, needsRainPlan, packingList, tipsFor, weatherKey, type DayWeather, type TripWeather } from '../lib/weather'
 import { staySegments, type StaySegment } from '../lib/plan'
 
 
@@ -28,6 +29,8 @@ export function ItineraryPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [home, setHome] = useState(defaultHomeAirport(locale))
+  const [weather, setWeather] = useState<TripWeather>({})
+  const [done, setDone] = useState<string[]>([])
 
   useEffect(() => {
     loadPref(HOME_AIRPORT_KEY).then((v) => {
@@ -47,7 +50,36 @@ export function ItineraryPage() {
     listCoupons().then(setCoupons)
   }, [id])
 
+  // 날씨: 일정이 바뀌면 다시 받는다 (하루 한 번 캐시)
+  const itinerary = trip?.itinerary
+  useEffect(() => {
+    if (!trip || !itinerary) return
+    let alive = true
+    getTripWeather(trip)
+      .then((w) => alive && setWeather(w))
+      .catch(() => alive && setWeather({}))
+    return () => {
+      alive = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trip?.id, itinerary])
+
+  // 준비 체크리스트 완료 표시 (여행별 저장)
+  useEffect(() => {
+    if (!id) return
+    loadJson<string[]>(`prep:${id}`, []).then(setDone)
+  }, [id])
+  const toggle = (key: string) => {
+    setDone((prev) => {
+      const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      if (id) void saveJson(`prep:${id}`, next)
+      return next
+    })
+  }
+
   const day = trip?.itinerary?.days[dayIdx]
+  const wx: DayWeather | undefined = day ? weather[weatherKey(day.city, day.date)] : undefined
+  const packing = useMemo(() => packingList(Object.values(weather)), [weather])
   const deals = useMemo(() => (day ? nearbyCoupons(coupons, day.city, day.stops) : []), [coupons, day])
   const segments = useMemo(() => (trip?.itinerary ? staySegments(trip) : []), [trip])
 
@@ -61,6 +93,13 @@ export function ItineraryPage() {
     if (!to || !homeCity || !dst) return null
     if (homeCity.id === dst.id || distanceKm(homeCity.lat, homeCity.lng, dst.lat, dst.lng) < 180) return null
     return { from: domesticOrigin(home, to), to }
+  }, [trip, home])
+
+  // 해외 일정이 있으면 출국 준비 항목을 보여 준다
+  const abroad = useMemo(() => {
+    if (!trip) return false
+    const homeCountry = airportDestination(home)?.country
+    return trip.params.cities.some((c) => getDestination(c)?.country !== homeCountry)
   }, [trip, home])
 
   const adults = trip ? adultsFor(trip.params.travelers) : 1
@@ -120,6 +159,15 @@ export function ItineraryPage() {
     )
   }
 
+  // 준비 항목: 일정(자동 완료) + 항공권 + 숙소 구간 + 날씨·준비물 + 현지 혜택 (+ 해외면 출국 준비)
+  const prepKeys = ['itinerary', ...(flight ? ['flight'] : []), ...segments.map((s) => `hotel:${s.city}:${s.checkIn}`), 'weather', 'deals', ...(abroad ? ['essentials'] : [])]
+  const prepDone = prepKeys.filter((k) => k === 'itinerary' || done.includes(k)).length
+  const check = (key: string) => (
+    <button type="button" className={`prep__check${done.includes(key) ? ' is-on' : ''}`} aria-pressed={done.includes(key)} aria-label={t('prep.check')} onClick={() => toggle(key)} data-testid="prep-check">
+      ✓
+    </button>
+  )
+
   return (
     <>
       <div>
@@ -128,41 +176,115 @@ export function ItineraryPage() {
       </div>
 
       <section className="card plan" data-testid="plan-card">
-        <p className="small" style={{ fontWeight: 700 }}>
-          {t('itin.planTitle')}
-        </p>
-        {flight && (
-          <button type="button" className="plan__row" onClick={goFlights} data-testid="plan-flights">
-            <span className="plan__icon" aria-hidden="true">
-              ✈
-            </span>
+        <div className="row">
+          <p className="small" style={{ fontWeight: 700 }}>
+            {t('prep.title')}
+          </p>
+          <span className="xs muted" data-testid="prep-progress">
+            {t('prep.progress', { done: prepDone, total: prepKeys.length })}
+          </span>
+        </div>
+        <div className="prep__bar" aria-hidden="true">
+          <span style={{ width: `${(prepDone / prepKeys.length) * 100}%` }} />
+        </div>
+        {prepDone === prepKeys.length && <p className="small prep__done">{t('prep.allDone')}</p>}
+
+        <div className="prep__row">
+          <span className="prep__check is-on" aria-hidden="true">
+            ✓
+          </span>
+          <div className="plan__row plan__row--static">
             <span className="plan__text">
-              <strong>{t('itin.flightsTo', { city: destName(trip.params.cities[0], locale) })}</strong>
-              <span className="xs muted">
-                {flight.from} ⇄ {flight.to} · {formatDate(trip.params.startDate)} – {formatDate(trip.params.endDate)}
+              <strong>{t('prep.itinerary')}</strong>
+              <span className="xs muted">{t('prep.itinerarySub', { n: daysBetween(trip.params.startDate, trip.params.endDate) })}</span>
+            </span>
+          </div>
+        </div>
+
+        {flight && (
+          <div className="prep__row">
+            {check('flight')}
+            <button type="button" className="plan__row" onClick={goFlights} data-testid="plan-flights">
+              <span className="plan__icon" aria-hidden="true">
+                ✈
               </span>
-            </span>
-            <span className="plan__go" aria-hidden="true">
-              ›
-            </span>
-          </button>
+              <span className="plan__text">
+                <strong>{t('itin.flightsTo', { city: destName(trip.params.cities[0], locale) })}</strong>
+                <span className="xs muted">
+                  {flight.from} ⇄ {flight.to} · {formatDate(trip.params.startDate)} – {formatDate(trip.params.endDate)}
+                </span>
+              </span>
+              <span className="plan__go" aria-hidden="true">
+                ›
+              </span>
+            </button>
+          </div>
         )}
         {segments.map((seg) => (
-          <button key={`${seg.city}-${seg.checkIn}`} type="button" className="plan__row" onClick={() => goHotels(seg)} data-testid="plan-hotels">
+          <div key={`${seg.city}-${seg.checkIn}`} className="prep__row">
+            {check(`hotel:${seg.city}:${seg.checkIn}`)}
+            <button type="button" className="plan__row" onClick={() => goHotels(seg)} data-testid="plan-hotels">
+              <span className="plan__icon" aria-hidden="true">
+                ⌂
+              </span>
+              <span className="plan__text">
+                <strong>{t('itin.hotelsIn', { city: destName(seg.city, locale) })}</strong>
+                <span className="xs muted">
+                  {formatDate(seg.checkIn)} – {formatDate(seg.checkOut)} · {t('hotels.nights', { n: seg.nights })}
+                </span>
+              </span>
+              <span className="plan__go" aria-hidden="true">
+                ›
+              </span>
+            </button>
+          </div>
+        ))}
+
+        <div className="prep__row">
+          {check('weather')}
+          <button type="button" className="plan__row" onClick={() => toggle('weather')} data-testid="prep-weather">
             <span className="plan__icon" aria-hidden="true">
-              ⌂
+              ☂
             </span>
             <span className="plan__text">
-              <strong>{t('itin.hotelsIn', { city: destName(seg.city, locale) })}</strong>
-              <span className="xs muted">
-                {formatDate(seg.checkIn)} – {formatDate(seg.checkOut)} · {t('hotels.nights', { n: seg.nights })}
+              <strong>{t('prep.weather')}</strong>
+              <span className="xs muted" data-testid="packing-list">
+                {packing.length ? packing.map((p) => t(`weather.tip.${p}`)).join(' · ') : t('weather.noTips')}
               </span>
+            </span>
+          </button>
+        </div>
+
+        <div className="prep__row">
+          {check('deals')}
+          <Link to="/deals" className="plan__row" data-testid="prep-deals">
+            <span className="plan__icon" aria-hidden="true">
+              %
+            </span>
+            <span className="plan__text">
+              <strong>{t('prep.deals')}</strong>
+              <span className="xs muted">{t('prep.dealsSub')}</span>
             </span>
             <span className="plan__go" aria-hidden="true">
               ›
             </span>
-          </button>
-        ))}
+          </Link>
+        </div>
+
+        {abroad && (
+          <div className="prep__row">
+            {check('essentials')}
+            <button type="button" className="plan__row" onClick={() => toggle('essentials')} data-testid="prep-essentials">
+              <span className="plan__icon" aria-hidden="true">
+                ✓
+              </span>
+              <span className="plan__text">
+                <strong>{t('prep.essentials')}</strong>
+                <span className="xs muted">{t('prep.essentialsSub')}</span>
+              </span>
+            </button>
+          </div>
+        )}
       </section>
 
       <div className="day-tabs" role="tablist" data-testid="day-tabs">
@@ -170,6 +292,11 @@ export function ItineraryPage() {
           <button key={d.day} type="button" role="tab" aria-selected={i === dayIdx} className={`day-tab${i === dayIdx ? ' is-active' : ''}`} onClick={() => setDayIdx(i)} data-testid="day-tab">
             <span className="day-tab__n">{t('common.day', { n: d.day })}</span>
             <span className="day-tab__d">{formatDate(d.date)}</span>
+            {weather[weatherKey(d.city, d.date)] && (
+              <span className="day-tab__w" data-testid="day-tab-weather">
+                <span aria-hidden="true">{ICONS[weather[weatherKey(d.city, d.date)].condition]}</span> {Math.round(weather[weatherKey(d.city, d.date)].high)}°
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -192,6 +319,41 @@ export function ItineraryPage() {
       {error && (
         <div className="alert" role="alert">
           {error}
+        </div>
+      )}
+
+      {wx && (
+        <section className="card card--flat wx" data-testid="day-weather" data-source={wx.source}>
+          <span className="wx__icon" aria-hidden="true">
+            {ICONS[wx.condition]}
+          </span>
+          <div className="wx__body">
+            <p className="wx__main">
+              <strong>{t(`weather.cond.${wx.condition}`)}</strong> <span data-testid="day-weather-temp">{formatTemps(wx, locale)}</span>
+            </p>
+            {wx.rainPct !== null && <p className="xs muted">{t(wx.source === 'forecast' ? 'weather.rainForecast' : 'weather.rainNormal', { n: wx.rainPct })}</p>}
+            {tipsFor(wx).length > 0 && (
+              <div className="chips wx__tips">
+                {tipsFor(wx).map((tip) => (
+                  <span key={tip} className="chip chip--sm" data-testid="weather-tip">
+                    {t(`weather.tip.${tip}`)}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <span className="wx__src">
+            <span className="badge">{t(`weather.src.${wx.source}`)}</span>
+            {wx.sample && <span className="badge">{t('common.sample')}</span>}
+          </span>
+        </section>
+      )}
+      {needsRainPlan(wx, day) && (
+        <div className="wx__alt" data-testid="rain-plan">
+          <span>{t('weather.rainPlan')}</span>
+          <Link to={`/trip/${trip.id}/chat`} className="btn btn--sm">
+            {t('weather.rainPlanCta')}
+          </Link>
         </div>
       )}
 
@@ -227,6 +389,7 @@ export function ItineraryPage() {
 
       <p className="notice">{t('itin.affiliateDisclosure')}</p>
       <p className="notice">{t('itin.aiNotice')}</p>
+      {wx && <p className="notice">{t(wx.sample ? 'weather.noticeSample' : 'weather.notice')}</p>}
       <button type="button" className="btn btn--sm btn--ghost" onClick={remove} style={{ alignSelf: 'flex-start' }}>
         {t('common.delete')}
       </button>

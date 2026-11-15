@@ -27,8 +27,8 @@
     "noMatch": "找不到結果"
   },
   "home": {
-    "heroTitle": "國內外旅行，一分鐘排好行程",
-    "heroSub": "用真實景點安排每日行程，還有機票、飯店與在地優惠。",
+    "heroTitle": "旅行準備，一天搞定",
+    "heroSub": "行程、機票、住宿、天氣、當地優惠，今天在這裡一次準備好。",
     "start": "建立新行程",
     "yourTrips": "我的行程",
     "noTrips": "還沒有行程，先建立第一個吧。",
@@ -331,5 +331,53 @@
     "compare": "比價",
     "noticeSample": "示範用的範例特價，並非實際價格。折扣是與該航線一般商務艙票價估計值相比。",
     "noticeLive": "合作夥伴近期找到的商務艙票價。折扣是與該航線一般票價估計值相比，座位有限且價格隨時變動，最終價格請以合作網站為準。"
+  },
+  "weather": {
+    "cond": {
+      "clear": "晴",
+      "partly": "多雲時晴",
+      "cloudy": "陰",
+      "fog": "霧",
+      "drizzle": "小雨",
+      "rain": "雨",
+      "heavyRain": "大雨",
+      "snow": "雪",
+      "storm": "雷雨"
+    },
+    "rainForecast": "降雨機率 {n}%",
+    "rainNormal": "雨天比例 {n}%",
+    "src": {
+      "forecast": "預報",
+      "normal": "常年",
+      "estimate": "常年(估算)"
+    },
+    "tip": {
+      "umbrella": "雨傘",
+      "snow": "雪靴·手套",
+      "heavyCoat": "厚外套",
+      "coat": "大衣",
+      "jacket": "薄外套",
+      "hot": "注意防暑",
+      "sunscreen": "防曬乳",
+      "layers": "日夜溫差大 · 洋蔥式穿搭"
+    },
+    "noTips": "沒有特別要帶的物品",
+    "rainPlan": "這天可能下雨或下雪，而且戶外行程較多，建議先準備室內備案。",
+    "rainPlanCta": "詢問室內備案",
+    "notice": "天氣：出發16天內為預報，之後為常年值（過去3年同期平均）。出發前請再次確認。資料來源：Open-Meteo.com",
+    "noticeSample": "這是測試用的範例天氣，並非實際預報。"
+  },
+  "prep": {
+    "title": "一天完成旅行準備",
+    "progress": "已完成 {done}/{total}",
+    "allDone": "準備完成！出發吧。",
+    "itinerary": "建立行程",
+    "itinerarySub": "{n}天行程已完成",
+    "weather": "天氣·行李",
+    "deals": "當地優惠·活動",
+    "dealsSub": "確認優惠券與預訂",
+    "essentials": "出國準備",
+    "essentialsSub": "護照效期 · 入境規定 · 換匯 · 漫遊/eSIM · 旅遊保險",
+    "check": "標記為完成"
   }
 }

@@ -1,8 +1,19 @@
-# Haru Korea — AI 여행 컨시어지 (국내·해외 + 항공권·호텔)
+# Haru — 하루 만에 끝내는 여행 준비 (일정·항공권·호텔·날씨)
+
+> **목표: 하루 만에 모든 여행 준비를 끝낸다.** 일정 → 항공권 → 숙소 → 날씨·준비물 → 현지 혜택 → 출국 준비를 한 화면의 체크리스트로 따라간다. (앱 안 표시 이름은 아직 작업명 `Haru Korea`)
 
 **국내·해외 여행 모두**에 대해 **실제 장소 기반 일자별 일정 + 항공권 검색 + 호텔 검색 + 예약 링크 + 현지 혜택**을 제공하는 앱.
 v0.1(방한 여행자 전용) → v0.2 에서 전 세계 여행지 93곳(국내 12 · 일본 9 · 중화권 9 · 동남아 18 · 유럽 24 · 미주 9 · 대양주·하와이 7 · 중동 등 5), 항공권·호텔 검색을 추가했다.
 수익 모델은 (1) 항공·호텔·액티비티 **어필리에이트 커미션**, (2) 지역 업체 **스폰서 혜택(광고) 게재**, (3) 선택적 AdMob 배너(목록 화면 한정).
+
+### v0.3 추가 기능 (2026-11-15)
+| 기능 | 내용 | 데이터 (라이브) | 데이터 (목업) |
+|---|---|---|---|
+| 일정별 날씨 | 날짜 탭마다 아이콘·최고기온, 선택한 날의 날씨 카드(상태·최고/최저·강수 확률·준비물), 비·눈 오는 날 야외 일정이 2곳 이상이면 실내 대안 안내. `src/lib/weather.ts` | Edge Function `trip-weather` → Open-Meteo. 오늘부터 16일 안은 **예보**, 그 뒤는 **평년값**(지난 3년 같은 날짜 ±3일 평균·비 온 날 비율). 실패하면 위도·지역 기반 평년 추정으로 대체 | 16일 안은 날짜별 샘플 예보, 그 뒤는 평년 추정 ("샘플" 표시) |
+| 하루 준비 체크리스트 | 일정 화면 상단: 일정(자동 완료) → 항공권 → 숙소(구간별) → 날씨·준비물 → 현지 혜택 → 출국 준비(해외일 때), 진행률 표시, 여행별로 기기에 저장 | — | — |
+| 운영센터 | `ops/agent/` — 여섯 부서(운영·제휴·재무·제품개선·마케팅·여행데이터) 운영 에이전트 헌장과 맥 운영센터 앱. `ops/agent/mac/README.md` | — | — |
+
+> Open-Meteo 무료 호스트는 **비상업적 이용만** 허용한다. 수익이 나는 정식 출시 전에 유료 플랜 키를 Supabase 비밀값 `WEATHER_API_KEY` 로 넣어야 한다(넣으면 customer-* 호스트로 호출). 데이터 출처 표기(Open-Meteo.com)는 일정 화면 하단에 있다.
 
 ### v0.2 추가 기능
 | 기능 | 내용 | 데이터 (라이브) | 데이터 (목업) |
@@ -31,7 +42,7 @@ v0.1(방한 여행자 전용) → v0.2 에서 전 세계 여행지 93곳(국내 
 npm install
 npm run dev          # http://localhost:5173  (목업 AI 모드)
 npm run build        # tsc + vite build → dist/
-npm test             # vitest 단위 테스트 (43개)
+npm test             # vitest 단위 테스트 (55개)
 npm run e2e          # Playwright 스모크 (vite preview :4181) + screenshots/*.png
 ```
 
@@ -50,10 +61,10 @@ npm run e2e          # Playwright 스모크 (vite preview :4181) + screenshots/*
 | `VITE_ADMOB_ENABLED` | `true` 일 때만 네이티브 배너 표시 |
 | `VITE_ADMOB_BANNER_ANDROID/IOS` | 배너 광고 단위 ID (기본값은 Google 테스트 ID) |
 
-Edge Function secret: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL_ITINERARY`(기본 claude-sonnet-5-5), `ANTHROPIC_MODEL_CHAT`(기본 claude-haiku-5-5), `ITINERARY_DAILY_CAP`(3), `CHAT_DAILY_CAP`(40), `TRAVELPAYOUTS_TOKEN`(항공), `AGODA_SITE_ID`·`AGODA_API_KEY`·`AGODA_API_URL`(호텔), `SEARCH_DAILY_CAP`(60).
+Edge Function secret: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL_ITINERARY`(기본 claude-sonnet-5-5), `ANTHROPIC_MODEL_CHAT`(기본 claude-haiku-5-5), `ITINERARY_DAILY_CAP`(3), `CHAT_DAILY_CAP`(40), `TRAVELPAYOUTS_TOKEN`(항공), `AGODA_SITE_ID`·`AGODA_API_KEY`·`AGODA_API_URL`(호텔), `SEARCH_DAILY_CAP`(60), `WEATHER_API_KEY`(선택 — Open-Meteo 유료 플랜).
 
 ## 3. Supabase 설정
-`supabase/SUPABASE_SETUP.md` 참고. 요약: 프로젝트 생성 → **Anonymous sign-ins 활성화** → `migrations/0001_init.sql` → `0002_travel_booking.sql` + `seed.sql` 실행 → Edge Function 4개 배포 → 운영자 `profiles.role='admin'` 지정.
+`supabase/SUPABASE_SETUP.md` 참고. 요약: 프로젝트 생성 → **Anonymous sign-ins 활성화** → `migrations/0001_init.sql` → `0002_travel_booking.sql` + `seed.sql` 실행 → Edge Function 6개 배포 → 운영자 `profiles.role='admin'` 지정.
 
 ## 4. 어필리에이트 프로그램 가입 목록
 

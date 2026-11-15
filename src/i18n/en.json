@@ -27,8 +27,8 @@
     "noMatch": "No matches"
   },
   "home": {
-    "heroTitle": "Plan any trip in one minute",
-    "heroSub": "Day-by-day itineraries with real places — plus flights, hotels and local deals.",
+    "heroTitle": "Get your whole trip ready in one day",
+    "heroSub": "Itinerary, flights, stays, weather and local deals — all sorted today, in one place.",
     "start": "Plan a new trip",
     "yourTrips": "Your trips",
     "noTrips": "No trips yet. Start with your first one.",
@@ -331,5 +331,53 @@
     "compare": "Compare",
     "noticeSample": "Sample deals for demo — not live prices. Discounts are estimated against typical business fares for the route.",
     "noticeLive": "Business fares found by partners recently. Discounts are estimated against typical fares for the route; seats are limited and prices change — the final price is on the partner site."
+  },
+  "weather": {
+    "cond": {
+      "clear": "Clear",
+      "partly": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "drizzle": "Light rain",
+      "rain": "Rain",
+      "heavyRain": "Heavy rain",
+      "snow": "Snow",
+      "storm": "Thunderstorm"
+    },
+    "rainForecast": "{n}% chance of rain",
+    "rainNormal": "Rainy days {n}%",
+    "src": {
+      "forecast": "Forecast",
+      "normal": "Typical",
+      "estimate": "Typical (est.)"
+    },
+    "tip": {
+      "umbrella": "Umbrella",
+      "snow": "Snow boots & gloves",
+      "heavyCoat": "Heavy coat",
+      "coat": "Coat",
+      "jacket": "Light jacket",
+      "hot": "Dress for heat",
+      "sunscreen": "Sunscreen",
+      "layers": "Big day–night swing · layers"
+    },
+    "noTips": "Nothing special to pack",
+    "rainPlan": "Rain or snow is likely and this day is mostly outdoors. Line up an indoor backup.",
+    "rainPlanCta": "Ask for indoor options",
+    "notice": "Weather: forecast within 16 days of today, otherwise typical conditions (average of the same dates over the past 3 years). Check again before you leave. Data: Open-Meteo.com",
+    "noticeSample": "Sample weather for testing — not a real forecast."
+  },
+  "prep": {
+    "title": "Trip ready in one day",
+    "progress": "{done}/{total} done",
+    "allDone": "All set. Just go.",
+    "itinerary": "Build the itinerary",
+    "itinerarySub": "{n}-day plan ready",
+    "weather": "Weather & packing",
+    "deals": "Local deals & activities",
+    "dealsSub": "Check coupons and bookings",
+    "essentials": "Before you fly",
+    "essentialsSub": "Passport validity · entry rules · currency · roaming/eSIM · travel insurance",
+    "check": "Mark as done"
   }
 }

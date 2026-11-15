@@ -1,0 +1,13 @@
+name,purpose,required,status,next
+Supabase,로그인·여행 저장·서버 함수(AI·검색·날씨),필수,미확인,프로젝트를 만들고 마이그레이션·함수 배포 (supabase/SUPABASE_SETUP.md)
+Anthropic API,AI 일정 생성·컨시어지 답변,필수,미확인,API 키를 Supabase 비밀값 ANTHROPIC_API_KEY 에 등록
+Travelpayouts (Aviasales),항공 운임·비즈니스 특가 데이터 + 항공 커미션,필수,미확인,가입 후 토큰을 TRAVELPAYOUTS_TOKEN 에 등록
+Agoda,호텔 검색 데이터 + 호텔 커미션,필수,미확인,제휴 가입 후 AGODA_SITE_ID·AGODA_API_KEY 등록
+Open-Meteo,일정 날짜별 날씨(예보·평년),필수,테스트용 무료,무료 호스트는 비상업용 — 수익이 나는 정식 출시 전에 유료 플랜 키(WEATHER_API_KEY) 필요
+Trip.com,항공·호텔 예약 커미션,선택,미확인,제휴 가입 후 VITE_AFF_TRIP_QS
+Klook,액티비티·입장권 커미션,선택,미확인,제휴 가입 후 VITE_AFF_KLOOK_QS
+Booking.com,호텔 커미션,선택,미확인,제휴 가입 후 VITE_AFF_BOOKING_QS
+Skyscanner,항공 비교 커미션,선택,미확인,제휴 가입 후 VITE_AFF_SKYSCANNER_QS
+AdMob,목록 화면 배너 광고,선택,미확인,앱·광고 단위 생성 후 VITE_ADMOB_*
+Apple Developer Program,앱스토어 출시,필수,완료,가입됨 (싹싹클린과 같은 계정)
+Google Play Console,구글플레이 출시,필수,미확인,싹싹클린 계정 승인 상태 확인

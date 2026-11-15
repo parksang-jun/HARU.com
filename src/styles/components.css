@@ -1144,3 +1144,126 @@ a.chip {
 .deal__left.is-hot {
   color: var(--color-primary);
 }
+
+/* 하루 준비 체크리스트 */
+.prep__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-surface-2);
+  overflow: hidden;
+}
+
+.prep__bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-success);
+  transition: width 0.2s ease;
+}
+
+.prep__done {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.prep__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.prep__row .plan__row {
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.plan__row--static {
+  border-style: dashed;
+}
+
+.prep__check {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-line);
+  background: var(--color-surface);
+  color: transparent;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prep__check.is-on {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: #fff;
+}
+
+/* 날씨 */
+.day-tab__w {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wx {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.wx__icon {
+  flex: none;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.wx__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wx__main {
+  font-size: var(--text-s);
+}
+
+.wx__tips {
+  margin-top: 2px;
+}
+
+.wx__src {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.wx__alt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-s);
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+  font-size: var(--text-s);
+}
+
+.wx__alt span {
+  flex: 1;
+}
+
+.wx__alt .btn {
+  flex: none;
+}

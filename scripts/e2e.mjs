@@ -64,6 +64,19 @@ try {
   assert(dayTabs >= 2, `itinerary renders with ${dayTabs} days (>= 2)`)
   const stops = await page.getByTestId('stop').count()
   assert(stops >= 3, `day 1 has ${stops} stops`)
+
+  // 날씨: 날짜 탭마다 아이콘·기온, 선택한 날의 날씨 카드, 준비 체크리스트
+  await page.getByTestId('day-weather').waitFor({ timeout: 5000 })
+  assert((await page.getByTestId('day-tab-weather').count()) === dayTabs, 'every day tab shows weather')
+  const temp = await page.getByTestId('day-weather-temp').innerText()
+  assert(/-?\d+° \/ -?\d+°C \(-?\d+° \/ -?\d+°F\)/.test(temp), `day weather shows temperatures: "${temp}"`)
+  const src = await page.getByTestId('day-weather').getAttribute('data-source')
+  assert(['forecast', 'estimate'].includes(src), `weather source is labelled (${src})`)
+  const before = await page.getByTestId('prep-progress').innerText()
+  await page.getByTestId('prep-weather').click()
+  const after = await page.getByTestId('prep-progress').innerText()
+  assert(before !== after && /^2\//.test(after), `prep checklist progress moves: "${before}" → "${after}"`)
+  assert((await page.getByTestId('packing-list').innerText()).length > 0, 'packing list is shown')
   await page.screenshot({ path: join(shots, '03-itinerary.png'), fullPage: true })
 
   // 스폰서 카드 + 라벨
