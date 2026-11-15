@@ -11,7 +11,7 @@ export const ENV = {
   supabaseAnonKey: (e.VITE_SUPABASE_ANON_KEY as string | undefined) ?? '',
   /** Supabase 미설정 시 자동으로 목업 모드 */
   mockAi: bool(e.VITE_MOCK_AI as string | undefined, true) || !(e.VITE_SUPABASE_URL as string | undefined),
-  admobEnabled: bool(e.VITE_ADMOB_ENABLED as string | undefined, false),
+  admobEnabled: bool(e.VITE_ADMOB_ENABLED as string | undefined, true),
   admobBannerAndroid: (e.VITE_ADMOB_BANNER_ANDROID as string | undefined) || 'ca-app-pub-3940256099942544/6300978111',
   admobBannerIos: (e.VITE_ADMOB_BANNER_IOS as string | undefined) || 'ca-app-pub-3940256099942544/2934735716',
   affiliate: {
@@ -26,10 +26,13 @@ export const ENV = {
     nolUrl: (e.VITE_AFF_NOL_URL as string | undefined) ?? '',
     /** Skyscanner 제휴(Impact) 추적 쿼리스트링 */
     skyscanner: (e.VITE_AFF_SKYSCANNER_QS as string | undefined) ?? '',
+    /** 아마존 어소시에이트 태그 (미국 / 일본) — 여행 제품 추천 링크 */
+    amazon: (e.VITE_AFF_AMAZON_TAG as string | undefined) ?? '',
+    amazonJp: (e.VITE_AFF_AMAZON_JP_TAG as string | undefined) ?? '',
     /** Travelpayouts(Aviasales) 파트너 marker */
     tpMarker: (e.VITE_TP_MARKER as string | undefined) ?? '',
   },
-  version: '0.2.0',
+  version: '0.5.0',
 } as const
 
 export const hasSupabase = Boolean(ENV.supabaseUrl && ENV.supabaseAnonKey)

@@ -1,8 +1,40 @@
-# Haru Korea — AI 여행 컨시어지 (국내·해외 + 항공권·호텔)
+# Haru — 하루 만에 끝내는 여행 준비 (일정·항공권·호텔·날씨)
+
+> **목표: 하루 만에 모든 여행 준비를 끝낸다.** 일정 → 항공권 → 숙소 → 날씨·준비물 → 현지 혜택 → 출국 준비를 한 화면의 체크리스트로 따라간다.
 
 **국내·해외 여행 모두**에 대해 **실제 장소 기반 일자별 일정 + 항공권 검색 + 호텔 검색 + 예약 링크 + 현지 혜택**을 제공하는 앱.
 v0.1(방한 여행자 전용) → v0.2 에서 전 세계 여행지 93곳(국내 12 · 일본 9 · 중화권 9 · 동남아 18 · 유럽 24 · 미주 9 · 대양주·하와이 7 · 중동 등 5), 항공권·호텔 검색을 추가했다.
 수익 모델은 (1) 항공·호텔·액티비티 **어필리에이트 커미션**, (2) 지역 업체 **스폰서 혜택(광고) 게재**, (3) 선택적 AdMob 배너(목록 화면 한정).
+
+### v0.3 추가 기능 (2026-11-15)
+| 기능 | 내용 | 데이터 (라이브) | 데이터 (목업) |
+|---|---|---|---|
+| 일정별 날씨 | 날짜 탭마다 아이콘·최고기온, 선택한 날의 날씨 카드(상태·최고/최저·강수 확률·준비물), 비·눈 오는 날 야외 일정이 2곳 이상이면 실내 대안 안내. `src/lib/weather.ts` | Edge Function `trip-weather` → Open-Meteo. 오늘부터 16일 안은 **예보**, 그 뒤는 **평년값**(지난 3년 같은 날짜 ±3일 평균·비 온 날 비율). 실패하면 위도·지역 기반 평년 추정으로 대체 | 16일 안은 날짜별 샘플 예보, 그 뒤는 평년 추정 ("샘플" 표시) |
+| 하루 준비 체크리스트 | 일정 화면 상단: 일정(자동 완료) → 항공권 → 숙소(구간별) → 날씨·준비물 → 현지 혜택 → 출국 준비(해외일 때), 진행률 표시, 여행별로 기기에 저장 | — | — |
+| 운영센터 | `ops/agent/` — 여섯 부서(운영·제휴·재무·제품개선·마케팅·여행데이터) 운영 에이전트 헌장과 맥 운영센터 앱. `ops/agent/mac/README.md` | — | — |
+
+> Open-Meteo 무료 호스트는 **비상업적 이용만** 허용한다. 수익이 나는 정식 출시 전에 유료 플랜 키를 Supabase 비밀값 `WEATHER_API_KEY` 로 넣어야 한다(넣으면 customer-* 호스트로 호출). 데이터 출처 표기(Open-Meteo.com)는 일정 화면 하단에 있다.
+
+### v0.5 추가 기능 (2026-11-15)
+| 기능 | 내용 |
+|---|---|
+| 점심·저녁 고르기 | 날마다 점심 3곳·저녁 3곳 후보를 보여 주고 하나씩 고른다(기기에 저장, 보고서와 예상 비용에 반영). 실서비스: AI 가 그날 동선 근처의 실제 식당을 `meals` 로 돌려준다. 샘플 모드: 식당 자료가 없어 **그 나라 대표 메뉴**(한국·일본·대만·태국·베트남, 그 외는 종류)를 후보로 내고 지도 검색으로 연결 — `src/lib/mock/meals.ts`, `src/components/MealPicker.tsx` |
+| 식당 예약 방법 | 식사 카드 아래에 예약 순서 5단계와 나라별 예약 서비스(한국 캐치테이블·네이버, 일본 Tabelog·TableCheck, 대만 inline·EZTABLE, 유럽 TheFork, 미주 OpenTable, 공통 Google 지도). 앱이 예약을 대신하지는 않는다 — `src/lib/reserveGuide.ts` |
+| 숙소 나누기 | 여행 만들기에서 "숙소를 옮기시나요?"를 묻고 2~3곳에 박 수와 지역(선택)을 배정. 숙소가 바뀌는 날 체크인을 넣고 그 지역 근처 장소를 먼저 배치, 호텔 검색 구간도 숙소별로 나뉜다 — `TripParams.stays`, `src/lib/plan.ts` |
+| 추가 요청 키워드 | 키워드로 입력하라는 안내와 키워드 버튼 8개 |
+| 배너 광고 | 기본 켜짐. 웹 목업에서는 자리만 표시 |
+| 샘플 호텔 | 샘플 목록임을 목록 위에 알리고, 버튼은 같은 지역·날짜의 실제 호텔 검색으로 연결 |
+
+### v0.4 추가 기능 (2026-11-15)
+| 기능 | 내용 |
+|---|---|
+| 추가 요청 반영 | 여행 만들 때 적은 추가 요청을 일정에 반영하고, 일정 화면에 **요청별 반영 내역**(반영/미반영과 이유)을 보여 준다. 실서비스: AI 가 요청을 필수 조건으로 지키고 `requests` 로 보고(`generate-itinerary`). 샘플 모드: 키워드만 읽는다(채식, 아이·유모차, 걷기 부담, 늦은/이른 출발, 특정 종류 제외·추가, 장소 이름) — `src/lib/mock/requests.ts` |
+| 관심사 20종 | 맛집·시장·카페·쇼핑·역사·미술관·건축·사진·자연·하이킹·바다·야경·체험·테마파크·축제·아이와 함께·K-컬처·애니·나이트라이프·온천 |
+| 여행 보고서 | `/trip/:id/report` — 개요, 준비 현황, 요청 반영, 일자별 일정+날씨, 예상 비용(통화별 1인·인원 합계), 준비물. 복사·공유, 웹에서는 인쇄·PDF 저장 — `src/lib/report.ts` |
+| 여행 제품 추천 | `/trip/:id/gear` — 날씨·해외 여부·비행 거리·관심사로 제품 **종류**를 고르고 쇼핑몰 검색으로 연결(ko 쿠팡, en Amazon, ja Amazon.co.jp, zh-TW 蝦皮, eSIM 은 Klook). 특정 상품·가격은 다루지 않는다 — `src/lib/gear.ts` |
+| 공항 대기 가이드 | `/trip/:id/airport` — 탑승까지 남은 시간(1·2·4·6시간+)별 할 일, 라운지 이용권 검색(Klook 제휴)·공식 안내 검색, 일부 공항(ICN·SIN·HND·NRT) 대표 시설 — `src/lib/airportGuide.ts` |
+
+> 제품 추천 링크의 제휴 수익: 아마존은 `VITE_AFF_AMAZON_TAG`·`VITE_AFF_AMAZON_JP_TAG` 를 넣으면 추적된다. **쿠팡·쇼피는 파트너스 딥링크가 필요해 지금은 수익이 잡히지 않는 일반 검색 링크**다. 공항 대표 시설 문구는 공식 자료 대조 전이다(`ops/agent/state/data-checks.csv`).
 
 ### v0.2 추가 기능
 | 기능 | 내용 | 데이터 (라이브) | 데이터 (목업) |
@@ -31,7 +63,7 @@ v0.1(방한 여행자 전용) → v0.2 에서 전 세계 여행지 93곳(국내 
 npm install
 npm run dev          # http://localhost:5173  (목업 AI 모드)
 npm run build        # tsc + vite build → dist/
-npm test             # vitest 단위 테스트 (43개)
+npm test             # vitest 단위 테스트
 npm run e2e          # Playwright 스모크 (vite preview :4181) + screenshots/*.png
 ```
 
@@ -47,13 +79,13 @@ npm run e2e          # Playwright 스모크 (vite preview :4181) + screenshots/*
 | `VITE_AFF_CREATRIP_URL`, `VITE_AFF_TRAZY_URL`, `VITE_AFF_NOL_URL` | 검색 딥링크 형식이 미확정인 파트너는 승인 후 받은 랜딩 URL 전체 |
 | `VITE_AFF_SKYSCANNER_QS` | Skyscanner 제휴(Impact) 추적 쿼리스트링 |
 | `VITE_TP_MARKER` | Travelpayouts 파트너 marker (Aviasales 링크 추적) |
-| `VITE_ADMOB_ENABLED` | `true` 일 때만 네이티브 배너 표시 |
+| `VITE_ADMOB_ENABLED` | 배너 광고 (기본 `true`, `false` 로 끔). 네이티브 앱에서 실제 배너, 웹 목업에서는 자리 표시만. 홈·예약·혜택·일정·보고서·제품 추천·공항 가이드에 표시하고 컨시어지 대화·여행 만들기·약관에는 넣지 않는다 |
 | `VITE_ADMOB_BANNER_ANDROID/IOS` | 배너 광고 단위 ID (기본값은 Google 테스트 ID) |
 
-Edge Function secret: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL_ITINERARY`(기본 claude-sonnet-5-5), `ANTHROPIC_MODEL_CHAT`(기본 claude-haiku-5-5), `ITINERARY_DAILY_CAP`(3), `CHAT_DAILY_CAP`(40), `TRAVELPAYOUTS_TOKEN`(항공), `AGODA_SITE_ID`·`AGODA_API_KEY`·`AGODA_API_URL`(호텔), `SEARCH_DAILY_CAP`(60).
+Edge Function secret: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL_ITINERARY`(기본 claude-sonnet-5-5), `ANTHROPIC_MODEL_CHAT`(기본 claude-haiku-5-5), `ITINERARY_DAILY_CAP`(3), `CHAT_DAILY_CAP`(40), `TRAVELPAYOUTS_TOKEN`(항공), `AGODA_SITE_ID`·`AGODA_API_KEY`·`AGODA_API_URL`(호텔), `SEARCH_DAILY_CAP`(60), `WEATHER_API_KEY`(선택 — Open-Meteo 유료 플랜).
 
 ## 3. Supabase 설정
-`supabase/SUPABASE_SETUP.md` 참고. 요약: 프로젝트 생성 → **Anonymous sign-ins 활성화** → `migrations/0001_init.sql` → `0002_travel_booking.sql` + `seed.sql` 실행 → Edge Function 4개 배포 → 운영자 `profiles.role='admin'` 지정.
+`supabase/SUPABASE_SETUP.md` 참고. 요약: 프로젝트 생성 → **Anonymous sign-ins 활성화** → `migrations/0001_init.sql` → `0002_travel_booking.sql` + `seed.sql` 실행 → Edge Function 6개 배포 → 운영자 `profiles.role='admin'` 지정.
 
 ## 4. 어필리에이트 프로그램 가입 목록
 
@@ -155,7 +187,7 @@ tests/             vitest
 - **항공 운임은 캐시 데이터**(Travelpayouts, 최근 48시간) — 인기 노선 외에는 결과가 비거나 실제가와 다를 수 있음. 실시간 좌석·발권이 필요하면 Duffel 등 NDC API 와 별도 계약 검토.
 - **Agoda cityId 매핑**이 비어 있으면 해당 도시는 호텔 목록 대신 파트너 검색 링크만 표시됨(`_shared/agoda-cities.ts` 채우기). Agoda Lite API 기본 엔드포인트는 HTTP — HTTPS 엔드포인트는 계정 매니저에게 요청.
 - 목업 항공·호텔 결과는 데모용 샘플(가상의 호텔명·대략 운임)로 "샘플" 라벨을 붙였다. 라이브 모드에서는 목업으로 대체하지 않는다.
-- 앱 이름 "Haru Korea" 는 해외여행까지 포함하는 지금 범위와 맞지 않을 수 있음 — 출시 전 브랜드 재검토 권장.
+- 앱 이름은 **Haru** 로 확정(2026-11-15). `appId` 는 아직 `com.harukorea.app` — 스토어 등록 전에 확정하고, 바꾸면 `android/`·`ios/` 를 다시 만들어야 한다.
 - **어필리에이트 파라미터 형식**은 파트너 승인 전까지 확정 불가. Creatrip·Trazy·NOL 은 검색 딥링크가 없어 랜딩 URL 로만 연결.
 - 장소 시드 좌표는 공개 지도 기준 대략값 — 출시 전 검증 필요. AI 생성 일정은 폐업·영업시간 오류 가능(고지 문구 포함).
 - 식당 예약은 리드 링크(검색 페이지)이며 실제 예약 커미션 계약은 별도.

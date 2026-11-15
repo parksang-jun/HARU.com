@@ -1144,3 +1144,472 @@ a.chip {
 .deal__left.is-hot {
   color: var(--color-primary);
 }
+
+/* 하루 준비 체크리스트 */
+.prep__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-surface-2);
+  overflow: hidden;
+}
+
+.prep__bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-success);
+  transition: width 0.2s ease;
+}
+
+.prep__done {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.prep__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.prep__row .plan__row {
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.plan__row--static {
+  border-style: dashed;
+}
+
+.prep__check {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-line);
+  background: var(--color-surface);
+  color: transparent;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prep__check.is-on {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: #fff;
+}
+
+/* 날씨 */
+.day-tab__w {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wx {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.wx__icon {
+  flex: none;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.wx__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wx__main {
+  font-size: var(--text-s);
+}
+
+.wx__tips {
+  margin-top: 2px;
+}
+
+.wx__src {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.wx__alt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-s);
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+  font-size: var(--text-s);
+}
+
+.wx__alt span {
+  flex: 1;
+}
+
+.wx__alt .btn {
+  flex: none;
+}
+
+/* 추가 요청 반영 */
+.req {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.req__text {
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.req__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-s);
+}
+
+.req__list li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.req__mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: var(--color-success);
+}
+
+.req__list li.is-no .req__mark {
+  background: var(--color-accent);
+}
+
+/* 여행 보고서 */
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.report__sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.report__sec h2 {
+  font-size: var(--text-m);
+}
+
+.report__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px var(--space-3);
+  margin: 0;
+  font-size: var(--text-s);
+}
+
+.report__dl dt {
+  color: var(--color-muted);
+}
+
+.report__dl dd {
+  margin: 0;
+}
+
+.report__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-s);
+}
+
+.report__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.report__state {
+  margin-left: auto;
+  flex: none;
+}
+
+.report__warn {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.report__day {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report__day:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.report__day h3 {
+  font-size: var(--text-s);
+}
+
+.report__stops {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-s);
+}
+
+.report__stops li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.report__time {
+  flex: none;
+  width: 44px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}
+
+.report__cost {
+  margin-left: auto;
+  flex: none;
+}
+
+@media print {
+  .topbar,
+  .tabbar,
+  .report__actions {
+    display: none !important;
+  }
+
+  .page {
+    padding: 0;
+  }
+
+  .card {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}
+
+/* 여행 제품 추천 · 공항 가이드 */
+.gear {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.gear__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gear .btn {
+  flex: none;
+}
+
+.airport__tips {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-s);
+}
+
+/* 배너 광고 자리 (웹 미리보기) — 네이티브 앱에서는 같은 위치에 AdMob 배너가 뜬다 */
+.adslot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 21;
+  height: calc(var(--banner-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--color-surface-2);
+  border-top: 1px dashed var(--color-line);
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+.adslot__tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-line);
+  font-weight: 700;
+}
+
+@media print {
+  .adslot {
+    display: none !important;
+  }
+}
+
+/* 오늘의 식사 (점심·저녁 고르기) */
+.meals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.meals__slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.meals__label {
+  font-weight: 700;
+}
+
+.meals__opt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+
+.meals__opt.is-on {
+  border-color: var(--color-success);
+  background: var(--color-surface-2);
+}
+
+.meals__choose {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.meals__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meals__opt .btn {
+  flex: none;
+}
+
+.report__meal {
+  padding-left: 52px;
+}
+
+.alert--info {
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+  border-color: transparent;
+}
+
+/* 숙소 나누기 */
+.stayrow {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-s);
+  background: var(--color-surface);
+}
+
+.stayrow__label {
+  font-weight: 700;
+}
+
+.stayrow__nights {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stayrow .input {
+  grid-column: 1 / -1;
+}
+
+/* 식당 예약 방법 */
+.reserve {
+  border-top: 1px solid var(--color-line);
+  padding-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.reserve summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: var(--text-s);
+}
+
+.reserve[open] summary {
+  margin-bottom: var(--space-2);
+}
+
+.reserve > * + * {
+  margin-top: var(--space-2);
+}

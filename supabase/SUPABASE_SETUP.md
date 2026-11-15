@@ -42,6 +42,7 @@ supabase functions deploy flight-deals      # 비즈니스 특가 (같은 토큰
 supabase secrets set AGODA_SITE_ID=123456 AGODA_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 # supabase secrets set AGODA_API_URL=https://...    # 받은 경우
 supabase functions deploy search-hotels
+supabase functions deploy trip-weather       # 일정별 날씨 (키 없이 동작. 상업 출시 전: supabase secrets set WEATHER_API_KEY=...)
 ```
 호텔 검색은 `supabase/functions/_shared/agoda-cities.ts` 에 앱 여행지 id → Agoda cityId 를 채운 도시만 목록이 나옵니다(그 외 도시는 파트너 검색 링크로 안내).
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` 는 Edge Runtime 이 자동 주입합니다.

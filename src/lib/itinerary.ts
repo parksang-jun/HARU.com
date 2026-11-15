@@ -6,8 +6,19 @@ export type CityId = string
 export const MAX_CITIES = 5
 
 export type Travelers = 'solo' | 'couple' | 'family' | 'friends'
-export type Interest = 'food' | 'kpop' | 'shopping' | 'history' | 'nature' | 'cafe' | 'nightlife' | 'wellness'
-export const INTERESTS: Interest[] = ['food', 'kpop', 'shopping', 'history', 'nature', 'cafe', 'nightlife', 'wellness']
+export type Interest =
+  | 'food' | 'market' | 'cafe' | 'shopping'
+  | 'history' | 'art' | 'architecture' | 'photo'
+  | 'nature' | 'hiking' | 'beach' | 'nightview'
+  | 'activity' | 'themepark' | 'festival' | 'kids'
+  | 'kpop' | 'anime' | 'nightlife' | 'wellness'
+export const INTERESTS: Interest[] = [
+  'food', 'market', 'cafe', 'shopping',
+  'history', 'art', 'architecture', 'photo',
+  'nature', 'hiking', 'beach', 'nightview',
+  'activity', 'themepark', 'festival', 'kids',
+  'kpop', 'anime', 'nightlife', 'wellness',
+]
 export type Budget = 'saver' | 'standard' | 'premium'
 export type Pace = 'relaxed' | 'balanced' | 'packed'
 
@@ -36,7 +47,39 @@ export interface TripParams {
   budget: Budget
   pace: Pace
   notes?: string
+  /** 숙소 나누기 — 순서대로 몇 박씩 어디서 묵는지. 없으면 도시마다 한 곳 */
+  stays?: StayPlan[]
   locale: string
+}
+
+/** 숙소 한 곳에서 묵는 기간 */
+export interface StayPlan {
+  nights: number
+  /** 지역 또는 호텔 이름 (비우면 앱이 정한다) */
+  area?: string
+}
+export const MAX_STAYS = 3
+
+/** 전체 박 수 (당일 여행이면 0) */
+export function totalNights(p: Pick<TripParams, 'startDate' | 'endDate'>): number {
+  return Math.max(0, daysBetween(p.startDate, p.endDate) - 1)
+}
+
+/** n박을 k곳에 고르게 나눈다 (앞쪽이 길게) — 숙소 나누기 기본값 */
+export function splitNights(nights: number, k: number): number[] {
+  const base = Math.floor(nights / k)
+  return Array.from({ length: k }, (_, i) => base + (i < nights % k ? 1 : 0))
+}
+
+/** i번째 날(0부터)에 묵는 숙소 번호. 마지막 날은 직전 숙소에 속한다 */
+export function stayIndexForDay(dayIdx: number, stays: StayPlan[] | undefined): number {
+  if (!stays?.length) return 0
+  let acc = 0
+  for (let i = 0; i < stays.length; i++) {
+    acc += stays[i].nights
+    if (dayIdx < acc) return i
+  }
+  return stays.length - 1
 }
 
 export interface Stop {
@@ -59,12 +102,46 @@ export interface Stop {
   reserve?: { provider: ReserveProvider; query: string }
 }
 
+/** 점심·저녁 후보 한 곳 (식당 또는 그 지역 대표 메뉴) */
+export interface MealOption {
+  name: LocalizedName
+  /** 한 줄 설명 (무엇을 먹는 곳인지) */
+  desc: string
+  area: string
+  /** 1인 예상 비용 (현지 통화) */
+  estCost?: number
+  currency?: string
+  /** 지도 검색어 */
+  query: string
+  reserve?: { provider: ReserveProvider; query: string }
+}
+
+export interface DayMeals {
+  lunch: MealOption[]
+  dinner: MealOption[]
+}
+
+export type MealSlot = keyof DayMeals
+export const MEAL_SLOTS: MealSlot[] = ['lunch', 'dinner']
+
 export interface ItineraryDay {
   day: number
   date: string
   city: CityId
   theme: string
   stops: Stop[]
+  /** 점심·저녁 후보 (사용자가 하나씩 고른다) */
+  meals?: DayMeals
+}
+
+/** 추가 요청 한 건을 일정에 어떻게 반영했는지 */
+export interface RequestNote {
+  /** 요청 내용 (사용자 언어) */
+  request: string
+  /** 반영 방법 또는 반영하지 못한 이유 */
+  handled: string
+  /** 반영 여부 */
+  applied: boolean
 }
 
 export interface Itinerary {
@@ -72,6 +149,8 @@ export interface Itinerary {
   title: string
   summary: string
   days: ItineraryDay[]
+  /** 추가 요청(notes) 반영 내역 — 요청이 없으면 생략 */
+  requests?: RequestNote[]
 }
 
 export interface Trip {
@@ -115,11 +194,17 @@ export function daysBetween(start: string, end: string): number {
   return Math.round((b - a) / 86_400_000) + 1
 }
 
-export function validateTripParams(p: TripParams): 'errCity' | 'errDates' | null {
+export function validateTripParams(p: TripParams): 'errCity' | 'errDates' | 'errStays' | null {
   if (!p.cities.length || p.cities.length > MAX_CITIES || p.cities.some((c) => !isDestination(c))) return 'errCity'
   if (!DATE_RE.test(p.startDate) || !DATE_RE.test(p.endDate)) return 'errDates'
   const n = daysBetween(p.startDate, p.endDate)
   if (!Number.isFinite(n) || n < 1 || n > 14) return 'errDates'
+  if (p.stays) {
+    // 숙소별 박 수는 1 이상이고, 합이 전체 박 수와 같아야 한다
+    if (p.stays.length < 2 || p.stays.length > MAX_STAYS) return 'errStays'
+    if (p.stays.some((s) => !Number.isInteger(s.nights) || s.nights < 1)) return 'errStays'
+    if (p.stays.reduce((a, s) => a + s.nights, 0) !== n - 1) return 'errStays'
+  }
   return null
 }
 
@@ -168,6 +253,38 @@ export function normalizeStop(raw: unknown, dayIdx: number, stopIdx: number, cit
   return stop
 }
 
+function normalizeMeal(raw: unknown, fallbackCurrency?: string): MealOption | null {
+  if (!isObj(raw)) return null
+  const nameRaw = isObj(raw.name) ? raw.name : {}
+  const en = str(nameRaw.en) || str(raw.name)
+  const ko = str(nameRaw.ko) || en
+  if (!en && !ko) return null
+  const meal: MealOption = {
+    name: { ko, en: en || ko, ja: str(nameRaw.ja) || undefined, zh: str(nameRaw.zh) || undefined },
+    desc: str(raw.desc).slice(0, 200),
+    area: str(raw.area).slice(0, 80),
+    query: str(raw.query).slice(0, 120) || en || ko,
+  }
+  const cost = num(raw.estCost)
+  if (cost !== undefined && cost > 0) {
+    const cur = str(raw.currency).toUpperCase()
+    meal.currency = /^[A-Z]{3}$/.test(cur) ? cur : (fallbackCurrency ?? 'KRW')
+    meal.estCost = ZERO_DECIMAL.has(meal.currency) ? Math.round(cost) : Math.round(cost * 100) / 100
+  }
+  if (isObj(raw.reserve) && RESERVE_PROVIDERS.includes(raw.reserve.provider as ReserveProvider)) {
+    meal.reserve = { provider: raw.reserve.provider as ReserveProvider, query: str(raw.reserve.query) || en }
+  }
+  return meal
+}
+
+/** 점심·저녁 후보 정규화 (끼니당 최대 4곳). 둘 다 비면 undefined */
+export function normalizeMeals(raw: unknown, fallbackCurrency?: string): DayMeals | undefined {
+  if (!isObj(raw)) return undefined
+  const list = (v: unknown) => (Array.isArray(v) ? v.map((m) => normalizeMeal(m, fallbackCurrency)).filter((m): m is MealOption => m !== null).slice(0, 4) : [])
+  const meals: DayMeals = { lunch: list(raw.lunch), dinner: list(raw.dinner) }
+  return meals.lunch.length || meals.dinner.length ? meals : undefined
+}
+
 /** LLM/목업 출력 전체를 Itinerary 로 정규화. 유효한 날이 하나도 없으면 null */
 export function normalizeItinerary(raw: unknown, params: TripParams): Itinerary | null {
   if (!isObj(raw) || !Array.isArray(raw.days)) return null
@@ -179,21 +296,33 @@ export function normalizeItinerary(raw: unknown, params: TripParams): Itinerary 
     const stops = d.stops.map((s, j) => normalizeStop(s, i, j, params.cities, currency)).filter((s): s is Stop => s !== null)
     if (!stops.length) return
     stops.sort((a, b) => a.time.localeCompare(b.time))
-    days.push({
+    const day: ItineraryDay = {
       day: days.length + 1,
       date: DATE_RE.test(str(d.date)) ? str(d.date) : addDays(params.startDate, days.length),
       city,
       theme: str(d.theme),
       stops,
-    })
+    }
+    const meals = normalizeMeals(d.meals, currency)
+    if (meals) day.meals = meals
+    days.push(day)
   })
   if (!days.length) return null
-  return {
+  const out: Itinerary = {
     version: 1,
     title: str(raw.title) || `${params.cities.join(', ')} trip`,
     summary: str(raw.summary),
     days,
   }
+  if (Array.isArray(raw.requests)) {
+    const requests = raw.requests
+      .filter(isObj)
+      .map((r) => ({ request: str(r.request).slice(0, 200), handled: str(r.handled).slice(0, 300), applied: r.applied !== false }))
+      .filter((r) => r.request && r.handled)
+      .slice(0, 8)
+    if (requests.length) out.requests = requests
+  }
+  return out
 }
 
 /** 여행자 유형 → 성인 수 (항공·호텔 검색 기본값) */

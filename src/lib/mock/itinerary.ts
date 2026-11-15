@@ -1,9 +1,9 @@
 // 결정적(deterministic) 샘플 일정 — 키 없이 UI·e2e 검증용 (국내·해외 공통)
 import { getDestination } from '../destinations'
-import { addDays, daysBetween, type Itinerary, type ItineraryDay, type Stop, type TripParams } from '../itinerary'
+import { addDays, daysBetween, stayIndexForDay, type Itinerary, type ItineraryDay, type Stop, type TripParams } from '../itinerary'
+import { mockMeals } from './meals'
 import { genericPlaces, MOCK_PLACES, type MockPlace } from './places'
-
-const TIME_SLOTS = ['09:30', '11:30', '13:00', '15:00', '17:30', '19:30']
+import { INTEREST_CATEGORIES, parseRequests, START_SLOTS, vegTip } from './requests'
 
 function stopsPerDay(pace: TripParams['pace']): number {
   return pace === 'relaxed' ? 4 : pace === 'packed' ? 6 : 5
@@ -16,17 +16,17 @@ function poolFor(cityId: string): MockPlace[] {
   return dst ? genericPlaces(dst) : []
 }
 
-function toStop(p: MockPlace, dayIdx: number, idx: number, currency: string): Stop {
+function toStop(p: MockPlace, dayIdx: number, idx: number, currency: string, slots: string[], extraTip = ''): Stop {
   const stop: Stop = {
     id: `d${dayIdx + 1}s${idx + 1}`,
-    time: TIME_SLOTS[idx] ?? '20:30',
+    time: slots[idx] ?? '20:30',
     durationMin: p.durationMin,
     category: p.category,
     name: p.name,
     area: p.area,
     lat: p.lat,
     lng: p.lng,
-    tip: p.tip,
+    tip: extraTip && (p.category === 'food' || p.category === 'cafe') ? `${extraTip} ${p.tip}` : p.tip,
     transitHint: p.transit,
   }
   if (p.cost !== undefined) {
@@ -59,46 +59,93 @@ function title(params: TripParams, n: number): string {
   }
 }
 
+/** 관심사·추가 요청에 맞춰 장소 순서를 정한다: 꼭 넣을 장소 → 선호 종류 → 나머지 (원래 순서 유지, 제외 종류는 뺀다) */
+function orderPool(pool: MockPlace[], prefer: Set<string>, exclude: Set<string>, must: string[]): MockPlace[] {
+  const usable = pool.filter((p) => p.category !== 'stay' && !exclude.has(p.category))
+  const first = usable.filter((p) => must.includes(p.name.en))
+  const liked = usable.filter((p) => !first.includes(p) && prefer.has(p.category))
+  const rest = usable.filter((p) => !first.includes(p) && !liked.includes(p))
+  // 선호 장소만 몰리지 않게 선호 2곳마다 나머지 1곳을 섞는다
+  const mixed: MockPlace[] = []
+  let r = 0
+  liked.forEach((p, i) => {
+    mixed.push(p)
+    if (i % 2 === 1 && r < rest.length) mixed.push(rest[r++])
+  })
+  return [...first, ...mixed, ...rest.slice(r)]
+}
+
 export function buildMockItinerary(params: TripParams): Itinerary {
   const n = Math.max(1, Math.min(14, daysBetween(params.startDate, params.endDate)))
-  const per = stopsPerDay(params.pace)
+  const allPools = params.cities.flatMap((c) => poolFor(c))
+  const req = parseRequests(params.notes, params.locale, allPools)
+  const per = Math.max(3, stopsPerDay(params.pace) + req.perDelta)
+  const slots = START_SLOTS[req.start]
+  const veg = req.vegetarian ? vegTip(params.locale) : ''
+  const prefer = new Set<string>([...params.interests.flatMap((i) => INTEREST_CATEGORIES[i] ?? []), ...req.prefer])
+  const exclude = new Set<string>(req.exclude)
+  // 밤 일정은 관심사로 고르거나 따로 요청했을 때만 넣는다
+  if (params.interests.length && !prefer.has('nightlife')) exclude.add('nightlife')
   const days: ItineraryDay[] = []
-  const cursor: Record<string, number> = {}
+  const used: Record<string, Set<MockPlace>> = {}
+  const ordered: Record<string, MockPlace[]> = {}
+  const usedMeals = new Set<MockPlace>()
 
   for (let i = 0; i < n; i++) {
     const city = params.cities[Math.floor((i * params.cities.length) / n)]
     const pool = poolFor(city)
+    const list = (ordered[city] ??= orderPool(pool, prefer, exclude, req.mustPlaces))
     const currency = getDestination(city)?.currency ?? 'KRW'
     const firstDayInCity = i === 0 || days[days.length - 1]?.city !== city
-    const stayIdx = pool.findIndex((p) => p.category === 'stay')
+    // 숙소 나누기: 숙소가 바뀌는 날에도 체크인을 넣고, 그 숙소 지역 근처 장소를 먼저 고른다
+    const stayIdx = stayIndexForDay(i, params.stays)
+    const newStay = firstDayInCity || stayIdx !== stayIndexForDay(i - 1, params.stays)
+    const stayArea = params.stays?.[stayIdx]?.area?.trim() ?? ''
+    const stayBase = pool.find((p) => p.category === 'stay')
+    const stay: MockPlace | undefined = stayBase && stayArea ? { ...stayBase, name: { ko: `숙소 체크인 (${stayArea})`, en: `Hotel check-in (${stayArea})`, ja: `ホテルにチェックイン（${stayArea}）`, zh: `飯店入住（${stayArea}）` }, area: stayArea, query: `${localName(city, 'en')} ${stayArea} hotels` } : stayBase
     const picks: MockPlace[] = []
-    // 도시 첫날은 숙소 체크인을 포함, 나머지는 순환 (샘플)
-    let c = cursor[city] ?? 0
-    const start = c
-    while (picks.length < per - (firstDayInCity ? 1 : 0)) {
-      const p = pool[c % pool.length]
-      c++
-      if (c - start > pool.length * 2) break
-      if (p.category === 'stay') continue
-      if (params.interests.length && !params.interests.includes('nightlife') && p.category === 'nightlife') continue
-      picks.push(p)
+    const want = per - (newStay && stay ? 1 : 0)
+    const seen = (used[city] ??= new Set<MockPlace>())
+    const near = (p: MockPlace) => Boolean(stayArea) && p.area.toLowerCase().includes(stayArea.toLowerCase())
+    const otherAreas = (params.stays ?? []).filter((_, k) => k !== stayIdx).map((x) => x.area?.trim().toLowerCase() ?? '').filter(Boolean)
+    const nearOther = (p: MockPlace) => otherAreas.some((x) => p.area.toLowerCase().includes(x))
+    while (list.length && picks.length < want && picks.length < list.length) {
+      let fresh = list.filter((p) => !seen.has(p) && !picks.includes(p))
+      if (!fresh.length) {
+        seen.clear() // 장소를 다 썼으면 처음부터 다시 (샘플)
+        fresh = list.filter((p) => !picks.includes(p))
+      }
+      // 다른 숙소 근처 장소는 그 숙소 기간을 위해 남겨 둔다
+      const next = fresh.find(near) ?? fresh.find((p) => !nearOther(p)) ?? fresh[0]
+      picks.push(next)
+      seen.add(next)
     }
-    cursor[city] = c
-    if (firstDayInCity && stayIdx >= 0) picks.splice(Math.min(2, picks.length), 0, pool[stayIdx])
+    // 하루에 식사 한 곳은 들어가게 한다
+    if (!exclude.has('food') && picks.length > 1 && !picks.some((p) => p.category === 'food')) {
+      // 앞선 날에 쓰지 않은 식당을 먼저 고른다
+      const meal = list.find((p) => p.category === 'food' && !usedMeals.has(p)) ?? list.find((p) => p.category === 'food' && !picks.includes(p)) ?? list.find((p) => p.category === 'food')
+      if (meal) picks[picks.length - 1] = meal
+    }
+    for (const p of picks) if (p.category === 'food') usedMeals.add(p)
+    if (newStay && stay) picks.splice(Math.min(2, picks.length), 0, stay)
     const cityName = localName(city, 'en')
+    const stops = picks.map((p, j) => toStop(p, i, j, currency, slots, veg))
     days.push({
       day: i + 1,
       date: addDays(params.startDate, i),
       city,
       theme: firstDayInCity ? `Arrival and first taste of ${cityName}` : `Highlights of ${cityName}`,
-      stops: picks.map((p, j) => toStop(p, i, j, currency)),
+      stops,
+      meals: mockMeals(stops, { country: getDestination(city)?.country ?? '', cityEn: cityName, currency, locale: params.locale, vegetarian: req.vegetarian, dayIdx: i }),
     })
   }
 
-  return {
+  const out: Itinerary = {
     version: 1,
     title: title(params, n),
     summary: `A ${params.pace} ${n}-day plan for ${params.travelers} travelers focused on ${params.interests.join(', ') || 'the classics'}. Sample itinerary (demo mode).`,
     days,
   }
+  if (req.notes.length) out.requests = req.notes
+  return out
 }

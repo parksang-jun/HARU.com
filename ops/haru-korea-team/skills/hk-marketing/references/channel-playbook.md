@@ -26,9 +26,9 @@
 
 ## 인플루언서 DM 초안
 
-- ja: はじめまして。韓国旅行者向けのAI旅程アプリ「Haru Korea」を作っている韓国在住の開発者、Peterです。{name}さんの韓国旅行動画がまさに私たちのユーザー像です。アプリで組んだ旅程を実際に歩く動画を1本お願いできないでしょうか。無料コード、提携店クーポン体験、謝礼をご用意します。
-- zh-TW: 您好，我是住在韓國的開發者 Peter，做了一款給訪韓旅客用的 AI 行程 App「Haru Korea」。{name} 的韓國旅遊影片正是我們的目標客群。想邀請您用 App 排一段行程並實際走一趟拍成影片，我們提供免費碼、合作店家優惠體驗與酬勞。
-- en: Hi {name}, I'm Peter, a developer in Korea building Haru Korea, an AI itinerary app for inbound travelers. Your Korea videos are exactly our audience. Would you plan one day with the app and film it? Free code, partner-shop coupon experience and a fee included.
+- ja: はじめまして。韓国旅行者向けのAI旅程アプリ「Haru」を作っている韓国在住の開発者、Peterです。{name}さんの韓国旅行動画がまさに私たちのユーザー像です。アプリで組んだ旅程を実際に歩く動画を1本お願いできないでしょうか。無料コード、提携店クーポン体験、謝礼をご用意します。
+- zh-TW: 您好，我是住在韓國的開發者 Peter，做了一款給訪韓旅客用的 AI 行程 App「Haru」。{name} 的韓國旅遊影片正是我們的目標客群。想邀請您用 App 排一段行程並實際走一趟拍成影片，我們提供免費碼、合作店家優惠體驗與酬勞。
+- en: Hi {name}, I'm Peter, a developer in Korea building Haru, an AI itinerary app for inbound travelers. Your Korea videos are exactly our audience. Would you plan one day with the app and film it? Free code, partner-shop coupon experience and a fee included.
 
 ## 유료 광고 세팅 요약
 

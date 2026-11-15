@@ -56,15 +56,95 @@ try {
   await page.getByTestId('start-trip').click()
   await page.getByTestId('generate').waitFor()
   await page.getByTestId('city-busan').click() // 서울 + 부산
+  assert((await page.getByTestId('interest-chip').count()) === 20, 'setup offers 20 interests')
+  // 숙소 나누기: 3박을 두 곳으로 (2박 + 1박)
+  await page.getByTestId('stay-count').nth(1).click()
+  assert((await page.getByTestId('stay-row').count()) === 2, 'two stay rows appear when splitting')
+  assert((await page.getByTestId('stay-total').innerText()).includes('3'), 'stay nights add up to the trip')
+  await page.getByTestId('stay-area').first().fill('Jongno')
+  assert((await page.getByTestId('notes-help').innerText()).toLowerCase().includes('keyword'), 'setup asks for keywords')
+  await page.getByTestId('note-keyword').nth(0).click() // vegetarian
+  await page.getByTestId('note-keyword').nth(6).click() // no shopping
+  assert((await page.getByTestId('setup-notes').inputValue()) === 'vegetarian, no shopping', 'keyword chips fill the request box')
+  assert((await page.getByTestId('banner-slot').count()) === 0, 'no banner on the setup screen')
   await page.screenshot({ path: join(shots, '02-setup.png'), fullPage: true })
   await page.getByTestId('generate').click()
 
   await page.getByTestId('itin-title').waitFor({ timeout: 15000 })
+  assert((await page.getByTestId('banner-slot').count()) === 1, 'banner slot is shown on the itinerary')
   const dayTabs = await page.getByTestId('day-tab').count()
   assert(dayTabs >= 2, `itinerary renders with ${dayTabs} days (>= 2)`)
   const stops = await page.getByTestId('stop').count()
   assert(stops >= 3, `day 1 has ${stops} stops`)
+
+  // 날씨: 날짜 탭마다 아이콘·기온, 선택한 날의 날씨 카드, 준비 체크리스트
+  await page.getByTestId('day-weather').waitFor({ timeout: 5000 })
+  assert((await page.getByTestId('day-tab-weather').count()) === dayTabs, 'every day tab shows weather')
+  const temp = await page.getByTestId('day-weather-temp').innerText()
+  assert(/-?\d+° \/ -?\d+°C \(-?\d+° \/ -?\d+°F\)/.test(temp), `day weather shows temperatures: "${temp}"`)
+  const src = await page.getByTestId('day-weather').getAttribute('data-source')
+  assert(['forecast', 'estimate'].includes(src), `weather source is labelled (${src})`)
+  const before = await page.getByTestId('prep-progress').innerText()
+  await page.getByTestId('prep-weather').click()
+  const after = await page.getByTestId('prep-progress').innerText()
+  assert(before !== after && /^2\//.test(after), `prep checklist progress moves: "${before}" → "${after}"`)
+  assert((await page.getByTestId('packing-list').innerText()).length > 0, 'packing list is shown')
   await page.screenshot({ path: join(shots, '03-itinerary.png'), fullPage: true })
+
+  // 숙소 나누기 결과: 숙소 구간이 도시·숙소 경계마다 나뉜다 (서울 2박 → 서울/부산 경계 포함 3구간 이하)
+  const hotelRows = await page.getByTestId('plan-hotels').count()
+  assert(hotelRows >= 2, `stay plan shows ${hotelRows} hotel segments`)
+  assert((await page.getByTestId('plan-hotels').first().innerText()).includes('Jongno'), 'first stay shows the chosen area')
+
+  // 점심·저녁 고르기 + 식당 예약 방법
+  assert((await page.locator('[data-testid="meals-lunch"] [data-testid="meal-option"]').count()) === 3, 'three lunch options')
+  assert((await page.locator('[data-testid="meals-dinner"] [data-testid="meal-option"]').count()) === 3, 'three dinner options')
+  await page.locator('[data-testid="meals-dinner"] [data-testid="meal-option"]').nth(1).click()
+  assert((await page.locator('[data-testid="meals-dinner"] [aria-checked="true"]').count()) === 1, 'one dinner is selected')
+  await page.getByTestId('reserve-guide').locator('summary').click()
+  assert((await page.locator('[data-testid="reserve-platform"][data-platform="catchtable"]').count()) === 1, 'Korean reservation service is offered')
+  await page.screenshot({ path: join(shots, '19-meals.png'), fullPage: true })
+
+  // 추가 요청 반영 내역
+  const reqItems = page.getByTestId('request-item')
+  assert((await reqItems.count()) === 2, 'both special requests are listed')
+  assert((await page.locator('[data-testid="request-item"][data-applied="true"]').count()) === 2, 'both requests are marked applied')
+  for (let i = 0; i < dayTabs; i++) {
+    await page.getByTestId('day-tab').nth(i).click()
+    assert((await page.locator('[data-testid="stop"][data-category="shopping"]').count()) === 0, `day ${i + 1} has no shopping stops ("no shopping")`)
+  }
+  await page.getByTestId('day-tab').first().click()
+
+  // 여행 보고서
+  await page.getByTestId('report-open').click()
+  await page.getByTestId('report-title').waitFor()
+  assert((await page.getByTestId('report-day').count()) === dayTabs, 'report lists every day')
+  assert((await page.getByTestId('report-prep').innerText()).includes('2/'), 'report shows prep progress')
+  assert((await page.getByTestId('report-costs').innerText()).includes('₩'), 'report totals costs')
+  assert((await page.locator('[data-testid="report-meal"][data-chosen="true"]').count()) === 1, 'the chosen dinner appears in the report')
+  await page.screenshot({ path: join(shots, '16-report.png'), fullPage: true })
+  await page.goBack()
+
+  // 여행 제품 추천
+  await page.getByTestId('prep-gear').click()
+  await page.getByTestId('gear-item').first().waitFor()
+  const gearUrl = await page.getByTestId('gear-link').first().getAttribute('data-url')
+  assert(/^https:\/\/www\.(amazon\.com\/s\?k=|klook\.com\/search)/.test(gearUrl), `gear links to a shop search (${gearUrl})`)
+  await page.screenshot({ path: join(shots, '17-gear.png'), fullPage: true })
+  await page.goBack()
+
+  // 공항 대기 가이드 (항공편이 있는 여행일 때)
+  if (await page.getByTestId('prep-airport').count()) {
+    await page.getByTestId('prep-airport').click()
+    await page.getByTestId('wait-tips').waitFor()
+    const two = await page.locator('[data-testid="wait-tips"] li').count()
+    await page.getByTestId('wait-chip').nth(3).click()
+    assert((await page.locator('[data-testid="wait-tips"] li[data-tip="nap"]').count()) === 1, 'long waits suggest a nap zone')
+    assert(two >= 3, 'wait tips are listed')
+    await page.screenshot({ path: join(shots, '18-airport.png'), fullPage: true })
+    await page.goBack()
+  }
+  await page.getByTestId('itin-title').waitFor()
 
   // 스폰서 카드 + 라벨
   const nearby = page.getByTestId('nearby-deals')
@@ -206,6 +286,16 @@ try {
   // 숙소 정류지 → 호텔 찾기
   assert((await page.getByTestId('find-hotels').count()) >= 1, 'stay stop offers "Find hotels"')
   await page.screenshot({ path: join(shots, '12-itinerary-overseas.png'), fullPage: true })
+
+  // 해외 여행: 공항 대기 가이드
+  await page.getByTestId('prep-airport').click()
+  await page.getByTestId('wait-tips').waitFor()
+  await page.getByTestId('wait-chip').nth(3).click()
+  assert((await page.locator('[data-testid="wait-tips"] li[data-tip="nap"]').count()) === 1, 'long waits suggest a nap zone')
+  assert((await page.getByTestId('airport-name').innerText()).length > 2, 'airport guide names the departure airport')
+  await page.screenshot({ path: join(shots, '18-airport.png'), fullPage: true })
+  await page.goBack()
+  await page.getByTestId('itin-title').waitFor()
   await page.getByTestId('plan-flights').click()
   await page.getByTestId('flight-results').waitFor({ timeout: 10000 })
   assert((await page.getByTestId('flight-offer').count()) >= 3, 'flights prefilled from the itinerary return offers')

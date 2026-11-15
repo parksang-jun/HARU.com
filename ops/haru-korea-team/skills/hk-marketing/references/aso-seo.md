@@ -2,7 +2,7 @@
 
 ## 스토어
 
-- 제목: `Haru Korea: AI Trip Planner` / ja `Haru Korea 韓国旅行プランナー` / zh-TW `Haru Korea 韓國旅遊行程`
+- 제목: `Haru: AI Trip Planner` / ja `Haru 韓国旅行プランナー` / zh-TW `Haru 韓國旅遊行程`
 - 부제(30자): en `Korea itineraries in 1 minute` / ja `1分で韓国旅程と予約リンク` / zh-TW `1分鐘排好韓國行程`
 - 짧은 설명(80자, en): `Day-by-day Korea itineraries with real places, booking links and local deals.`
 - 키워드: Korea travel, Seoul itinerary, Busan, Jeju, trip planner, Korea guide; 韓国旅行, ソウル, 旅程; 韓國旅遊, 首爾自由行, 行程規劃

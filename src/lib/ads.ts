@@ -1,4 +1,4 @@
-// AdMob 배너 — 네이티브 + VITE_ADMOB_ENABLED=true 일 때만. 전면광고는 쓰지 않음(신뢰 우선)
+// AdMob 배너 — 네이티브 앱에서 표시(기본 켜짐, VITE_ADMOB_ENABLED=false 로 끔). 전면광고는 쓰지 않음(신뢰 우선)
 import { Capacitor } from '@capacitor/core'
 import { ENV } from './env'
 
@@ -10,6 +10,18 @@ let bannerShown = false
 
 export function adsAvailable(): boolean {
   return ENV.admobEnabled && Capacitor.isNativePlatform()
+}
+
+/** 배너를 보여 줄 화면: 홈·예약·혜택·일정·보고서·제품 추천·공항 가이드.
+ *  컨시어지 대화, 여행 만들기(입력 중), 약관, 관리자, 더보기에는 넣지 않는다 (AI 답변 안·입력 화면 광고 금지) */
+export function bannerAllowed(pathname: string): boolean {
+  if (['/', '/deals', '/hotels', '/flights', '/flights/deals'].includes(pathname)) return true
+  return /^\/trip\/[^/]+(\/(report|gear|airport))?$/.test(pathname)
+}
+
+/** 웹 미리보기(테스트 베드)에서 배너 자리를 표시할지 — 실제 광고는 네이티브 앱에서만 나온다 */
+export function bannerPreview(): boolean {
+  return ENV.admobEnabled && ENV.mockAi && !Capacitor.isNativePlatform()
 }
 
 async function load(): Promise<AdMobModule | null> {

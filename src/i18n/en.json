@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Haru Korea",
-    "tagline": "Your AI trip concierge — Korea and beyond"
+    "name": "Haru",
+    "tagline": "Your whole trip, ready in one day"
   },
   "nav": {
     "trips": "Trips",
@@ -27,8 +27,8 @@
     "noMatch": "No matches"
   },
   "home": {
-    "heroTitle": "Plan any trip in one minute",
-    "heroSub": "Day-by-day itineraries with real places — plus flights, hotels and local deals.",
+    "heroTitle": "Get your whole trip ready in one day",
+    "heroSub": "Itinerary, flights, stays, weather and local deals — all sorted today, in one place.",
     "start": "Plan a new trip",
     "yourTrips": "Your trips",
     "noTrips": "No trips yet. Start with your first one.",
@@ -54,13 +54,25 @@
     "interests": "Interests",
     "interest": {
       "food": "Food",
-      "kpop": "K-pop",
+      "market": "Markets & street food",
+      "cafe": "Cafés & desserts",
       "shopping": "Shopping",
-      "history": "History",
-      "nature": "Nature",
-      "cafe": "Cafés",
-      "nightlife": "Nightlife",
-      "wellness": "Wellness"
+      "history": "History & heritage",
+      "art": "Museums & galleries",
+      "architecture": "Architecture & city walks",
+      "photo": "Photo spots",
+      "nature": "Nature & scenery",
+      "hiking": "Hiking",
+      "beach": "Beach & resort",
+      "nightview": "Night views",
+      "activity": "Activities & tours",
+      "themepark": "Theme parks",
+      "festival": "Festivals & shows",
+      "kids": "With kids",
+      "kpop": "K-pop & K-culture",
+      "anime": "Anime & games",
+      "nightlife": "Bars & nightlife",
+      "wellness": "Hot springs & spa"
     },
     "budget": "Budget",
     "budgetOpt": {
@@ -74,8 +86,8 @@
       "balanced": "Balanced",
       "packed": "Packed"
     },
-    "notes": "Anything else? (optional)",
-    "notesPh": "e.g. vegetarian, traveling with a stroller, first time in Korea",
+    "notes": "Extra requests (optional)",
+    "notesPh": "e.g. vegetarian, stroller, no shopping, Gyeongbokgung, late start",
     "generate": "Generate itinerary",
     "generating": "Building your itinerary…",
     "errCity": "Pick 1–5 destinations.",
@@ -83,7 +95,34 @@
     "errGeneric": "We couldn't build the itinerary. Please try again.",
     "destSearch": "Search a city or country (e.g. Tokyo, Paris)",
     "cityHint": "Up to {n} cities, in travel order.",
-    "remove": "Remove {city}"
+    "remove": "Remove {city}",
+    "interestsHint": "Pick as many as you like",
+    "notesHelp": "Enter keywords, separated by commas.",
+    "kw": {
+      "veg": "vegetarian",
+      "kids": "with kids",
+      "easy": "less walking",
+      "slow": "relaxed",
+      "late": "late start",
+      "early": "early start",
+      "noshop": "no shopping",
+      "nonight": "no nightlife"
+    },
+    "stay": "Where you stay",
+    "stayQ": "Will you change hotels during the trip?",
+    "stayOpt": {
+      "1": "One place throughout",
+      "2": "Split across two",
+      "3": "Split across three"
+    },
+    "stayN": "Stay {n}",
+    "stayNights": "{n} nights",
+    "stayAreaPh": "Area or hotel name (optional), e.g. Myeongdong",
+    "stayTotal": "{m} of {n} nights assigned",
+    "stayNeed": "You can split stays on trips of 2 nights or more.",
+    "stayLess": "Fewer nights",
+    "stayMore": "More nights",
+    "errStays": "Nights per stay must add up to the total nights."
   },
   "itin": {
     "loading": "Preparing your days…",
@@ -310,7 +349,10 @@
     "compare": "Compare on other sites",
     "unsupported": "A live hotel list isn't available for this city yet. Search directly on our partners:",
     "noticeSample": "Sample hotels and prices for demo — not real listings. Search the partner sites for actual availability.",
-    "noticeLive": "Prices from partners, per room per night, before taxes and fees. Final price on the partner site."
+    "noticeLive": "Prices from partners, per room per night, before taxes and fees. Final price on the partner site.",
+    "viewReal": "See real hotels in {area}",
+    "viewRealCity": "See real hotels",
+    "sampleTop": "These are sample listings for testing, so no hotel with these names exists. The button opens real hotel results for the same area and dates."
   },
   "deals2": {
     "title": "Business class deals",
@@ -331,5 +373,225 @@
     "compare": "Compare",
     "noticeSample": "Sample deals for demo — not live prices. Discounts are estimated against typical business fares for the route.",
     "noticeLive": "Business fares found by partners recently. Discounts are estimated against typical fares for the route; seats are limited and prices change — the final price is on the partner site."
+  },
+  "weather": {
+    "cond": {
+      "clear": "Clear",
+      "partly": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "drizzle": "Light rain",
+      "rain": "Rain",
+      "heavyRain": "Heavy rain",
+      "snow": "Snow",
+      "storm": "Thunderstorm"
+    },
+    "rainForecast": "{n}% chance of rain",
+    "rainNormal": "Rainy days {n}%",
+    "src": {
+      "forecast": "Forecast",
+      "normal": "Typical",
+      "estimate": "Typical (est.)"
+    },
+    "tip": {
+      "umbrella": "Umbrella",
+      "snow": "Snow boots & gloves",
+      "heavyCoat": "Heavy coat",
+      "coat": "Coat",
+      "jacket": "Light jacket",
+      "hot": "Dress for heat",
+      "sunscreen": "Sunscreen",
+      "layers": "Big day–night swing · layers"
+    },
+    "noTips": "Nothing special to pack",
+    "rainPlan": "Rain or snow is likely and this day is mostly outdoors. Line up an indoor backup.",
+    "rainPlanCta": "Ask for indoor options",
+    "notice": "Weather: forecast within 16 days of today, otherwise typical conditions (average of the same dates over the past 3 years). Check again before you leave. Data: Open-Meteo.com",
+    "noticeSample": "Sample weather for testing — not a real forecast."
+  },
+  "prep": {
+    "title": "Trip ready in one day",
+    "progress": "{done}/{total} done",
+    "allDone": "All set. Just go.",
+    "itinerary": "Build the itinerary",
+    "itinerarySub": "{n}-day plan ready",
+    "weather": "Weather & packing",
+    "deals": "Local deals & activities",
+    "dealsSub": "Check coupons and bookings",
+    "essentials": "Before you fly",
+    "essentialsSub": "Passport validity · entry rules · currency · roaming/eSIM · travel insurance",
+    "check": "Mark as done"
+  },
+  "req": {
+    "title": "Your requests",
+    "noDetail": "This itinerary has no record of how requests were applied. Tap Regenerate to see it.",
+    "sampleNote": "Sample mode only reads keywords. The live service has the AI read and apply the full sentence."
+  },
+  "report": {
+    "open": "View trip report",
+    "title": "Trip report",
+    "overview": "Overview",
+    "dates": "Dates",
+    "cities": "Destinations",
+    "party": "Travelers",
+    "partyValue": "{who} · based on {n} adults",
+    "style": "Travel style",
+    "interests": "Interests",
+    "prep": "Preparation",
+    "prepLeft": "{n} items left",
+    "prepAll": "Everything is ready",
+    "done": "Done",
+    "todo": "To do",
+    "bookings": "Flights & stays",
+    "stay": "{city}, {n} nights",
+    "days": "Day by day",
+    "costs": "Estimated costs",
+    "costNote": "Sum of the admission and meal costs listed in the itinerary. Flights and hotels are not included and actual prices may differ.",
+    "perPerson": "Per person",
+    "total": "Total for {n}",
+    "noCost": "No stops list a cost",
+    "packing": "Packing",
+    "requests": "Your requests",
+    "applied": "Applied",
+    "notApplied": "Not applied",
+    "copy": "Copy report",
+    "copied": "Report copied",
+    "share": "Share",
+    "print": "Print / save as PDF",
+    "back": "Back to itinerary",
+    "generated": "Created {date} · Haru",
+    "weatherNone": "No weather data"
+  },
+  "gear": {
+    "title": "Travel gear",
+    "sub": "Picked for this trip’s weather, destination and flight length.",
+    "open": "Travel gear picks",
+    "openSub": "{n} things that fit this trip",
+    "find": "Find on {shop}",
+    "none": "Nothing special to buy",
+    "disclosure": "Shopping links may be affiliate links; we may earn a commission at no extra cost to you. These are product types, not specific products — check price and stock at the store.",
+    "shop": {
+      "coupang": "Coupang",
+      "amazon": "Amazon",
+      "amazonjp": "Amazon.co.jp",
+      "shopee": "Shopee",
+      "klook": "Klook"
+    },
+    "item": {
+      "umbrella": "Travel umbrella",
+      "raincoat": "Packable rain poncho",
+      "padding": "Packable down jacket",
+      "gloves": "Winter gloves",
+      "windbreaker": "Windbreaker",
+      "fan": "Portable fan",
+      "sunscreen": "Sunscreen",
+      "adapter": "Universal travel adapter",
+      "esim": "Travel eSIM",
+      "neckpillow": "Travel neck pillow",
+      "powerbank": "Power bank",
+      "organizer": "Compression packing cubes",
+      "waterproof": "Waterproof phone pouch",
+      "daypack": "Lightweight daypack",
+      "kidskit": "Kids travel activity kit"
+    },
+    "why": {
+      "weather_umbrella": "Rain is likely on some days",
+      "weather_snow": "Snow is likely on some days",
+      "weather_heavyCoat": "It drops below freezing",
+      "weather_coat": "Daytime highs stay under 10°C",
+      "weather_jacket": "Mornings and evenings are chilly",
+      "weather_layers": "Big swing between day and night",
+      "weather_hot": "Highs go above 30°C",
+      "weather_sunscreen": "Clear, sunny days ahead",
+      "abroad": "Different plugs and mobile networks abroad",
+      "longhaul": "It is a long flight",
+      "flight": "Carry-on only — check the capacity limit",
+      "always": "Maps and photos drain your battery all day",
+      "beach": "You have beach time planned",
+      "outdoor": "Lots of time outdoors",
+      "kids": "Flying with children",
+      "long": "Five days or more means more luggage"
+    }
+  },
+  "airport": {
+    "title": "Airport wait guide",
+    "sub": "What to do with the time you have before boarding.",
+    "open": "Lounges & airport wait time",
+    "openSub": "Departing {from} · make use of the wait",
+    "depart": "Departure airport",
+    "arrive": "Arrival airport",
+    "wait": "Time until boarding",
+    "waitOpt": {
+      "60": "1 hour",
+      "120": "2 hours",
+      "240": "4 hours",
+      "360": "6+ hours"
+    },
+    "todo": "How to spend it",
+    "lounge": "Lounges",
+    "loungeNote": "Lounge locations, hours and entry rules change often. Check your card or airline benefits and the airport’s official guide.",
+    "loungePass": "Find a lounge pass (Klook)",
+    "loungeSearch": "Search lounges & facilities",
+    "highlights": "Worth doing at this airport",
+    "hlNote": "Check the airport’s official guide for current hours and availability.",
+    "ask": "Ask the concierge about this airport",
+    "none": "This trip does not need a flight",
+    "tip": {
+      "gate": "Find your gate and boarding time first, then stay nearby",
+      "water": "Buy water and a snack after security",
+      "charge": "Charge your phone and power bank",
+      "meal": "Have a meal. Head to the gate 40 minutes before boarding",
+      "lounge": "Use a lounge (card or airline benefits, or a day pass)",
+      "dutyfree": "Collect duty-free pre-orders and browse the shops",
+      "shower": "Take a shower (in a lounge or airport facilities)",
+      "walk": "Visit the observation deck, exhibits or gardens",
+      "nap": "Rest in a nap zone or capsule hotel",
+      "transitTour": "If the airport runs transit tours, sign up (check entry rules)"
+    },
+    "hl": {
+      "ICN": {
+        "1": "Free transit tours for layover passengers",
+        "2": "Korean traditional culture experience center",
+        "3": "Free showers and rest zones"
+      },
+      "SIN": {
+        "1": "The indoor waterfall at Jewel Changi",
+        "2": "Butterfly Garden in Terminal 3",
+        "3": "Free city tour for layovers of 5.5 hours or more"
+      },
+      "HND": {
+        "1": "Edo-style shopping street (Edo-Koji) in Terminal 3",
+        "2": "Observation decks overlooking the runways"
+      },
+      "NRT": {
+        "1": "Runway observation decks",
+        "2": "Capsule hotel in Terminal 2"
+      }
+    }
+  },
+  "ads": {
+    "slot": "Banner ad space · real ads appear in the app"
+  },
+  "meals": {
+    "title": "Today’s meals",
+    "pick": "Pick one for each meal",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "near": "near {area}",
+    "find": "Find on map",
+    "undecided": "Not chosen ({n} options)",
+    "sampleNote": "Sample mode suggests typical local dishes instead of restaurants. The live service recommends restaurants near your route for that day."
+  },
+  "reserve": {
+    "title": "How to book a restaurant",
+    "apps": "Booking services people use in this country",
+    "note": "Haru does not make reservations for you. Check availability and terms with each service.",
+    "step": {
+      "need": "First check whether you need a booking. Popular places, dinners and weekends usually do; markets and street food do not.",
+      "app": "Search the restaurant name on one of the services below, then pick the date, time and party size.",
+      "hotel": "If the app does not work, ask your hotel front desk to call for you, or phone the number shown on the map.",
+      "tell": "When you book, say how many people, whether children are coming, and any vegetarian or allergy needs.",
+      "cancel": "Cancel if you cannot go. Some restaurants take a deposit or charge a no-show fee."
+    }
   }
 }
