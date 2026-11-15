@@ -26,10 +26,13 @@ export const ENV = {
     nolUrl: (e.VITE_AFF_NOL_URL as string | undefined) ?? '',
     /** Skyscanner 제휴(Impact) 추적 쿼리스트링 */
     skyscanner: (e.VITE_AFF_SKYSCANNER_QS as string | undefined) ?? '',
+    /** 아마존 어소시에이트 태그 (미국 / 일본) — 여행 제품 추천 링크 */
+    amazon: (e.VITE_AFF_AMAZON_TAG as string | undefined) ?? '',
+    amazonJp: (e.VITE_AFF_AMAZON_JP_TAG as string | undefined) ?? '',
     /** Travelpayouts(Aviasales) 파트너 marker */
     tpMarker: (e.VITE_TP_MARKER as string | undefined) ?? '',
   },
-  version: '0.3.0',
+  version: '0.4.0',
 } as const
 
 export const hasSupabase = Boolean(ENV.supabaseUrl && ENV.supabaseAnonKey)

@@ -8,6 +8,8 @@ Trip.com,항공·호텔 예약 커미션,선택,미확인,제휴 가입 후 VITE
 Klook,액티비티·입장권 커미션,선택,미확인,제휴 가입 후 VITE_AFF_KLOOK_QS
 Booking.com,호텔 커미션,선택,미확인,제휴 가입 후 VITE_AFF_BOOKING_QS
 Skyscanner,항공 비교 커미션,선택,미확인,제휴 가입 후 VITE_AFF_SKYSCANNER_QS
+Amazon Associates,여행 제품 추천 링크 커미션(영어·일본어),선택,미확인,가입 후 VITE_AFF_AMAZON_TAG·VITE_AFF_AMAZON_JP_TAG
+쿠팡 파트너스,여행 제품 추천 링크 커미션(한국어),선택,미확인,가입 후 딥링크 연동 개발 필요(지금은 일반 검색 링크)
 AdMob,목록 화면 배너 광고,선택,미확인,앱·광고 단위 생성 후 VITE_ADMOB_*
 Apple Developer Program,앱스토어 출시,필수,완료,가입됨 (싹싹클린과 같은 계정)
 Google Play Console,구글플레이 출시,필수,미확인,싹싹클린 계정 승인 상태 확인

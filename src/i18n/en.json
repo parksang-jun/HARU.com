@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Haru Korea",
-    "tagline": "Your AI trip concierge — Korea and beyond"
+    "name": "Haru",
+    "tagline": "Your whole trip, ready in one day"
   },
   "nav": {
     "trips": "Trips",
@@ -54,13 +54,25 @@
     "interests": "Interests",
     "interest": {
       "food": "Food",
-      "kpop": "K-pop",
+      "market": "Markets & street food",
+      "cafe": "Cafés & desserts",
       "shopping": "Shopping",
-      "history": "History",
-      "nature": "Nature",
-      "cafe": "Cafés",
-      "nightlife": "Nightlife",
-      "wellness": "Wellness"
+      "history": "History & heritage",
+      "art": "Museums & galleries",
+      "architecture": "Architecture & city walks",
+      "photo": "Photo spots",
+      "nature": "Nature & scenery",
+      "hiking": "Hiking",
+      "beach": "Beach & resort",
+      "nightview": "Night views",
+      "activity": "Activities & tours",
+      "themepark": "Theme parks",
+      "festival": "Festivals & shows",
+      "kids": "With kids",
+      "kpop": "K-pop & K-culture",
+      "anime": "Anime & games",
+      "nightlife": "Bars & nightlife",
+      "wellness": "Hot springs & spa"
     },
     "budget": "Budget",
     "budgetOpt": {
@@ -75,7 +87,7 @@
       "packed": "Packed"
     },
     "notes": "Anything else? (optional)",
-    "notesPh": "e.g. vegetarian, traveling with a stroller, first time in Korea",
+    "notesPh": "e.g. vegetarian, travelling with a stroller, no shopping, must see Gyeongbokgung, late mornings",
     "generate": "Generate itinerary",
     "generating": "Building your itinerary…",
     "errCity": "Pick 1–5 destinations.",
@@ -83,7 +95,8 @@
     "errGeneric": "We couldn't build the itinerary. Please try again.",
     "destSearch": "Search a city or country (e.g. Tokyo, Paris)",
     "cityHint": "Up to {n} cities, in travel order.",
-    "remove": "Remove {city}"
+    "remove": "Remove {city}",
+    "interestsHint": "Pick as many as you like"
   },
   "itin": {
     "loading": "Preparing your days…",
@@ -379,5 +392,152 @@
     "essentials": "Before you fly",
     "essentialsSub": "Passport validity · entry rules · currency · roaming/eSIM · travel insurance",
     "check": "Mark as done"
+  },
+  "req": {
+    "title": "Your requests",
+    "noDetail": "This itinerary has no record of how requests were applied. Tap Regenerate to see it.",
+    "sampleNote": "Sample mode only reads keywords. The live service has the AI read and apply the full sentence."
+  },
+  "report": {
+    "open": "View trip report",
+    "title": "Trip report",
+    "overview": "Overview",
+    "dates": "Dates",
+    "cities": "Destinations",
+    "party": "Travelers",
+    "partyValue": "{who} · based on {n} adults",
+    "style": "Travel style",
+    "interests": "Interests",
+    "prep": "Preparation",
+    "prepLeft": "{n} items left",
+    "prepAll": "Everything is ready",
+    "done": "Done",
+    "todo": "To do",
+    "bookings": "Flights & stays",
+    "stay": "{city}, {n} nights",
+    "days": "Day by day",
+    "costs": "Estimated costs",
+    "costNote": "Sum of the admission and meal costs listed in the itinerary. Flights and hotels are not included and actual prices may differ.",
+    "perPerson": "Per person",
+    "total": "Total for {n}",
+    "noCost": "No stops list a cost",
+    "packing": "Packing",
+    "requests": "Your requests",
+    "applied": "Applied",
+    "notApplied": "Not applied",
+    "copy": "Copy report",
+    "copied": "Report copied",
+    "share": "Share",
+    "print": "Print / save as PDF",
+    "back": "Back to itinerary",
+    "generated": "Created {date} · Haru",
+    "weatherNone": "No weather data"
+  },
+  "gear": {
+    "title": "Travel gear",
+    "sub": "Picked for this trip’s weather, destination and flight length.",
+    "open": "Travel gear picks",
+    "openSub": "{n} things that fit this trip",
+    "find": "Find on {shop}",
+    "none": "Nothing special to buy",
+    "disclosure": "Shopping links may be affiliate links; we may earn a commission at no extra cost to you. These are product types, not specific products — check price and stock at the store.",
+    "shop": {
+      "coupang": "Coupang",
+      "amazon": "Amazon",
+      "amazonjp": "Amazon.co.jp",
+      "shopee": "Shopee",
+      "klook": "Klook"
+    },
+    "item": {
+      "umbrella": "Travel umbrella",
+      "raincoat": "Packable rain poncho",
+      "padding": "Packable down jacket",
+      "gloves": "Winter gloves",
+      "windbreaker": "Windbreaker",
+      "fan": "Portable fan",
+      "sunscreen": "Sunscreen",
+      "adapter": "Universal travel adapter",
+      "esim": "Travel eSIM",
+      "neckpillow": "Travel neck pillow",
+      "powerbank": "Power bank",
+      "organizer": "Compression packing cubes",
+      "waterproof": "Waterproof phone pouch",
+      "daypack": "Lightweight daypack",
+      "kidskit": "Kids travel activity kit"
+    },
+    "why": {
+      "weather_umbrella": "Rain is likely on some days",
+      "weather_snow": "Snow is likely on some days",
+      "weather_heavyCoat": "It drops below freezing",
+      "weather_coat": "Daytime highs stay under 10°C",
+      "weather_jacket": "Mornings and evenings are chilly",
+      "weather_layers": "Big swing between day and night",
+      "weather_hot": "Highs go above 30°C",
+      "weather_sunscreen": "Clear, sunny days ahead",
+      "abroad": "Different plugs and mobile networks abroad",
+      "longhaul": "It is a long flight",
+      "flight": "Carry-on only — check the capacity limit",
+      "always": "Maps and photos drain your battery all day",
+      "beach": "You have beach time planned",
+      "outdoor": "Lots of time outdoors",
+      "kids": "Flying with children",
+      "long": "Five days or more means more luggage"
+    }
+  },
+  "airport": {
+    "title": "Airport wait guide",
+    "sub": "What to do with the time you have before boarding.",
+    "open": "Lounges & airport wait time",
+    "openSub": "Departing {from} · make use of the wait",
+    "depart": "Departure airport",
+    "arrive": "Arrival airport",
+    "wait": "Time until boarding",
+    "waitOpt": {
+      "60": "1 hour",
+      "120": "2 hours",
+      "240": "4 hours",
+      "360": "6+ hours"
+    },
+    "todo": "How to spend it",
+    "lounge": "Lounges",
+    "loungeNote": "Lounge locations, hours and entry rules change often. Check your card or airline benefits and the airport’s official guide.",
+    "loungePass": "Find a lounge pass (Klook)",
+    "loungeSearch": "Search lounges & facilities",
+    "highlights": "Worth doing at this airport",
+    "hlNote": "Check the airport’s official guide for current hours and availability.",
+    "ask": "Ask the concierge about this airport",
+    "none": "This trip does not need a flight",
+    "tip": {
+      "gate": "Find your gate and boarding time first, then stay nearby",
+      "water": "Buy water and a snack after security",
+      "charge": "Charge your phone and power bank",
+      "meal": "Have a meal. Head to the gate 40 minutes before boarding",
+      "lounge": "Use a lounge (card or airline benefits, or a day pass)",
+      "dutyfree": "Collect duty-free pre-orders and browse the shops",
+      "shower": "Take a shower (in a lounge or airport facilities)",
+      "walk": "Visit the observation deck, exhibits or gardens",
+      "nap": "Rest in a nap zone or capsule hotel",
+      "transitTour": "If the airport runs transit tours, sign up (check entry rules)"
+    },
+    "hl": {
+      "ICN": {
+        "1": "Free transit tours for layover passengers",
+        "2": "Korean traditional culture experience center",
+        "3": "Free showers and rest zones"
+      },
+      "SIN": {
+        "1": "The indoor waterfall at Jewel Changi",
+        "2": "Butterfly Garden in Terminal 3",
+        "3": "Free city tour for layovers of 5.5 hours or more"
+      },
+      "HND": {
+        "1": "Edo-style shopping street (Edo-Koji) in Terminal 3",
+        "2": "Observation decks overlooking the runways"
+      },
+      "NRT": {
+        "1": "Runway observation decks",
+        "2": "Capsule hotel in Terminal 2"
+      }
+    }
   }
 }

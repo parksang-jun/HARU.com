@@ -56,6 +56,8 @@ try {
   await page.getByTestId('start-trip').click()
   await page.getByTestId('generate').waitFor()
   await page.getByTestId('city-busan').click() // 서울 + 부산
+  assert((await page.getByTestId('interest-chip').count()) === 20, 'setup offers 20 interests')
+  await page.getByTestId('setup-notes').fill('vegetarian, no shopping')
   await page.screenshot({ path: join(shots, '02-setup.png'), fullPage: true })
   await page.getByTestId('generate').click()
 
@@ -78,6 +80,46 @@ try {
   assert(before !== after && /^2\//.test(after), `prep checklist progress moves: "${before}" → "${after}"`)
   assert((await page.getByTestId('packing-list').innerText()).length > 0, 'packing list is shown')
   await page.screenshot({ path: join(shots, '03-itinerary.png'), fullPage: true })
+
+  // 추가 요청 반영 내역
+  const reqItems = page.getByTestId('request-item')
+  assert((await reqItems.count()) === 2, 'both special requests are listed')
+  assert((await page.locator('[data-testid="request-item"][data-applied="true"]').count()) === 2, 'both requests are marked applied')
+  for (let i = 0; i < dayTabs; i++) {
+    await page.getByTestId('day-tab').nth(i).click()
+    assert((await page.locator('[data-testid="stop"][data-category="shopping"]').count()) === 0, `day ${i + 1} has no shopping stops ("no shopping")`)
+  }
+  await page.getByTestId('day-tab').first().click()
+
+  // 여행 보고서
+  await page.getByTestId('report-open').click()
+  await page.getByTestId('report-title').waitFor()
+  assert((await page.getByTestId('report-day').count()) === dayTabs, 'report lists every day')
+  assert((await page.getByTestId('report-prep').innerText()).includes('2/'), 'report shows prep progress')
+  assert((await page.getByTestId('report-costs').innerText()).includes('₩'), 'report totals costs')
+  await page.screenshot({ path: join(shots, '16-report.png'), fullPage: true })
+  await page.goBack()
+
+  // 여행 제품 추천
+  await page.getByTestId('prep-gear').click()
+  await page.getByTestId('gear-item').first().waitFor()
+  const gearUrl = await page.getByTestId('gear-link').first().getAttribute('data-url')
+  assert(/^https:\/\/www\.(amazon\.com\/s\?k=|klook\.com\/search)/.test(gearUrl), `gear links to a shop search (${gearUrl})`)
+  await page.screenshot({ path: join(shots, '17-gear.png'), fullPage: true })
+  await page.goBack()
+
+  // 공항 대기 가이드 (항공편이 있는 여행일 때)
+  if (await page.getByTestId('prep-airport').count()) {
+    await page.getByTestId('prep-airport').click()
+    await page.getByTestId('wait-tips').waitFor()
+    const two = await page.locator('[data-testid="wait-tips"] li').count()
+    await page.getByTestId('wait-chip').nth(3).click()
+    assert((await page.locator('[data-testid="wait-tips"] li[data-tip="nap"]').count()) === 1, 'long waits suggest a nap zone')
+    assert(two >= 3, 'wait tips are listed')
+    await page.screenshot({ path: join(shots, '18-airport.png'), fullPage: true })
+    await page.goBack()
+  }
+  await page.getByTestId('itin-title').waitFor()
 
   // 스폰서 카드 + 라벨
   const nearby = page.getByTestId('nearby-deals')
@@ -219,6 +261,16 @@ try {
   // 숙소 정류지 → 호텔 찾기
   assert((await page.getByTestId('find-hotels').count()) >= 1, 'stay stop offers "Find hotels"')
   await page.screenshot({ path: join(shots, '12-itinerary-overseas.png'), fullPage: true })
+
+  // 해외 여행: 공항 대기 가이드
+  await page.getByTestId('prep-airport').click()
+  await page.getByTestId('wait-tips').waitFor()
+  await page.getByTestId('wait-chip').nth(3).click()
+  assert((await page.locator('[data-testid="wait-tips"] li[data-tip="nap"]').count()) === 1, 'long waits suggest a nap zone')
+  assert((await page.getByTestId('airport-name').innerText()).length > 2, 'airport guide names the departure airport')
+  await page.screenshot({ path: join(shots, '18-airport.png'), fullPage: true })
+  await page.goBack()
+  await page.getByTestId('itin-title').waitFor()
   await page.getByTestId('plan-flights').click()
   await page.getByTestId('flight-results').waitFor({ timeout: 10000 })
   assert((await page.getByTestId('flight-offer').count()) >= 3, 'flights prefilled from the itinerary return offers')

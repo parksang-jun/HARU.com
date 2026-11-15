@@ -1,8 +1,8 @@
-# Haru Korea 출시·운영 로드맵 (2026-11 → 2027-12)
+# Haru 출시·운영 로드맵 (2026-11 → 2027-12)
 
 ## Phase 0 — 기반 확정 (2026-11)
 
-- [ ] 앱명·appId 확정(작업명 Haru Korea / `com.harukorea.app`), 도메인·문의 이메일
+- [ ] 앱명·appId 확정(작업명 Haru / `com.harukorea.app`), 도메인·문의 이메일
 - [ ] 계정: Supabase 프로젝트(마이그레이션·시드·Edge Function 배포, `ANTHROPIC_API_KEY` secret), Anthropic API, Play Console, Apple Developer, AdMob(배너 선택)
 - [ ] 법적 문서 운영자 정보 기입·호스팅(개인정보·약관·AI 고지), 여행업 등록 필요 여부 확인(직접 예약·결제 없음 → 통상 불필요, 전문가 확인)
 - [ ] 분석: Supabase 테이블 기반 깔때기 쿼리 + 앱 이벤트(선택) — `hk-dev`
@@ -49,5 +49,5 @@
 ## v0.2 범위 변경 (2026-11-02, 사장 지시)
 - 국내 여행만이 아니라 **해외 여행 전체** 지원 — 여행지 카탈로그 93곳(국내 12·일본 9·중화권 9·동남아 18·유럽 24·미주 9·대양주 7·중동 등 5).
 - **항공권 검색**(Travelpayouts 운임 캐시 + Trip.com·Skyscanner·Aviasales 제휴, Google·네이버 비교 링크)과 **호텔 검색**(Agoda Lite API + Booking·Trip.com·Expedia 비교) 추가, 일정 상단에서 바로 연결.
-- 영향: 타깃에 해외 나가는 한국인 추가 → 한국어 마케팅·ASO 비중 확대, 항공·호텔 커미션이 주수익원 후보. 앱명 "Haru Korea" 브랜드 재검토 필요(PM 결정 과제).
+- 영향: 타깃에 해외 나가는 한국인 추가 → 한국어 마케팅·ASO 비중 확대, 항공·호텔 커미션이 주수익원 후보. 앱명 "Haru" 브랜드 재검토 필요(PM 결정 과제).
 - Phase 1 에 추가: Travelpayouts·Skyscanner 가입, Agoda API(Site ID·API key·HTTPS 엔드포인트) 신청, `agoda-cities.ts` 도시 매핑 채우기.

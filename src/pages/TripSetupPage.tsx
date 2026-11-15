@@ -92,10 +92,12 @@ export function TripSetupPage() {
       </section>
 
       <section className="field">
-        <span className="field__label">{t('setup.interests')}</span>
+        <span className="field__label">
+          {t('setup.interests')} <span className="xs muted">{t('setup.interestsHint')}</span>
+        </span>
         <div className="chips">
           {INTERESTS.map((v) => (
-            <button key={v} type="button" className={`chip${interests.includes(v) ? ' is-on' : ''}`} onClick={() => toggle(interests, v, setInterests)}>
+            <button key={v} type="button" className={`chip${interests.includes(v) ? ' is-on' : ''}`} aria-pressed={interests.includes(v)} onClick={() => toggle(interests, v, setInterests)} data-testid="interest-chip">
               {t(`setup.interest.${v}`)}
             </button>
           ))}
@@ -127,7 +129,7 @@ export function TripSetupPage() {
 
       <section className="field">
         <span className="field__label">{t('setup.notes')}</span>
-        <textarea className="textarea" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('setup.notesPh')} maxLength={500} />
+        <textarea className="textarea" data-testid="setup-notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('setup.notesPh')} maxLength={500} />
       </section>
 
       {error && (

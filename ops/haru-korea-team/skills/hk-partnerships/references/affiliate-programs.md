@@ -15,7 +15,7 @@
 
 ## 심사 통과용 소개문(en, 수정해서 사용)
 
-Haru Korea is a mobile and web trip planner for inbound travelers to South Korea (Japanese, Taiwanese and English-speaking visitors). Users get an AI-built day-by-day itinerary with real places, transit hints and local deals; every ticketed sight, tour and hotel links out to partner booking pages. Launch markets: Japan and Taiwan (2027). Traffic: {monthly users}. Site: {url}.
+Haru is a mobile and web trip planner for inbound travelers to South Korea (Japanese, Taiwanese and English-speaking visitors). Users get an AI-built day-by-day itinerary with real places, transit hints and local deals; every ticketed sight, tour and hotel links out to partner booking pages. Launch markets: Japan and Taiwan (2027). Traffic: {monthly users}. Site: {url}.
 
 ## 운영 체크
 

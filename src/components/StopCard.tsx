@@ -41,7 +41,7 @@ export function StopCard({ stop, tripId, country = 'KR', onFindHotels }: Props) 
   }
 
   return (
-    <article className="stop" data-testid="stop">
+    <article className="stop" data-testid="stop" data-category={stop.category}>
       <div className="stop__time">{stop.time}</div>
       <div className="card stop__card">
         <div className="stop__head">

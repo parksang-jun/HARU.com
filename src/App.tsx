@@ -3,12 +3,15 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { ensureSession } from './lib/supabase'
 import { AdminPage } from './pages/AdminPage'
+import { AirportPage } from './pages/AirportPage'
+import { GearPage } from './pages/GearPage'
 import { ChatPage } from './pages/ChatPage'
 import { DealsPage } from './pages/DealsPage'
 import { BusinessDealsPage } from './pages/BusinessDealsPage'
 import { FlightsPage } from './pages/FlightsPage'
 import { HotelsPage } from './pages/HotelsPage'
 import { HomePage } from './pages/HomePage'
+import { ReportPage } from './pages/ReportPage'
 import { ItineraryPage } from './pages/ItineraryPage'
 import { LegalPage } from './pages/LegalPage'
 import { MorePage } from './pages/MorePage'
@@ -27,6 +30,9 @@ export default function App() {
         <Route path="/setup" element={<TripSetupPage />} />
         <Route path="/trip/:id" element={<ItineraryPage />} />
         <Route path="/trip/:id/chat" element={<ChatPage />} />
+        <Route path="/trip/:id/report" element={<ReportPage />} />
+        <Route path="/trip/:id/gear" element={<GearPage />} />
+        <Route path="/trip/:id/airport" element={<AirportPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/flights" element={<FlightsPage />} />
         <Route path="/flights/deals" element={<BusinessDealsPage />} />

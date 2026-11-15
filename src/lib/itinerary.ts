@@ -6,8 +6,19 @@ export type CityId = string
 export const MAX_CITIES = 5
 
 export type Travelers = 'solo' | 'couple' | 'family' | 'friends'
-export type Interest = 'food' | 'kpop' | 'shopping' | 'history' | 'nature' | 'cafe' | 'nightlife' | 'wellness'
-export const INTERESTS: Interest[] = ['food', 'kpop', 'shopping', 'history', 'nature', 'cafe', 'nightlife', 'wellness']
+export type Interest =
+  | 'food' | 'market' | 'cafe' | 'shopping'
+  | 'history' | 'art' | 'architecture' | 'photo'
+  | 'nature' | 'hiking' | 'beach' | 'nightview'
+  | 'activity' | 'themepark' | 'festival' | 'kids'
+  | 'kpop' | 'anime' | 'nightlife' | 'wellness'
+export const INTERESTS: Interest[] = [
+  'food', 'market', 'cafe', 'shopping',
+  'history', 'art', 'architecture', 'photo',
+  'nature', 'hiking', 'beach', 'nightview',
+  'activity', 'themepark', 'festival', 'kids',
+  'kpop', 'anime', 'nightlife', 'wellness',
+]
 export type Budget = 'saver' | 'standard' | 'premium'
 export type Pace = 'relaxed' | 'balanced' | 'packed'
 
@@ -67,11 +78,23 @@ export interface ItineraryDay {
   stops: Stop[]
 }
 
+/** 추가 요청 한 건을 일정에 어떻게 반영했는지 */
+export interface RequestNote {
+  /** 요청 내용 (사용자 언어) */
+  request: string
+  /** 반영 방법 또는 반영하지 못한 이유 */
+  handled: string
+  /** 반영 여부 */
+  applied: boolean
+}
+
 export interface Itinerary {
   version: 1
   title: string
   summary: string
   days: ItineraryDay[]
+  /** 추가 요청(notes) 반영 내역 — 요청이 없으면 생략 */
+  requests?: RequestNote[]
 }
 
 export interface Trip {
@@ -188,12 +211,21 @@ export function normalizeItinerary(raw: unknown, params: TripParams): Itinerary 
     })
   })
   if (!days.length) return null
-  return {
+  const out: Itinerary = {
     version: 1,
     title: str(raw.title) || `${params.cities.join(', ')} trip`,
     summary: str(raw.summary),
     days,
   }
+  if (Array.isArray(raw.requests)) {
+    const requests = raw.requests
+      .filter(isObj)
+      .map((r) => ({ request: str(r.request).slice(0, 200), handled: str(r.handled).slice(0, 300), applied: r.applied !== false }))
+      .filter((r) => r.request && r.handled)
+      .slice(0, 8)
+    if (requests.length) out.requests = requests
+  }
+  return out
 }
 
 /** 여행자 유형 → 성인 수 (항공·호텔 검색 기본값) */

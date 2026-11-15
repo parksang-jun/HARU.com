@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Haru Korea",
-    "tagline": "韓國與世界各地的 AI 旅遊禮賓"
+    "name": "Haru",
+    "tagline": "旅行準備，一天搞定"
   },
   "nav": {
     "trips": "行程",
@@ -54,13 +54,25 @@
     "interests": "興趣",
     "interest": {
       "food": "美食",
-      "kpop": "K-pop",
+      "market": "市場·街頭小吃",
+      "cafe": "咖啡·甜點",
       "shopping": "購物",
-      "history": "歷史",
-      "nature": "自然",
-      "cafe": "咖啡廳",
-      "nightlife": "夜生活",
-      "wellness": "療癒放鬆"
+      "history": "歷史·古蹟",
+      "art": "美術館·博物館",
+      "architecture": "建築·城市漫步",
+      "photo": "拍照景點",
+      "nature": "自然·風景",
+      "hiking": "健行",
+      "beach": "海邊·度假",
+      "nightview": "夜景·展望台",
+      "activity": "體驗·導覽",
+      "themepark": "主題樂園",
+      "festival": "節慶·表演",
+      "kids": "親子同遊",
+      "kpop": "K-POP·韓流文化",
+      "anime": "動漫·遊戲",
+      "nightlife": "酒吧·夜生活",
+      "wellness": "溫泉·SPA"
     },
     "budget": "預算",
     "budgetOpt": {
@@ -75,7 +87,7 @@
       "packed": "緊湊"
     },
     "notes": "其他需求（選填）",
-    "notesPh": "例如：素食、帶嬰兒車、第一次來韓國",
+    "notesPh": "例：素食、推嬰兒車、不要購物、一定要去景福宮、早上晚點出發",
     "generate": "產生行程",
     "generating": "正在建立行程…",
     "errCity": "請選擇 1–5 個目的地。",
@@ -83,7 +95,8 @@
     "errGeneric": "無法建立行程，請再試一次。",
     "destSearch": "搜尋城市或國家（例：首爾、巴黎）",
     "cityHint": "最多 {n} 個城市，依選擇順序安排。",
-    "remove": "移除{city}"
+    "remove": "移除{city}",
+    "interestsHint": "可複選"
   },
   "itin": {
     "loading": "正在準備每日計畫…",
@@ -379,5 +392,152 @@
     "essentials": "出國準備",
     "essentialsSub": "護照效期 · 入境規定 · 換匯 · 漫遊/eSIM · 旅遊保險",
     "check": "標記為完成"
+  },
+  "req": {
+    "title": "額外需求的處理",
+    "noDetail": "這份行程沒有需求處理紀錄。點「重新產生」即可顯示。",
+    "sampleNote": "範例模式只會讀取關鍵字。實際服務中，AI 會讀完整句並套用。"
+  },
+  "report": {
+    "open": "查看旅行報告",
+    "title": "旅行報告",
+    "overview": "總覽",
+    "dates": "日期",
+    "cities": "目的地",
+    "party": "人數",
+    "partyValue": "{who} · 以{n}位成人計算",
+    "style": "旅行風格",
+    "interests": "興趣",
+    "prep": "準備進度",
+    "prepLeft": "還有 {n} 項未完成",
+    "prepAll": "所有準備都完成了",
+    "done": "完成",
+    "todo": "未完成",
+    "bookings": "機票·住宿",
+    "stay": "{city} {n}晚",
+    "days": "每日行程",
+    "costs": "預估費用",
+    "costNote": "行程中列出的門票、餐費等合計，不含機票與住宿，實際金額可能不同。",
+    "perPerson": "每人",
+    "total": "{n}人合計",
+    "noCost": "沒有列出費用的行程",
+    "packing": "行李清單",
+    "requests": "額外需求的處理",
+    "applied": "已套用",
+    "notApplied": "未套用",
+    "copy": "複製報告",
+    "copied": "已複製報告",
+    "share": "分享",
+    "print": "列印·存成 PDF",
+    "back": "回到行程",
+    "generated": "{date} 製作 · Haru",
+    "weatherNone": "沒有天氣資料"
+  },
+  "gear": {
+    "title": "旅行用品推薦",
+    "sub": "依這趟旅程的天氣、目的地與飛行時間挑選。",
+    "open": "旅行用品推薦",
+    "openSub": "適合這趟旅程的 {n} 樣物品",
+    "find": "在{shop}尋找",
+    "none": "沒有特別需要購買的物品",
+    "disclosure": "購物連結可能是聯盟連結，我們可能獲得佣金，您無需支付額外費用。這裡推薦的是用品種類而非特定商品，價格與庫存請以商店為準。",
+    "shop": {
+      "coupang": "Coupang",
+      "amazon": "Amazon",
+      "amazonjp": "Amazon.co.jp",
+      "shopee": "蝦皮",
+      "klook": "Klook"
+    },
+    "item": {
+      "umbrella": "旅行折疊傘",
+      "raincoat": "攜帶式雨衣",
+      "padding": "輕羽絨外套",
+      "gloves": "保暖手套",
+      "windbreaker": "防風外套",
+      "fan": "手持風扇",
+      "sunscreen": "防曬乳",
+      "adapter": "萬用轉接頭",
+      "esim": "旅遊 eSIM",
+      "neckpillow": "頸枕",
+      "powerbank": "行動電源",
+      "organizer": "壓縮收納袋",
+      "waterproof": "手機防水袋",
+      "daypack": "輕量後背包",
+      "kidskit": "兒童機上遊戲組"
+    },
+    "why": {
+      "weather_umbrella": "有幾天可能下雨",
+      "weather_snow": "有幾天可能下雪",
+      "weather_heavyCoat": "氣溫會降到零下",
+      "weather_coat": "白天也低於10度",
+      "weather_jacket": "早晚偏涼",
+      "weather_layers": "日夜溫差大",
+      "weather_hot": "高溫超過30度",
+      "weather_sunscreen": "有晴朗、日曬強的日子",
+      "abroad": "國外的插座與網路不同",
+      "longhaul": "飛行時間較長",
+      "flight": "只能隨身攜帶，請確認容量限制",
+      "always": "整天用地圖和拍照很耗電",
+      "beach": "行程中有海邊",
+      "outdoor": "戶外活動較多",
+      "kids": "帶孩子搭機",
+      "long": "五天以上行李較多"
+    }
+  },
+  "airport": {
+    "title": "機場候機指南",
+    "sub": "依登機前剩餘的時間推薦可以做的事。",
+    "open": "機場貴賓室·候機時間",
+    "openSub": "{from} 出發 · 善用候機時間",
+    "depart": "出發機場",
+    "arrive": "抵達機場",
+    "wait": "距離登機的時間",
+    "waitOpt": {
+      "60": "1小時",
+      "120": "2小時",
+      "240": "4小時",
+      "360": "6小時以上"
+    },
+    "todo": "建議這樣安排",
+    "lounge": "貴賓室",
+    "loungeNote": "貴賓室的位置、營業時間與入場條件經常變動，請確認信用卡或航空公司權益及機場官方資訊。",
+    "loungePass": "尋找貴賓室使用券 (Klook)",
+    "loungeSearch": "搜尋貴賓室·設施",
+    "highlights": "這座機場值得做的事",
+    "hlNote": "營運狀況與時間請以機場官方資訊為準。",
+    "ask": "向禮賓詢問這座機場",
+    "none": "這趟旅程不需要搭機",
+    "tip": {
+      "gate": "先確認登機門與開始登機時間，並待在附近",
+      "water": "通過安檢後先買水和點心",
+      "charge": "替手機和行動電源充電",
+      "meal": "用餐。登機前40分鐘前往登機門",
+      "lounge": "使用貴賓室（信用卡、航空公司權益或使用券）",
+      "dutyfree": "領取預購免稅品並逛免稅店",
+      "shower": "使用淋浴設施（貴賓室或機場設施）",
+      "walk": "逛逛觀景台、展覽或花園",
+      "nap": "在休息區或膠囊旅館小睡",
+      "transitTour": "若機場提供過境導覽可以報名（請確認入境規定）"
+    },
+    "hl": {
+      "ICN": {
+        "1": "轉機旅客的免費過境導覽",
+        "2": "韓國傳統文化體驗館",
+        "3": "免費淋浴間與休息區"
+      },
+      "SIN": {
+        "1": "星耀樟宜的室內瀑布",
+        "2": "第三航廈蝴蝶園",
+        "3": "轉機5.5小時以上可參加免費市區導覽"
+      },
+      "HND": {
+        "1": "第三航廈江戶小路商店街",
+        "2": "可看跑道的觀景台"
+      },
+      "NRT": {
+        "1": "跑道觀景台",
+        "2": "第二航廈膠囊旅館"
+      }
+    }
   }
 }

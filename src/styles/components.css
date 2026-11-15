@@ -1267,3 +1267,201 @@ a.chip {
 .wx__alt .btn {
   flex: none;
 }
+
+/* 추가 요청 반영 */
+.req {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.req__text {
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.req__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-s);
+}
+
+.req__list li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.req__mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: var(--color-success);
+}
+
+.req__list li.is-no .req__mark {
+  background: var(--color-accent);
+}
+
+/* 여행 보고서 */
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.report__sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.report__sec h2 {
+  font-size: var(--text-m);
+}
+
+.report__dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px var(--space-3);
+  margin: 0;
+  font-size: var(--text-s);
+}
+
+.report__dl dt {
+  color: var(--color-muted);
+}
+
+.report__dl dd {
+  margin: 0;
+}
+
+.report__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-s);
+}
+
+.report__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.report__state {
+  margin-left: auto;
+  flex: none;
+}
+
+.report__warn {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.report__day {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report__day:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.report__day h3 {
+  font-size: var(--text-s);
+}
+
+.report__stops {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-s);
+}
+
+.report__stops li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.report__time {
+  flex: none;
+  width: 44px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}
+
+.report__cost {
+  margin-left: auto;
+  flex: none;
+}
+
+@media print {
+  .topbar,
+  .tabbar,
+  .report__actions {
+    display: none !important;
+  }
+
+  .page {
+    padding: 0;
+  }
+
+  .card {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}
+
+/* 여행 제품 추천 · 공항 가이드 */
+.gear {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.gear__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gear .btn {
+  flex: none;
+}
+
+.airport__tips {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-s);
+}

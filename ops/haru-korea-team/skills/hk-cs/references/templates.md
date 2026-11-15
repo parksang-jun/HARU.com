@@ -7,10 +7,10 @@
 - ko: 알려주셔서 감사합니다. {place}를 확인해 정보를 수정했습니다({화요일 휴무/이전/폐업}). 일정은 AI가 장소 데이터로 만들기 때문에 이런 제보가 바로 개선으로 이어집니다. 불편을 드려 죄송합니다.
 
 ## 예약·결제 문제(파트너 사이트)
-- en: Bookings are made directly with {partner}; Haru Korea only links to their page and never takes payment. Please contact {partner} support with your booking number — here's the link: {url}. If you tell us what happened, we'll also review whether the link we showed was correct.
-- ja: ご予約は {partner} と直接行われ、Haru Korea はリンクを提供するのみで決済は行っていません。予約番号を添えて {partner} のサポートへご連絡ください: {url}。状況を教えていただければ、表示したリンクが適切だったかも確認します。
-- zh-TW: 預訂是直接與 {partner} 完成，Haru Korea 只提供連結，不經手付款。請附上訂單編號聯絡 {partner} 客服：{url}。若您告訴我們發生了什麼，我們也會檢查顯示的連結是否正確。
-- ko: 예약은 {partner}와 직접 이루어지며 Haru Korea는 링크만 제공하고 결제는 받지 않습니다. 예약번호와 함께 {partner} 고객센터({url})로 문의해 주세요. 상황을 알려주시면 저희가 보여드린 링크가 맞았는지도 확인하겠습니다.
+- en: Bookings are made directly with {partner}; Haru only links to their page and never takes payment. Please contact {partner} support with your booking number — here's the link: {url}. If you tell us what happened, we'll also review whether the link we showed was correct.
+- ja: ご予約は {partner} と直接行われ、Haru はリンクを提供するのみで決済は行っていません。予約番号を添えて {partner} のサポートへご連絡ください: {url}。状況を教えていただければ、表示したリンクが適切だったかも確認します。
+- zh-TW: 預訂是直接與 {partner} 完成，Haru 只提供連結，不經手付款。請附上訂單編號聯絡 {partner} 客服：{url}。若您告訴我們發生了什麼，我們也會檢查顯示的連結是否正確。
+- ko: 예약은 {partner}와 직접 이루어지며 Haru는 링크만 제공하고 결제는 받지 않습니다. 예약번호와 함께 {partner} 고객센터({url})로 문의해 주세요. 상황을 알려주시면 저희가 보여드린 링크가 맞았는지도 확인하겠습니다.
 
 ## 쿠폰을 매장에서 거부
 - en: We're sorry — that shouldn't happen. The offer was valid until {date}. We've contacted {merchant} and paused the listing until it's resolved. Please send a photo of the receipt if you have one; we'll follow up and share an alternative deal nearby.

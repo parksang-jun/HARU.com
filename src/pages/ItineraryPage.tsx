@@ -7,15 +7,16 @@ import { StopCard } from '../components/StopCard'
 import { useI18n } from '../i18n/context'
 import { pickName } from '../i18n'
 import { AiError, generateItinerary } from '../lib/ai'
-import { airportDestination, bestAirportFor, domesticOrigin, getAirport, HOME_AIRPORT_KEY } from '../lib/airports'
+import { getAirport, HOME_AIRPORT_KEY } from '../lib/airports'
 import { listCoupons, nearbyCoupons, type Coupon } from '../lib/coupons'
 import { defaultHomeAirport, destName, getDestination } from '../lib/destinations'
-import { distanceKm } from '../lib/geo'
 import { adultsFor, daysBetween, type Trip } from '../lib/itinerary'
+import { ENV } from '../lib/env'
+import { recommendGear } from '../lib/gear'
 import { getRepo } from '../lib/repo'
 import { loadJson, loadPref, saveJson, savePref } from '../lib/storage'
 import { formatTemps, getTripWeather, ICONS, needsRainPlan, packingList, tipsFor, weatherKey, type DayWeather, type TripWeather } from '../lib/weather'
-import { staySegments, type StaySegment } from '../lib/plan'
+import { flightRoute, hotelKey, isAbroad, isPrepDone, prepKeys as prepKeysFor, staySegments, type StaySegment } from '../lib/plan'
 
 
 
@@ -80,27 +81,13 @@ export function ItineraryPage() {
   const day = trip?.itinerary?.days[dayIdx]
   const wx: DayWeather | undefined = day ? weather[weatherKey(day.city, day.date)] : undefined
   const packing = useMemo(() => packingList(Object.values(weather)), [weather])
+  const gearCount = useMemo(() => (trip ? recommendGear(trip, Object.values(weather), home).length : 0), [trip, weather, home])
   const deals = useMemo(() => (day ? nearbyCoupons(coupons, day.city, day.stops) : []), [coupons, day])
   const segments = useMemo(() => (trip?.itinerary ? staySegments(trip) : []), [trip])
 
-  // 항공권: 홈 공항 → 첫 도시 대표 공항 (같은 도시이거나 너무 가까우면 생략, 국내선은 김포 출발)
-  const flight = useMemo(() => {
-    if (!trip) return null
-    const first = trip.params.cities[0]
-    const to = bestAirportFor(first, home)
-    const homeCity = airportDestination(home)
-    const dst = getDestination(first)
-    if (!to || !homeCity || !dst) return null
-    if (homeCity.id === dst.id || distanceKm(homeCity.lat, homeCity.lng, dst.lat, dst.lng) < 180) return null
-    return { from: domesticOrigin(home, to), to }
-  }, [trip, home])
-
+  const flight = useMemo(() => (trip ? flightRoute(trip, home) : null), [trip, home])
   // 해외 일정이 있으면 출국 준비 항목을 보여 준다
-  const abroad = useMemo(() => {
-    if (!trip) return false
-    const homeCountry = airportDestination(home)?.country
-    return trip.params.cities.some((c) => getDestination(c)?.country !== homeCountry)
-  }, [trip, home])
+  const abroad = useMemo(() => (trip ? isAbroad(trip, home) : false), [trip, home])
 
   const adults = trip ? adultsFor(trip.params.travelers) : 1
   const goFlights = () => {
@@ -160,8 +147,8 @@ export function ItineraryPage() {
   }
 
   // 준비 항목: 일정(자동 완료) + 항공권 + 숙소 구간 + 날씨·준비물 + 현지 혜택 (+ 해외면 출국 준비)
-  const prepKeys = ['itinerary', ...(flight ? ['flight'] : []), ...segments.map((s) => `hotel:${s.city}:${s.checkIn}`), 'weather', 'deals', ...(abroad ? ['essentials'] : [])]
-  const prepDone = prepKeys.filter((k) => k === 'itinerary' || done.includes(k)).length
+  const prepKeys = prepKeysFor(trip, home)
+  const prepDone = prepKeys.filter((k) => isPrepDone(k, done)).length
   const check = (key: string) => (
     <button type="button" className={`prep__check${done.includes(key) ? ' is-on' : ''}`} aria-pressed={done.includes(key)} aria-label={t('prep.check')} onClick={() => toggle(key)} data-testid="prep-check">
       ✓
@@ -174,6 +161,32 @@ export function ItineraryPage() {
         <h1 data-testid="itin-title">{trip.itinerary.title}</h1>
         {trip.itinerary.summary && <p className="muted small">{trip.itinerary.summary}</p>}
       </div>
+
+      {trip.params.notes && (
+        <section className="card card--flat req" data-testid="requests">
+          <p className="small" style={{ fontWeight: 700 }}>
+            {t('req.title')}
+          </p>
+          <p className="xs muted req__text">“{trip.params.notes}”</p>
+          {trip.itinerary.requests?.length ? (
+            <ul className="req__list">
+              {trip.itinerary.requests.map((r, i) => (
+                <li key={i} className={r.applied ? 'is-ok' : 'is-no'} data-testid="request-item" data-applied={r.applied}>
+                  <span className="req__mark" aria-hidden="true">
+                    {r.applied ? '✓' : '!'}
+                  </span>
+                  <span>
+                    <strong>{r.request}</strong> — {r.handled}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="xs muted">{t('req.noDetail')}</p>
+          )}
+          {ENV.mockAi && <p className="xs muted">{t('req.sampleNote')}</p>}
+        </section>
+      )}
 
       <section className="card plan" data-testid="plan-card">
         <div className="row">
@@ -222,7 +235,7 @@ export function ItineraryPage() {
         )}
         {segments.map((seg) => (
           <div key={`${seg.city}-${seg.checkIn}`} className="prep__row">
-            {check(`hotel:${seg.city}:${seg.checkIn}`)}
+            {check(hotelKey(seg))}
             <button type="button" className="plan__row" onClick={() => goHotels(seg)} data-testid="plan-hotels">
               <span className="plan__icon" aria-hidden="true">
                 ⌂
@@ -256,6 +269,22 @@ export function ItineraryPage() {
         </div>
 
         <div className="prep__row">
+          {check('gear')}
+          <Link to={`/trip/${trip.id}/gear`} className="plan__row" data-testid="prep-gear">
+            <span className="plan__icon" aria-hidden="true">
+              ▣
+            </span>
+            <span className="plan__text">
+              <strong>{t('gear.open')}</strong>
+              <span className="xs muted">{t('gear.openSub', { n: gearCount })}</span>
+            </span>
+            <span className="plan__go" aria-hidden="true">
+              ›
+            </span>
+          </Link>
+        </div>
+
+        <div className="prep__row">
           {check('deals')}
           <Link to="/deals" className="plan__row" data-testid="prep-deals">
             <span className="plan__icon" aria-hidden="true">
@@ -271,6 +300,24 @@ export function ItineraryPage() {
           </Link>
         </div>
 
+        {flight && (
+          <div className="prep__row">
+            {check('airport')}
+            <Link to={`/trip/${trip.id}/airport`} className="plan__row" data-testid="prep-airport">
+              <span className="plan__icon" aria-hidden="true">
+                ◷
+              </span>
+              <span className="plan__text">
+                <strong>{t('airport.open')}</strong>
+                <span className="xs muted">{t('airport.openSub', { from: flight.from })}</span>
+              </span>
+              <span className="plan__go" aria-hidden="true">
+                ›
+              </span>
+            </Link>
+          </div>
+        )}
+
         {abroad && (
           <div className="prep__row">
             {check('essentials')}
@@ -285,6 +332,9 @@ export function ItineraryPage() {
             </button>
           </div>
         )}
+        <Link to={`/trip/${trip.id}/report`} className="btn btn--primary btn--block" data-testid="report-open">
+          {t('report.open')}
+        </Link>
       </section>
 
       <div className="day-tabs" role="tablist" data-testid="day-tabs">
