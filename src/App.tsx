@@ -15,6 +15,7 @@ import { ReportPage } from './pages/ReportPage'
 import { ItineraryPage } from './pages/ItineraryPage'
 import { LegalPage } from './pages/LegalPage'
 import { MorePage } from './pages/MorePage'
+import { TipsPage } from './pages/TipsPage'
 import { TripSetupPage } from './pages/TripSetupPage'
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/trip/:id/report" element={<ReportPage />} />
         <Route path="/trip/:id/gear" element={<GearPage />} />
         <Route path="/trip/:id/airport" element={<AirportPage />} />
+        <Route path="/trip/:id/tips" element={<TipsPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/flights" element={<FlightsPage />} />
         <Route path="/flights/deals" element={<BusinessDealsPage />} />

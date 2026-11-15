@@ -100,9 +100,9 @@ export function TripSetupPage() {
         </div>
       </section>
 
-      <section className="field" data-testid="stay-plan">
+      <section className="field card card--flat stayplan" data-testid="stay-plan">
         <span className="field__label">{t('setup.stay')}</span>
-        <p className="xs muted">{nights >= 2 ? t('setup.stayQ') : t('setup.stayNeed')}</p>
+        <p className="small">{nights >= 2 ? t('setup.stayQ') : t('setup.stayNeed')}</p>
         {nights >= 2 && (
           <div className="chips">
             {Array.from({ length: Math.min(MAX_STAYS, nights) }, (_, i) => i + 1).map((k) => (

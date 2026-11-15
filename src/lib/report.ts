@@ -3,7 +3,7 @@ import { recommendGear, type GearItem } from './gear'
 import { adultsFor, daysBetween, MEAL_SLOTS, type LocalizedName, type MealOption, type MealSlot, type RequestNote, type StopCategory, type Trip } from './itinerary'
 import { chosenMeal, type MealPicks } from './meals'
 import { flightRoute, hotelKey, isAbroad, isPrepDone, prepKeys, staySegments, type StaySegment } from './plan'
-import { packingList, weatherKey, type DayWeather, type Tip, type TripWeather } from './weather'
+import { outfitFor, packingList, weatherKey, type DayWeather, type Tip, type TripWeather } from './weather'
 
 export interface ReportStop {
   time: string
@@ -27,7 +27,7 @@ export interface ReportDay {
 
 export interface ReportPrep {
   key: string
-  kind: 'itinerary' | 'flight' | 'hotel' | 'weather' | 'gear' | 'deals' | 'airport' | 'essentials'
+  kind: 'itinerary' | 'flight' | 'hotel' | 'weather' | 'gear' | 'deals' | 'airport' | 'tips' | 'essentials'
   done: boolean
   /** 숙소 항목일 때의 구간 */
   stay?: StaySegment
@@ -156,6 +156,8 @@ export function prepLabel(x: ReportPrep, r: TripReport, f: ReportFormat): string
       return f.t('prep.deals')
     case 'airport':
       return f.t('airport.open')
+    case 'tips':
+      return f.t('tips.open')
     default:
       return f.t('prep.essentials')
   }
@@ -164,7 +166,7 @@ export function prepLabel(x: ReportPrep, r: TripReport, f: ReportFormat): string
 export function weatherLine(w: DayWeather | undefined, f: ReportFormat): string {
   if (!w) return f.t('report.weatherNone')
   const rain = w.rainPct === null ? '' : ` · ${f.t(w.source === 'forecast' ? 'weather.rainForecast' : 'weather.rainNormal', { n: w.rainPct })}`
-  return `${f.t(`weather.cond.${w.condition}`)} ${f.temps(w)}${rain} (${f.t(`weather.src.${w.source}`)}${w.sample ? ` · ${f.t('common.sample')}` : ''})`
+  return `${f.t(`weather.cond.${w.condition}`)} ${f.temps(w)}${rain} · ${f.t('outfit.label')}: ${f.t(`outfit.${outfitFor(w)}`)} (${f.t(`weather.src.${w.source}`)}${w.sample ? ` · ${f.t('common.sample')}` : ''})`
 }
 
 export function mealLine(m: ReportDay['meals'][number], f: ReportFormat): string {

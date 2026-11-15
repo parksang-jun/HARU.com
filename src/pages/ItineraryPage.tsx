@@ -17,7 +17,7 @@ import { recommendGear } from '../lib/gear'
 import { hasMeals, loadMealPicks, saveMealPicks, togglePick, type MealPicks } from '../lib/meals'
 import { getRepo } from '../lib/repo'
 import { loadJson, loadPref, saveJson, savePref } from '../lib/storage'
-import { formatTemps, getTripWeather, ICONS, needsRainPlan, packingList, tipsFor, weatherKey, type DayWeather, type TripWeather } from '../lib/weather'
+import { formatTemps, getTripWeather, ICONS, needsExtraLayer, needsRainPlan, outfitFor, packingList, tipsFor, weatherKey, type DayWeather, type TripWeather } from '../lib/weather'
 import { flightRoute, hotelKey, isAbroad, isPrepDone, prepKeys as prepKeysFor, staySegments, type StaySegment } from '../lib/plan'
 
 
@@ -328,6 +328,22 @@ export function ItineraryPage() {
           </div>
         )}
 
+        <div className="prep__row">
+          {check('tips')}
+          <Link to={`/trip/${trip.id}/tips`} className="plan__row" data-testid="prep-tips">
+            <span className="plan__icon" aria-hidden="true">
+              ✦
+            </span>
+            <span className="plan__text">
+              <strong>{t('tips.open')}</strong>
+              <span className="xs muted">{t('tips.openSub')}</span>
+            </span>
+            <span className="plan__go" aria-hidden="true">
+              ›
+            </span>
+          </Link>
+        </div>
+
         {abroad && (
           <div className="prep__row">
             {check('essentials')}
@@ -392,6 +408,10 @@ export function ItineraryPage() {
               <strong>{t(`weather.cond.${wx.condition}`)}</strong> <span data-testid="day-weather-temp">{formatTemps(wx, locale)}</span>
             </p>
             {wx.rainPct !== null && <p className="xs muted">{t(wx.source === 'forecast' ? 'weather.rainForecast' : 'weather.rainNormal', { n: wx.rainPct })}</p>}
+            <p className="small wx__outfit" data-testid="day-outfit">
+              <span className="muted">{t('outfit.label')}</span> {t(`outfit.${outfitFor(wx)}`)}
+              {needsExtraLayer(wx) && <span className="xs muted"> · {t('outfit.extra')}</span>}
+            </p>
             {tipsFor(wx).length > 0 && (
               <div className="chips wx__tips">
                 {tipsFor(wx).map((tip) => (

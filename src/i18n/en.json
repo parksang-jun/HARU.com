@@ -109,7 +109,7 @@
       "nonight": "no nightlife"
     },
     "stay": "Where you stay",
-    "stayQ": "Will you change hotels during the trip?",
+    "stayQ": "Will you change hotels during the trip? (e.g. 2 nights in one place, 2 in another)",
     "stayOpt": {
       "1": "One place throughout",
       "2": "Split across two",
@@ -593,5 +593,53 @@
       "tell": "When you book, say how many people, whether children are coming, and any vegetarian or allergy needs.",
       "cancel": "Cancel if you cannot go. Some restaurants take a deposit or charge a no-show fee."
     }
+  },
+  "outfit": {
+    "label": "What to wear",
+    "o28": "T-shirt and shorts, breathable fabrics",
+    "o23": "T-shirt with light trousers",
+    "o20": "Light long sleeves or a shirt",
+    "o17": "Sweatshirt or cardigan",
+    "o12": "Jacket or knit",
+    "o9": "Trench coat over a knit",
+    "o5": "Coat with thermals and a scarf",
+    "o0": "Padded coat, gloves, scarf and hat",
+    "extra": "Mornings and evenings are much cooler — bring one more layer"
+  },
+  "tips": {
+    "title": "Country tips",
+    "sub": "Good to know before you arrive.",
+    "open": "Country tips",
+    "openSub": "Plugs, tipping, payment, emergency numbers",
+    "plug": "Plug type {types} · {v}V",
+    "adapterNeed": "Different from your home plugs — bring an adapter.",
+    "adapterOk": "Your home plugs fit as they are.",
+    "voltNote": "The voltage differs. Check that chargers and hair dryers are dual-voltage (100–240V).",
+    "tipping": {
+      "label": "Tipping",
+      "none": "Tipping is not expected.",
+      "service": "A service charge is often included, so no extra tip is needed.",
+      "optional": "Not required; leave small change for good service.",
+      "expected": "Tipping is effectively required at restaurants and in taxis (usually 15–20%)."
+    },
+    "pay": {
+      "label": "Payment",
+      "card": "Cards work almost everywhere.",
+      "cash": "Many shops are cash only — carry local currency.",
+      "mobile": "Mobile payment (Alipay, WeChat Pay) dominates. Link a card in the app before you go."
+    },
+    "transit": "Getting around: {name}",
+    "water": {
+      "label": "Tap water",
+      "yes": "Safe to drink.",
+      "no": "Buy bottled water."
+    },
+    "emergency": "Emergency: police {p} · ambulance {a}",
+    "emergencyOne": "Emergency: {p}",
+    "unknown": "No data for this country yet. Ask the concierge.",
+    "checklist": "Before you fly",
+    "note": "General guidance that can vary by region and season. Always confirm entry rules with official government sources.",
+    "ask": "Ask the concierge more",
+    "home": "Domestic trip"
   }
 }

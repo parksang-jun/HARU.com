@@ -89,6 +89,7 @@ try {
   const after = await page.getByTestId('prep-progress').innerText()
   assert(before !== after && /^2\//.test(after), `prep checklist progress moves: "${before}" → "${after}"`)
   assert((await page.getByTestId('packing-list').innerText()).length > 0, 'packing list is shown')
+  assert((await page.getByTestId('day-outfit').innerText()).length > 12, 'day weather suggests what to wear')
   await page.screenshot({ path: join(shots, '03-itinerary.png'), fullPage: true })
 
   // 숙소 나누기 결과: 숙소 구간이 도시·숙소 경계마다 나뉜다 (서울 2박 → 서울/부산 경계 포함 3구간 이하)
@@ -286,6 +287,15 @@ try {
   // 숙소 정류지 → 호텔 찾기
   assert((await page.getByTestId('find-hotels').count()) >= 1, 'stay stop offers "Find hotels"')
   await page.screenshot({ path: join(shots, '12-itinerary-overseas.png'), fullPage: true })
+
+  // 해외 여행: 나라별 꿀팁
+  await page.getByTestId('prep-tips').click()
+  await page.getByTestId('country-tips').first().waitFor()
+  assert((await page.locator('[data-testid="country-tips"] li[data-tip="plug"]').count()) >= 1, 'country tips show plug and voltage')
+  assert((await page.locator('[data-testid="country-tips"] li[data-tip="emergency"]').count()) >= 1, 'country tips show emergency numbers')
+  await page.screenshot({ path: join(shots, '20-tips.png'), fullPage: true })
+  await page.goBack()
+  await page.getByTestId('itin-title').waitFor()
 
   // 해외 여행: 공항 대기 가이드
   await page.getByTestId('prep-airport').click()

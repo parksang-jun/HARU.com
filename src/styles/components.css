@@ -1613,3 +1613,12 @@ a.chip {
 .reserve > * + * {
   margin-top: var(--space-2);
 }
+
+.stayplan {
+  padding: var(--space-4);
+  border: 2px solid var(--color-accent-soft);
+}
+
+.wx__outfit {
+  margin-top: 2px;
+}

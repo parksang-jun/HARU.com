@@ -32,7 +32,7 @@ export const ENV = {
     /** Travelpayouts(Aviasales) 파트너 marker */
     tpMarker: (e.VITE_TP_MARKER as string | undefined) ?? '',
   },
-  version: '0.5.0',
+  version: '0.6.0',
 } as const
 
 export const hasSupabase = Boolean(ENV.supabaseUrl && ENV.supabaseAnonKey)
