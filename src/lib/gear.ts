@@ -1,6 +1,8 @@
 // 여행 제품 추천 — 날씨·여행지·비행 거리·관심사로 "이번 여행에 필요한 물건 종류"를 고른다.
 // 특정 상품·가격은 다루지 않는다(상품 데이터가 없다). 쇼핑몰 검색 링크로 연결하고, 제휴 태그가 있으면 붙인다.
 import { airportDestination } from './airports'
+import { plugCompatible } from './countryTips'
+import { getDestination } from './destinations'
 import { appendQuery } from './affiliate'
 import { ENV } from './env'
 import { distanceKm } from './geo'
@@ -45,7 +47,13 @@ export function recommendGear(trip: Trip, weather: DayWeather[], home: string): 
 
   // 2) 해외
   if (isAbroad(trip, home)) {
-    add('adapter', 'abroad')
+    // 어댑터: 플러그가 맞는 나라만 가면 권하지 않는다 (자료가 없는 나라는 권한다)
+    const homeCountry = airportDestination(home)?.country ?? ''
+    const needs = trip.params.cities.some((c) => {
+      const country = getDestination(c)?.country ?? ''
+      return country !== homeCountry && plugCompatible(homeCountry, country) !== true
+    })
+    if (needs) add('adapter', 'abroad')
     add('esim', 'abroad')
   }
 

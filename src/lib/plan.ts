@@ -55,10 +55,10 @@ export function isAbroad(trip: Trip, home: string): boolean {
 
 export const hotelKey = (s: StaySegment) => `hotel:${s.city}:${s.checkIn}`
 
-/** 준비 항목 키: 일정(자동 완료) + 항공권 + 숙소 구간 + 날씨·준비물 + 여행 제품 + 현지 혜택 (+ 항공편이 있으면 공항 가이드) (+ 해외면 출국 준비) */
+/** 준비 항목 키: 일정(자동 완료) + 항공권 + 숙소 구간 + 날씨·준비물 + 여행 제품 + 현지 혜택 (+ 항공편이 있으면 공항 가이드) + 나라별 꿀팁 (+ 해외면 출국 준비) */
 export function prepKeys(trip: Trip, home: string): string[] {
   const flight = flightRoute(trip, home)
-  return ['itinerary', ...(flight ? ['flight'] : []), ...staySegments(trip).map(hotelKey), 'weather', 'gear', 'deals', ...(flight ? ['airport'] : []), ...(isAbroad(trip, home) ? ['essentials'] : [])]
+  return ['itinerary', ...(flight ? ['flight'] : []), ...staySegments(trip).map(hotelKey), 'weather', 'gear', 'deals', ...(flight ? ['airport'] : []), 'tips', ...(isAbroad(trip, home) ? ['essentials'] : [])]
 }
 
 export const isPrepDone = (key: string, done: string[]) => key === 'itinerary' || done.includes(key)

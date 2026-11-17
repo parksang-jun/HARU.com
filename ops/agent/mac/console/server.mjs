@@ -566,7 +566,7 @@ const server = http.createServer(async (req, res) => {
       return send(res, 404, { ok: false });
     }
     if (req.method === 'POST') {
-      if (req.headers['x-sc'] !== '1') return send(res, 403, { ok: false }); // 다른 사이트에서 오는 요청 차단
+      if (req.headers['x-haru'] !== '1') return send(res, 403, { ok: false }); // 다른 사이트에서 오는 요청 차단
       const body = await readBody(req);
       if (url.pathname === '/api/run') return send(res, 200, startRoutine(body.routine));
       if (url.pathname === '/api/stop') return send(res, 200, stopRoutine(body.routine));

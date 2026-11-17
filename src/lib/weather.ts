@@ -265,6 +265,26 @@ export function needsRainPlan(w: DayWeather | undefined, day: Pick<ItineraryDay,
   return day.stops.filter((s) => OUTDOOR.includes(s.category)).length >= 2
 }
 
+/** 기온대별 옷차림 (낮 최고기온 기준) */
+export type Outfit = 'o28' | 'o23' | 'o20' | 'o17' | 'o12' | 'o9' | 'o5' | 'o0'
+
+export function outfitFor(w: Pick<DayWeather, 'high'>): Outfit {
+  const t = w.high
+  if (t >= 28) return 'o28'
+  if (t >= 23) return 'o23'
+  if (t >= 20) return 'o20'
+  if (t >= 17) return 'o17'
+  if (t >= 12) return 'o12'
+  if (t >= 9) return 'o9'
+  if (t >= 5) return 'o5'
+  return 'o0'
+}
+
+/** 아침저녁용 덧옷이 필요한지: 하루 기온 차가 10도 이상일 때 */
+export function needsExtraLayer(w: Pick<DayWeather, 'high' | 'low'>): boolean {
+  return w.high - w.low >= 10
+}
+
 /** 표시용 기온: 영어는 °C 와 °F 를 함께 */
 export function formatTemps(w: Pick<DayWeather, 'high' | 'low'>, locale: string): string {
   const c = `${Math.round(w.high)}° / ${Math.round(w.low)}°C`

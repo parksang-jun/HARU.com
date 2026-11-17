@@ -16,7 +16,7 @@ export function adsAvailable(): boolean {
  *  컨시어지 대화, 여행 만들기(입력 중), 약관, 관리자, 더보기에는 넣지 않는다 (AI 답변 안·입력 화면 광고 금지) */
 export function bannerAllowed(pathname: string): boolean {
   if (['/', '/deals', '/hotels', '/flights', '/flights/deals'].includes(pathname)) return true
-  return /^\/trip\/[^/]+(\/(report|gear|airport))?$/.test(pathname)
+  return /^\/trip\/[^/]+(\/(report|gear|airport|tips|map|packing))?$/.test(pathname)
 }
 
 /** 웹 미리보기(테스트 베드)에서 배너 자리를 표시할지 — 실제 광고는 네이티브 앱에서만 나온다 */

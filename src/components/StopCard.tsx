@@ -5,7 +5,7 @@ import { pickName } from '../i18n'
 import { buildAffiliateUrl, reserveUrl } from '../lib/affiliate'
 import { ENV } from '../lib/env'
 import { defaultPartnerFor, type Stop } from '../lib/itinerary'
-import { googleMapsUrl, kakaoMapUrl, naverMapUrl } from '../lib/links'
+import { googleMapsSearchUrl, googleMapsUrl, kakaoMapUrl, naverMapUrl } from '../lib/links'
 import { logAffiliateClick } from '../lib/logger'
 import { openExternal } from '../lib/openUrl'
 
@@ -41,20 +41,26 @@ export function StopCard({ stop, tripId, country = 'KR', onFindHotels }: Props) 
   }
 
   return (
-    <article className="stop" data-testid="stop" data-category={stop.category}>
+    <article className="stop" data-testid="stop" data-category={stop.category} data-custom={stop.custom ? 'true' : undefined}>
       <div className="stop__time">{stop.time}</div>
       <div className="card stop__card">
         <div className="stop__head">
           <div>
             <div className="stop__name">{name}</div>
             <div className="stop__sub">
-              {stop.area} · {stop.durationMin} {t('common.min')}
+              {stop.area ? `${stop.area} · ` : ''}
+              {stop.durationMin} {t('common.min')}
               {cost !== undefined && cost > 0 ? ` · ${t('itin.estCost', { cost: formatMoney(cost, currency) })}` : ''}
             </div>
           </div>
           <span className="badge badge--cat">{t(`cat.${stop.category}`)}</span>
         </div>
         {stop.tip && <p className="tip">{stop.tip}</p>}
+        {stop.memo && (
+          <p className="small stop__memo" data-testid="stop-memo">
+            📝 {stop.memo}
+          </p>
+        )}
         {stop.transitHint && <p className="transit">{t('itin.transit', { hint: stop.transitHint })}</p>}
         <div className="btn-row">
           {stop.category === 'stay' && onFindHotels && (
@@ -83,10 +89,10 @@ export function StopCard({ stop, tripId, country = 'KR', onFindHotels }: Props) 
                 {t('itin.naverMap')}
               </button>
             )}
-            <button type="button" className="btn btn--sm" onClick={() => openExternal(googleMapsUrl(stop.lat, stop.lng))}>
+            <button type="button" className="btn btn--sm" onClick={() => openExternal(stop.custom ? googleMapsSearchUrl(name) : googleMapsUrl(stop.lat, stop.lng))}>
               {t('itin.googleMaps')}
             </button>
-            {isKr && (
+            {isKr && !stop.custom && (
               <button type="button" className="btn btn--sm" onClick={() => openExternal(kakaoMapUrl(stop.name.ko, stop.lat, stop.lng))}>
                 {t('itin.kakaoMap')}
               </button>

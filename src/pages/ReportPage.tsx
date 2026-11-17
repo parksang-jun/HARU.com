@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
 import { Share } from '@capacitor/share'
+import { encodeTrip } from '../lib/share'
 import { useI18n } from '../i18n/context'
 import { pickName } from '../i18n'
 import { getAirport, HOME_AIRPORT_KEY } from '../lib/airports'
@@ -32,6 +33,7 @@ export function ReportPage() {
   const [picks, setPicks] = useState<MealPicks>({})
   const [home, setHome] = useState(defaultHomeAirport(locale))
   const [copied, setCopied] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
 
   useEffect(() => {
     loadPref(HOME_AIRPORT_KEY).then((v) => {
@@ -102,12 +104,34 @@ export function ReportPage() {
         <button type="button" className="btn btn--sm" onClick={share}>
           {t('report.share')}
         </button>
+        {trip.itinerary && (
+          <button
+            type="button"
+            className="btn btn--sm"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(encodeTrip(trip.params, trip.itinerary!))
+                setCodeCopied(true)
+              } catch {
+                setCodeCopied(false)
+              }
+            }}
+            data-testid="share-code"
+          >
+            {t('share.copy')}
+          </button>
+        )}
         {canPrint() && (
           <button type="button" className="btn btn--sm" onClick={() => window.print()}>
             {t('report.print')}
           </button>
         )}
       </div>
+      {codeCopied && (
+        <p className="xs muted" role="status" data-testid="share-copied">
+          {t('share.copied')} {t('share.help')}
+        </p>
+      )}
 
       <section className="card report__sec">
         <h2>{t('report.overview')}</h2>
