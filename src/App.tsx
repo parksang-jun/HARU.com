@@ -16,6 +16,11 @@ import { ItineraryPage } from './pages/ItineraryPage'
 import { LegalPage } from './pages/LegalPage'
 import { MorePage } from './pages/MorePage'
 import { TipsPage } from './pages/TipsPage'
+import { EditPage } from './pages/EditPage'
+import { MapPage } from './pages/MapPage'
+import { LedgerPage } from './pages/LedgerPage'
+import { PackingPage } from './pages/PackingPage'
+import { TalkPage } from './pages/TalkPage'
 import { TripSetupPage } from './pages/TripSetupPage'
 
 export default function App() {
@@ -35,6 +40,11 @@ export default function App() {
         <Route path="/trip/:id/gear" element={<GearPage />} />
         <Route path="/trip/:id/airport" element={<AirportPage />} />
         <Route path="/trip/:id/tips" element={<TipsPage />} />
+        <Route path="/trip/:id/edit" element={<EditPage />} />
+        <Route path="/trip/:id/map" element={<MapPage />} />
+        <Route path="/trip/:id/budget" element={<LedgerPage />} />
+        <Route path="/trip/:id/packing" element={<PackingPage />} />
+        <Route path="/trip/:id/talk" element={<TalkPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/flights" element={<FlightsPage />} />
         <Route path="/flights/deals" element={<BusinessDealsPage />} />

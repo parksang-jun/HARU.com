@@ -100,6 +100,10 @@ export interface Stop {
   estCostKrw?: number
   booking?: { partner: PartnerId; query: string }
   reserve?: { provider: ReserveProvider; query: string }
+  /** 사용자가 직접 추가한 장소 — 좌표를 모르므로 지도·이동 거리 계산에서 뺀다 */
+  custom?: boolean
+  /** 사용자 메모 */
+  memo?: string
 }
 
 /** 점심·저녁 후보 한 곳 (식당 또는 그 지역 대표 메뉴) */
@@ -216,10 +220,11 @@ export function normalizeStop(raw: unknown, dayIdx: number, stopIdx: number, cit
   const en = str(nameRaw.en) || str(raw.name)
   const ko = str(nameRaw.ko) || en
   if (!en && !ko) return null
-  const lat = num(raw.lat)
-  const lng = num(raw.lng)
+  const custom = raw.custom === true
+  const lat = num(raw.lat) ?? (custom ? 0 : undefined)
+  const lng = num(raw.lng) ?? (custom ? 0 : undefined)
   if (lat === undefined || lng === undefined || lat < -90 || lat > 90 || lng < -180 || lng > 180) return null
-  if (!nearAnyDestination(lat, lng, cities)) return null // 여행 도시와 동떨어진 좌표(환각) 거부
+  if (!custom && !nearAnyDestination(lat, lng, cities)) return null // 여행 도시와 동떨어진 좌표(환각) 거부
 
   const category = STOP_CATEGORIES.includes(raw.category as StopCategory) ? (raw.category as StopCategory) : 'sight'
   const time = TIME_RE.test(str(raw.time)) ? str(raw.time) : `${String(9 + stopIdx * 2).padStart(2, '0')}:00`
@@ -250,6 +255,9 @@ export function normalizeStop(raw: unknown, dayIdx: number, stopIdx: number, cit
   if (isObj(raw.reserve) && RESERVE_PROVIDERS.includes(raw.reserve.provider as ReserveProvider)) {
     stop.reserve = { provider: raw.reserve.provider as ReserveProvider, query: str(raw.reserve.query) || en }
   }
+  if (custom) stop.custom = true
+  const memo = str(raw.memo).slice(0, 300)
+  if (memo) stop.memo = memo
   return stop
 }
 

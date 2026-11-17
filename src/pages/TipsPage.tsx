@@ -52,11 +52,18 @@ export function TipsPage() {
         const facts = factsFor(country)
         const abroad = country !== homeCountry
         const fits = plugCompatible(homeCountry, country)
+        const homeDest = airportDestination(home)
+        const diff = homeDest ? (getDestination(cities[0])?.tz ?? homeDest.tz) - homeDest.tz : 0
         return (
           <section key={country} className="card report__sec" data-testid="country-tips" data-country={country}>
             <h2>
               {cities.map((c) => destName(c, locale)).join(' · ')} {!abroad && <span className="xs muted">{t('tips.home')}</span>}
             </h2>
+            {abroad && homeDest && (
+              <p className="small" data-testid="time-diff" data-diff={diff}>
+                🕒 {diff === 0 ? t('tips.timeSame', { home: destName(homeDest.id, locale) }) : t('tips.timeDiff', { home: destName(homeDest.id, locale), h: Math.abs(diff), dir: t(diff > 0 ? 'tips.ahead' : 'tips.behind') })}
+              </p>
+            )}
             {!facts ? (
               <p className="small muted">{t('tips.unknown')}</p>
             ) : (

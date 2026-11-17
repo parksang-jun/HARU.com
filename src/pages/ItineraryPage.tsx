@@ -363,6 +363,15 @@ export function ItineraryPage() {
         </Link>
       </section>
 
+      <nav className="tools" aria-label={t('tools.title')} data-testid="tools">
+        {(['map', 'edit', 'packing', 'budget', 'talk'] as const).map((k) => (
+          <Link key={k} to={`/trip/${trip.id}/${k}`} className="tools__item" data-testid={`tool-${k}`}>
+            <span aria-hidden="true">{{ map: '🗺️', edit: '✏️', packing: '🧳', budget: '💰', talk: '💬' }[k]}</span>
+            {t(`tools.${k === 'budget' ? 'ledger' : k}`)}
+          </Link>
+        ))}
+      </nav>
+
       <div className="day-tabs" role="tablist" data-testid="day-tabs">
         {trip.itinerary.days.map((d, i) => (
           <button key={d.day} type="button" role="tab" aria-selected={i === dayIdx} className={`day-tab${i === dayIdx ? ' is-active' : ''}`} onClick={() => setDayIdx(i)} data-testid="day-tab">
