@@ -75,7 +75,10 @@ export function TripSetupPage() {
       navigate(`/trip/${trip.id}`, { replace: true })
     } catch (e) {
       const code = e instanceof AiError ? e.code : 'unavailable'
-      setError(code === 'limit' ? t('chat.limit') : t('setup.errGeneric'))
+      console.error('[setup] trip creation failed', e)
+      // 서버 저장이 거부된 경우(권한·로그인 설정)는 원인을 알 수 있게 따로 알린다
+      const pg = !(e instanceof AiError) && e && typeof e === 'object' && 'code' in e ? String((e as { code: unknown }).code) : ''
+      setError(code === 'limit' ? t('chat.limit') : pg ? t('setup.errServer', { code: pg }) : t('setup.errGeneric'))
       setBusy(false)
     }
   }

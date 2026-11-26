@@ -122,7 +122,8 @@
     "stayNeed": "You can split stays on trips of 2 nights or more.",
     "stayLess": "Fewer nights",
     "stayMore": "More nights",
-    "errStays": "Nights per stay must add up to the total nights."
+    "errStays": "Nights per stay must add up to the total nights.",
+    "errServer": "Could not save to the server (error {code}). Please check the server setup."
   },
   "itin": {
     "loading": "Preparing your days…",
