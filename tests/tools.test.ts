@@ -191,3 +191,17 @@ describe('숙소: 평점 좋은 곳 중 최저가', () => {
     expect(out).toEqual(['good-cheap', 'good-mid', 'no-score', 'few-reviews', 'cheap-bad'])
   })
 })
+
+import { normalizeRemoteOffers } from '../src/lib/flights'
+
+describe('항공: 가까운 날짜 운임', () => {
+  const q = { from: 'ICN', to: 'KIX', depart: '2026-12-10', return: '2026-12-13', adults: 2, cabin: 'economy' as const }
+  const row = (dep: string, ret: string) => ({ airline: 'KE', flight_number: 723, departure_at: `${dep}T09:00:00+09:00`, return_at: `${ret}T15:00:00+09:00`, duration_to: 110, duration_back: 115, price: 200000, link: '/search/x' })
+  it('검색한 날짜와 다르면 실제 날짜를 표시용으로 남긴다', () => {
+    const [same, other] = normalizeRemoteOffers([row('2026-12-10', '2026-12-13'), row('2026-12-11', '2026-12-14')], q, 'KRW', '812458')
+    expect(same.altDepart).toBeUndefined()
+    expect(other.altDepart).toBe('2026-12-11')
+    expect(other.altReturn).toBe('2026-12-14')
+    expect(other.bookUrl).toContain('marker=812458')
+  })
+})

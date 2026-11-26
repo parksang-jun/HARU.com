@@ -239,6 +239,11 @@ export function FlightsPage() {
           {shown.length === 0 && <p className="muted small">{t('flights.empty')}</p>}
           {shown.map((o) => (
             <article key={o.id} className="card flight" data-testid="flight-offer">
+              {o.altDepart && (
+                <p className="xs flight__alt" data-testid="flight-alt">
+                  {o.altReturn ? t('flights.altRound', { depart: formatDate(o.altDepart), back: formatDate(o.altReturn) }) : t('flights.altOne', { depart: formatDate(o.altDepart) })}
+                </p>
+              )}
               <div className="row">
                 <div className="flight__airline">
                   <span className="flight__logo" aria-hidden="true">
