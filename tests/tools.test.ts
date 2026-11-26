@@ -205,3 +205,16 @@ describe('항공: 가까운 날짜 운임', () => {
     expect(other.bookUrl).toContain('marker=812458')
   })
 })
+
+import { normalizeRemoteDeals } from '../src/lib/flightDeals'
+
+describe('비즈니스 특가: 실제 응답 형식', () => {
+  it('도시 코드(TYO)와 시각이 붙은 날짜를 해석한다', () => {
+    const raw = [{ depart_date: '2026-12-02T17:15:00+09:00', origin: 'SEL', destination: 'TYO', gate: 'Trip.com', return_date: '', found_at: '2026-11-24T21:08:17Z', trip_class: 1, value: 299266, number_of_changes: 0, duration: 145, distance: 1256 }]
+    const [deal] = normalizeRemoteDeals(raw, 'ICN', '2026-11-27', 'KRW')
+    expect(deal?.cityId).toBe('tokyo')
+    expect(deal?.depart).toBe('2026-12-02')
+    expect(deal?.return).toBeUndefined()
+    expect(deal?.to).toBe('HND')
+  })
+})
