@@ -11,6 +11,8 @@ export const ENV = {
   supabaseAnonKey: (e.VITE_SUPABASE_ANON_KEY as string | undefined) ?? '',
   /** Supabase 미설정 시 자동으로 목업 모드 */
   mockAi: bool(e.VITE_MOCK_AI as string | undefined, true) || !(e.VITE_SUPABASE_URL as string | undefined),
+  /** AI 를 부르지 않고 앱에 내장된 일정 생성기·기본 답변을 쓴다 (비용 0원). 서버의 숙소·항공·날씨 연결은 그대로 쓴다 */
+  aiBuiltin: bool(e.VITE_AI_BUILTIN as string | undefined, false) || bool(e.VITE_MOCK_AI as string | undefined, true) || !(e.VITE_SUPABASE_URL as string | undefined),
   admobEnabled: bool(e.VITE_ADMOB_ENABLED as string | undefined, true),
   admobBannerAndroid: (e.VITE_ADMOB_BANNER_ANDROID as string | undefined) || 'ca-app-pub-3940256099942544/6300978111',
   admobRewardedAndroid: (e.VITE_ADMOB_REWARDED_ANDROID as string | undefined) || 'ca-app-pub-3940256099942544/5224354917',

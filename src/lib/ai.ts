@@ -28,7 +28,7 @@ export function destinationContext(cities: string[]) {
 }
 
 export async function generateItinerary(params: TripParams): Promise<Itinerary> {
-  if (ENV.mockAi) {
+  if (ENV.aiBuiltin) {
     await delay(600)
     const it = normalizeItinerary(buildMockItinerary(params), params)
     if (!it) throw new AiError('invalid')
@@ -45,7 +45,7 @@ export async function generateItinerary(params: TripParams): Promise<Itinerary> 
 }
 
 export async function askConcierge(tripParams: TripParams | null, history: ChatMessage[], question: string, locale: string): Promise<string> {
-  if (ENV.mockAi) {
+  if (ENV.aiBuiltin) {
     await delay(400)
     return mockChatAnswer(question)
   }
