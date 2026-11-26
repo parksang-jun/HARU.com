@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
   try {
     const res = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'gzip,deflate', Authorization: `${SITE_ID}:${API_KEY}` },
+      headers: { 'Content-Type': 'application/json', Authorization: `${SITE_ID}:${API_KEY}` },
       body: JSON.stringify(payload),
     })
     const data = (await res.json().catch(() => ({}))) as { results?: unknown[]; error?: { id?: number; message?: string } }

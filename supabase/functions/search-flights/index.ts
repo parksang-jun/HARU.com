@@ -67,10 +67,10 @@ Deno.serve(async (req) => {
   if (q.return) params.set('return_at', q.return)
 
   try {
-    const res = await fetch(`${ENDPOINT}?${params}`, { headers: { 'X-Access-Token': TOKEN, 'Accept-Encoding': 'gzip, deflate' } })
+    const res = await fetch(`${ENDPOINT}?${params}`, { headers: { 'X-Access-Token': TOKEN } })
     if (!res.ok) {
       console.error('travelpayouts error', res.status, await res.text())
-      return json({ error: 'upstream_error' }, 502)
+      return json({ error: 'upstream_error', status: res.status }, 502)
     }
     const data = (await res.json()) as { success?: boolean; data?: unknown[] }
     await bumpUsage(user.id, 'search')
@@ -82,6 +82,6 @@ Deno.serve(async (req) => {
     return json({ offers, currency: currency.toUpperCase(), source: 'travelpayouts' })
   } catch (e) {
     console.error('search-flights failed', e)
-    return json({ error: 'search_failed' }, 502)
+    return json({ error: 'search_failed', detail: String(e).slice(0, 200) }, 502)
   }
 })
