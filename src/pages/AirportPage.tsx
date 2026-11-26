@@ -1,4 +1,5 @@
 // 공항 대기 가이드 — 탑승까지 남은 시간에 맞는 할 일, 라운지 찾기, 공항별 대표 시설
+import { SponsorSlot } from '../components/SponsorSlot'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
@@ -125,6 +126,7 @@ export function AirportPage() {
         {t('airport.ask')}
       </Link>
       <p className="notice">{t('itin.affiliateDisclosure')}</p>
+      <SponsorSlot slot="airport" trip={trip} />
       <Link to={`/trip/${trip.id}`} className="btn btn--block btn--ghost">
         {t('report.back')}
       </Link>

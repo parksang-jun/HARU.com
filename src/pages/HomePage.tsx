@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
 import { destName, POPULAR } from '../lib/destinations'
 import { daysBetween, type Trip } from '../lib/itinerary'
 import { getRepo } from '../lib/repo'
+import { decodeTrip } from '../lib/share'
 
 export function HomePage() {
   const { t, locale, formatDate } = useI18n()
   const [trips, setTrips] = useState<Trip[] | null>(null)
+  const nav = useNavigate()
+  const [importOpen, setImportOpen] = useState(false)
+  const [code, setCode] = useState('')
+  const [bad, setBad] = useState(false)
+  const importTrip = async () => {
+    const got = decodeTrip(code)
+    if (!got) return setBad(true)
+    const repo = getRepo()
+    const trip = await repo.createTrip({ ...got.params, locale })
+    await repo.saveItinerary(trip.id, got.itinerary)
+    nav(`/trip/${trip.id}`)
+  }
 
   useEffect(() => {
     getRepo()
@@ -83,6 +96,32 @@ export function HomePage() {
             <span className="btn btn--sm">{t('home.open')}</span>
           </Link>
         ))}
+        <button type="button" className="btn btn--sm btn--ghost" onClick={() => setImportOpen((v) => !v)} aria-expanded={importOpen} data-testid="import-open">
+          {t('share.import_')}
+        </button>
+        {importOpen && (
+          <div className="card card--flat">
+            <textarea
+              className="input"
+              rows={3}
+              value={code}
+              onChange={(e) => {
+                setCode(e.target.value)
+                setBad(false)
+              }}
+              placeholder={t('share.importPh')}
+              data-testid="import-code"
+            />
+            {bad && (
+              <p className="alert small" role="alert" data-testid="import-bad">
+                {t('share.bad')}
+              </p>
+            )}
+            <button type="button" className="btn btn--primary btn--sm" onClick={importTrip} data-testid="import-go">
+              {t('share.importBtn')}
+            </button>
+          </div>
+        )}
       </section>
     </>
   )

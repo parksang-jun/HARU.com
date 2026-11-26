@@ -10,7 +10,9 @@ import { INTEREST_CATEGORIES, parseRequests } from '../src/lib/mock/requests'
 import { MOCK_PLACES } from '../src/lib/mock/places'
 import { prepKeys } from '../src/lib/plan'
 import { buildReport, reportText, type ReportFormat } from '../src/lib/report'
-import { weatherKey, type DayWeather, type TripWeather } from '../src/lib/weather'
+import { needsExtraLayer, outfitFor, weatherKey, type DayWeather, type TripWeather } from '../src/lib/weather'
+import { COUNTRY_FACTS, plugCompatible, voltageDiffers } from '../src/lib/countryTips'
+import { DESTINATIONS } from '../src/lib/destinations'
 import en from '../src/i18n/en.json'
 import ko from '../src/i18n/ko.json'
 import ja from '../src/i18n/ja.json'
@@ -96,7 +98,7 @@ describe('trip report', () => {
 
   it('summarises prep status, days with weather, costs per currency, packing and gear', () => {
     const r = buildReport(trip, weather, ['flight', 'weather'], 'ICN')!
-    expect(r.prep.map((x) => x.kind)).toEqual(['itinerary', 'flight', 'hotel', 'weather', 'gear', 'deals', 'airport', 'essentials'])
+    expect(r.prep.map((x) => x.kind)).toEqual(['itinerary', 'flight', 'hotel', 'weather', 'gear', 'deals', 'airport', 'tips', 'essentials'])
     expect(r.prepDone).toBe(3)
     expect(r.days).toHaveLength(3)
     expect(r.days[0].weather?.condition).toBe('rain')
@@ -125,7 +127,9 @@ describe('gear and airport guide', () => {
   it('recommends gear from weather, destination and flight length', () => {
     const paris = tripOf({ ...base, cities: ['paris'], interests: ['beach'], endDate: '2027-04-15' })
     const ids = recommendGear(paris, [wx('paris', '2027-04-10', { high: 4, low: -2, condition: 'snow' })], 'ICN').map((g) => g.id)
-    expect(ids).toEqual(expect.arrayContaining(['gloves', 'padding', 'adapter', 'esim', 'neckpillow', 'powerbank', 'waterproof', 'organizer']))
+    expect(ids).toEqual(expect.arrayContaining(['gloves', 'padding', 'esim', 'neckpillow', 'powerbank', 'waterproof', 'organizer']))
+    expect(ids).not.toContain('adapter') // 프랑스 콘센트(C·E)는 한국 플러그가 그대로 맞는다
+    expect(recommendGear(tripOf({ ...base, cities: ['london'] }), [], 'ICN').map((g) => g.id)).toContain('adapter')
     expect(new Set(ids).size).toBe(ids.length)
     const domestic = recommendGear(tripOf({ ...base, cities: ['seoul'] }), [wx('seoul', '2027-04-10')], 'ICN').map((g) => g.id)
     expect(domestic).toEqual(['powerbank'])
@@ -170,7 +174,7 @@ describe('request keywords and banner placement', () => {
   })
 
   it('shows the banner on browsing and trip screens but never on chat, setup or legal pages', () => {
-    for (const p of ['/', '/deals', '/hotels', '/flights', '/flights/deals', '/trip/abc', '/trip/abc/report', '/trip/abc/gear', '/trip/abc/airport']) expect(bannerAllowed(p), p).toBe(true)
+    for (const p of ['/', '/deals', '/hotels', '/flights', '/flights/deals', '/trip/abc', '/trip/abc/report', '/trip/abc/gear', '/trip/abc/airport', '/trip/abc/tips']) expect(bannerAllowed(p), p).toBe(true)
     for (const p of ['/chat', '/trip/abc/chat', '/setup', '/more', '/legal/privacy', '/admin']) expect(bannerAllowed(p), p).toBe(false)
   })
 })
@@ -265,5 +269,29 @@ describe('splitting the stay between hotels', () => {
     expect(prepKeys(trip, 'ICN').filter((k) => k.startsWith('hotel:'))).toHaveLength(2)
     // 나누지 않으면 한 구간
     expect(staySegments(tripOf(five))).toHaveLength(1)
+  })
+})
+
+describe('outfits and country tips', () => {
+  it('suggests an outfit by daytime high and flags a big day–night gap', () => {
+    expect([33, 25, 21, 18, 14, 10, 6, -3].map((high) => outfitFor({ high }))).toEqual(['o28', 'o23', 'o20', 'o17', 'o12', 'o9', 'o5', 'o0'])
+    expect(needsExtraLayer({ high: 24, low: 11 })).toBe(true)
+    expect(needsExtraLayer({ high: 24, low: 19 })).toBe(false)
+    for (const k of ['o28', 'o23', 'o20', 'o17', 'o12', 'o9', 'o5', 'o0', 'extra', 'label']) expect((ko.outfit as Record<string, string>)[k]).toBeTruthy()
+  })
+
+  it('has facts for every country in the destination catalog', () => {
+    const countries = [...new Set(DESTINATIONS.map((d) => d.country))]
+    for (const c of countries) expect(COUNTRY_FACTS[c], c).toBeTruthy()
+  })
+
+  it('knows when a plug adapter or dual-voltage device is needed', () => {
+    expect(plugCompatible('KR', 'JP')).toBe(false)
+    expect(plugCompatible('KR', 'FR')).toBe(true)
+    expect(plugCompatible('KR', 'GB')).toBe(false)
+    expect(plugCompatible('JP', 'US')).toBe(true)
+    expect(plugCompatible('KR', 'ZZ')).toBeUndefined()
+    expect(voltageDiffers('KR', 'JP')).toBe(true)
+    expect(voltageDiffers('KR', 'FR')).toBe(false)
   })
 })

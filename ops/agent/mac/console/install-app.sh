@@ -21,6 +21,25 @@ done
 # 실행 스크립트도 최신으로 (저장소 안에서 실행된 경우)
 if [ -f "$SRC/../run-routine.sh" ] && ! [ "$SRC/../run-routine.sh" -ef "$HOME_DIR/run-routine.sh" ]; then cp "$SRC/../run-routine.sh" "$HOME_DIR/run-routine.sh"; chmod +x "$HOME_DIR/run-routine.sh"; fi
 mkdir -p "$HOME_DIR/feedback"
+
+# 실행 환경(env.sh): 앱이나 예약으로 실행될 때는 PATH 가 거의 비어 있어 claude·node·git 을 못 찾는다.
+# 터미널(로그인 셸)에서 찾은 위치를 적어 둔다. 이미 있으면 claude 를 찾을 수 있는지 확인하고, 못 찾으면 다시 만든다.
+find_bin() { command -v "$1" 2>/dev/null || /bin/zsh -lic "command -v $1" 2>/dev/null | tail -1 || true; }
+env_ok() { [ -f "$HOME_DIR/env.sh" ] && ( . "$HOME_DIR/env.sh"; command -v claude >/dev/null 2>&1 ); }
+if ! env_ok; then
+  P=""
+  for b in claude node git gh; do
+    x="$(find_bin "$b")"
+    case "$x" in /*) P="$P$(dirname "$x"):" ;; esac
+  done
+  cat > "$HOME_DIR/env.sh" <<ENV
+export PATH="${P}\$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+export HARU_REPO_DIR="\$HOME/HaruOps/HARU.com"
+export HARU_HOME_DIR="\$HOME/HaruOps"
+ENV
+  if env_ok; then echo "  실행 환경 기록: claude $(. "$HOME_DIR/env.sh"; command -v claude)"
+  else echo "  ⚠ Claude Code(claude)를 찾지 못했습니다 — 설치·로그인 후 운영센터 설정에서 '다시 설치·복구'를 눌러 주세요."; fi
+fi
 xattr -dr com.apple.quarantine "$DEST" 2>/dev/null || true
 
 echo "2/3 앱 만들기"
@@ -91,6 +110,7 @@ if [ -n "${HARU_FROM_CONSOLE:-}" ]; then echo "✓ 앱을 다시 만들었습니
 echo "3/3 실행"
 # 이미 떠 있던 예전 서버가 있으면 내리고 새로 띄운다
 curl -s -m 1 -X POST -H 'X-HARU: 1' http://127.0.0.1:4778/api/quit >/dev/null 2>&1 || true
+pkill -f "$DEST/server.mjs" >/dev/null 2>&1 || true   # 종료 요청을 못 알아듣는 예전 서버도 확실히 내린다
 sleep 0.5
 open "$HOME/Desktop/$APP_NAME.app"
 echo

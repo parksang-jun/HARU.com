@@ -4,7 +4,7 @@ import { bumpUsage, getUser, underCap } from '../_shared/auth.ts'
 import { corsHeaders, json } from '../_shared/cors.ts'
 
 const MODEL = Deno.env.get('ANTHROPIC_MODEL_ITINERARY') ?? 'claude-sonnet-5-5'
-const CAP = Number(Deno.env.get('ITINERARY_DAILY_CAP') ?? '3')
+const CAP = Number(Deno.env.get('ITINERARY_DAILY_CAP') ?? '5')
 
 const CATEGORIES = ['sight', 'nature', 'food', 'cafe', 'shopping', 'activity', 'nightlife', 'wellness', 'transport', 'stay']
 const PARTNERS = ['klook', 'trip', 'agoda', 'booking', 'expedia', 'getyourguide', 'creatrip', 'trazy', 'nol']

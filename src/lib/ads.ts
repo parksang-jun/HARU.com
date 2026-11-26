@@ -1,4 +1,4 @@
-// AdMob 배너 — 네이티브 앱에서 표시(기본 켜짐, VITE_ADMOB_ENABLED=false 로 끔). 전면광고는 쓰지 않음(신뢰 우선)
+// AdMob 배너·보상형 광고 — 네이티브 앱에서 표시(기본 켜짐, VITE_ADMOB_ENABLED=false 로 끔). 전면광고는 쓰지 않음(신뢰 우선)
 import { Capacitor } from '@capacitor/core'
 import { ENV } from './env'
 
@@ -16,7 +16,7 @@ export function adsAvailable(): boolean {
  *  컨시어지 대화, 여행 만들기(입력 중), 약관, 관리자, 더보기에는 넣지 않는다 (AI 답변 안·입력 화면 광고 금지) */
 export function bannerAllowed(pathname: string): boolean {
   if (['/', '/deals', '/hotels', '/flights', '/flights/deals'].includes(pathname)) return true
-  return /^\/trip\/[^/]+(\/(report|gear|airport))?$/.test(pathname)
+  return /^\/trip\/[^/]+(\/(report|gear|airport|tips|map|packing))?$/.test(pathname)
 }
 
 /** 웹 미리보기(테스트 베드)에서 배너 자리를 표시할지 — 실제 광고는 네이티브 앱에서만 나온다 */
@@ -77,4 +77,22 @@ export async function hideBanner(): Promise<void> {
   if (!m || !bannerShown) return
   await m.AdMob.hideBanner()
   document.documentElement.style.setProperty('--banner-h', '0px')
+}
+
+/** 보상형 광고를 보여 주고, 끝까지 봐서 보상을 받았으면 true (네이티브 전용 — 실기기 미검증) */
+export async function showRewarded(): Promise<boolean> {
+  const m = await load()
+  if (!m) return false
+  await initAds()
+  const adId = Capacitor.getPlatform() === 'ios' ? ENV.admobRewardedIos : ENV.admobRewardedAndroid
+  try {
+    if (bannerShown) await m.AdMob.hideBanner()
+    await m.AdMob.prepareRewardVideoAd({ adId, isTesting: import.meta.env.DEV })
+    const item = await m.AdMob.showRewardVideoAd()
+    return Boolean(item)
+  } catch {
+    return false
+  } finally {
+    if (bannerShown) await m.AdMob.resumeBanner().catch(() => undefined)
+  }
 }

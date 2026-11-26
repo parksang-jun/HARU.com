@@ -59,6 +59,7 @@ update() {
   if [ $restart = 1 ]; then
     echo "$(date '+%F %T') 업데이트: 새 버전으로 서버 교체" >> "$LOG"
     curl -s -m 2 -X POST -H 'X-HARU: 1' "$URL/api/quit" >/dev/null 2>&1; sleep 1
+    pkill -f "$DEST/server.mjs" >/dev/null 2>&1; sleep 0.5   # 종료 요청을 못 알아듣는 예전 서버도 확실히 내린다
     up || start_server
   fi
   if [ $rebuild = 1 ]; then

@@ -109,7 +109,7 @@
       "nonight": "no nightlife"
     },
     "stay": "Where you stay",
-    "stayQ": "Will you change hotels during the trip?",
+    "stayQ": "Will you change hotels during the trip? (e.g. 2 nights in one place, 2 in another)",
     "stayOpt": {
       "1": "One place throughout",
       "2": "Split across two",
@@ -144,7 +144,8 @@
     "planTitle": "Flights & hotels for this trip",
     "flightsTo": "Flights to {city}",
     "hotelsIn": "Hotels in {city}",
-    "findHotels": "Find hotels"
+    "findHotels": "Find hotels",
+    "reviews": "Ratings & reviews"
   },
   "cat": {
     "sight": "Sight",
@@ -330,7 +331,8 @@
     "sort": {
       "recommended": "Recommended",
       "price": "Lowest price",
-      "rating": "Top rated"
+      "rating": "Top rated",
+      "value": "Cheapest well-rated"
     },
     "freeCancel": "Free cancellation",
     "breakfast": "Breakfast included",
@@ -352,7 +354,8 @@
     "noticeLive": "Prices from partners, per room per night, before taxes and fees. Final price on the partner site.",
     "viewReal": "See real hotels in {area}",
     "viewRealCity": "See real hotels",
-    "sampleTop": "These are sample listings for testing, so no hotel with these names exists. The button opens real hotel results for the same area and dates."
+    "sampleTop": "These are sample listings for testing, so no hotel with these names exists. The button opens real hotel results for the same area and dates.",
+    "best": "Cheapest rated 8.0+"
   },
   "deals2": {
     "title": "Business class deals",
@@ -592,6 +595,241 @@
       "hotel": "If the app does not work, ask your hotel front desk to call for you, or phone the number shown on the map.",
       "tell": "When you book, say how many people, whether children are coming, and any vegetarian or allergy needs.",
       "cancel": "Cancel if you cannot go. Some restaurants take a deposit or charge a no-show fee."
+    }
+  },
+  "outfit": {
+    "label": "What to wear",
+    "o28": "T-shirt and shorts, breathable fabrics",
+    "o23": "T-shirt with light trousers",
+    "o20": "Light long sleeves or a shirt",
+    "o17": "Sweatshirt or cardigan",
+    "o12": "Jacket or knit",
+    "o9": "Trench coat over a knit",
+    "o5": "Coat with thermals and a scarf",
+    "o0": "Padded coat, gloves, scarf and hat",
+    "extra": "Mornings and evenings are much cooler — bring one more layer"
+  },
+  "tips": {
+    "title": "Country tips",
+    "sub": "Good to know before you arrive.",
+    "open": "Country tips",
+    "openSub": "Plugs, tipping, payment, emergency numbers",
+    "plug": "Plug type {types} · {v}V",
+    "adapterNeed": "Different from your home plugs — bring an adapter.",
+    "adapterOk": "Your home plugs fit as they are.",
+    "voltNote": "The voltage differs. Check that chargers and hair dryers are dual-voltage (100–240V).",
+    "tipping": {
+      "label": "Tipping",
+      "none": "Tipping is not expected.",
+      "service": "A service charge is often included, so no extra tip is needed.",
+      "optional": "Not required; leave small change for good service.",
+      "expected": "Tipping is effectively required at restaurants and in taxis (usually 15–20%)."
+    },
+    "pay": {
+      "label": "Payment",
+      "card": "Cards work almost everywhere.",
+      "cash": "Many shops are cash only — carry local currency.",
+      "mobile": "Mobile payment (Alipay, WeChat Pay) dominates. Link a card in the app before you go."
+    },
+    "transit": "Getting around: {name}",
+    "water": {
+      "label": "Tap water",
+      "yes": "Safe to drink.",
+      "no": "Buy bottled water."
+    },
+    "emergency": "Emergency: police {p} · ambulance {a}",
+    "emergencyOne": "Emergency: {p}",
+    "unknown": "No data for this country yet. Ask the concierge.",
+    "checklist": "Before you fly",
+    "note": "General guidance that can vary by region and season. Always confirm entry rules with official government sources.",
+    "ask": "Ask the concierge more",
+    "home": "Domestic trip",
+    "timeDiff": "Time difference: {h} h {dir} {home} (standard time)",
+    "timeSame": "Same time as {home} (standard time)",
+    "ahead": "ahead of",
+    "behind": "behind"
+  },
+  "tools": {
+    "title": "Trip tools",
+    "map": "Map & route",
+    "edit": "Edit itinerary",
+    "ledger": "Expenses & split",
+    "packing": "Packing list",
+    "talk": "Traveler talk"
+  },
+  "map": {
+    "title": "Map & route",
+    "sub": "The order of your stops and the distance between them. Works without internet.",
+    "legs": "Legs",
+    "walk": "Walk",
+    "ride": "Transit or taxi",
+    "leg": "{km} km · about {min} min",
+    "total": "About {min} min of travel today · {km} km",
+    "none": "No places to show on the map",
+    "est": "Travel times are estimates from straight-line distance. Check the real route in a map app.",
+    "custom": "{n} places you added yourself are left off the map because their location is unknown.",
+    "check": "Plan check",
+    "checkOk": "Nothing looks too tight",
+    "open": "Open in map app",
+    "fix": "Fix times automatically"
+  },
+  "issue": {
+    "tooMany": "{n} stops is a lot. At this pace, {max} or fewer per day works better.",
+    "longLeg": "{from} → {to} is a long trip ({km} km, about {min} min).",
+    "longDay": "About {min} min ({km} km) just getting around. Drop a stop or group nearby places.",
+    "overlap": "You are {min} min short between {from} and {to}.",
+    "late": "{name} runs past 11 pm.",
+    "backtrack": "You visit {area} twice. Grouping it saves travel."
+  },
+  "edit": {
+    "title": "Edit itinerary",
+    "sub": "Reorder stops, move them to another day, or add any place you like.",
+    "up": "Up",
+    "down": "Down",
+    "prev": "Previous day",
+    "next": "Next day",
+    "remove": "Remove",
+    "memo": "Note",
+    "memoPh": "e.g. booked for 12:00, window seat",
+    "add": "Add your own place",
+    "addPh": "Place name (anything, even if unlisted)",
+    "addBtn": "Add",
+    "paste": "Paste a list",
+    "pasteHelp": "Paste a list of places copied from a blog or your notes. One place per line.",
+    "pastePh": "e.g.\n1. Gyeongbokgung\n2. Tongin Market\n3. Bukchon Hanok Village",
+    "pasteBtn": "Add from list",
+    "added": "Added {n} places",
+    "saved": "Saved",
+    "empty": "Nothing planned this day",
+    "mine": "Added by you"
+  },
+  "ledger": {
+    "title": "Expenses & split",
+    "sub": "Log what you spend and see who owes whom.",
+    "members": "Who is travelling",
+    "memberPh": "Name",
+    "addMember": "Add",
+    "needMembers": "Add the people travelling first.",
+    "add": "Add an expense",
+    "what": "What was it for",
+    "whatPh": "e.g. dinner",
+    "amount": "Amount",
+    "payer": "Paid by",
+    "among": "Shared by",
+    "everyone": "Everyone",
+    "addBtn": "Save",
+    "list": "Expenses",
+    "none": "Nothing logged yet",
+    "total": "Total spent",
+    "settle": "Settle up",
+    "settled": "Nothing to settle",
+    "transfer": "{from} → {to}",
+    "paidBy": "Paid by {payer} · {among}",
+    "remove": "Remove",
+    "local": "Expenses are stored on this device only."
+  },
+  "packing": {
+    "title": "Packing list",
+    "sub": "The basics plus items that fit this trip’s weather and destination.",
+    "progress": "{done}/{total} packed",
+    "group": {
+      "base": "Basics",
+      "abroad": "Going abroad",
+      "trip": "For this trip",
+      "custom": "Added by you"
+    },
+    "addPh": "Item to add",
+    "addBtn": "Add",
+    "remove": "Remove",
+    "item": {
+      "id": "ID",
+      "cards": "Cards & cash",
+      "phone": "Phone",
+      "charger": "Charger & cables",
+      "clothes": "Change of clothes",
+      "underwear": "Underwear & socks",
+      "toiletries": "Toiletries",
+      "medicine": "Basic medicine",
+      "passport": "Passport",
+      "cash": "Local currency",
+      "insurance": "Travel insurance papers",
+      "bookings": "Flight & hotel confirmations"
+    }
+  },
+  "talk": {
+    "title": "Traveler talk",
+    "sub": "Swap on-the-ground news with others heading to the same place.",
+    "all": "All",
+    "tag": {
+      "weather": "Weather & clothes",
+      "food": "Food & queues",
+      "transit": "Getting around",
+      "tip": "Tips",
+      "question": "Questions"
+    },
+    "ph": "Share local news or ask a question (300 characters)",
+    "post": "Post",
+    "mine": "Mine",
+    "report": "Report",
+    "reported": "Reported. You will no longer see this post.",
+    "delete": "Delete",
+    "none": "No posts yet. Be the first.",
+    "sampleTag": "Example",
+    "now": "just now",
+    "min": "{n} min ago",
+    "hour": "{n} h ago",
+    "day": "{n} d ago",
+    "err": {
+      "empty": "Write something first.",
+      "tooLong": "300 characters at most.",
+      "link": "Links are not allowed.",
+      "contact": "Phone numbers and messenger IDs are not allowed.",
+      "rate": "Please wait a moment (3 posts per minute).",
+      "failed": "Could not post. Please try again."
+    },
+    "rules": "Be respectful. No ads, contact swapping or companion-seeking posts. Other travelers’ posts are personal opinions, not information verified by Haru.",
+    "sampleNote": "In the test bed you see example posts, and your own posts stay on your device. In the live service they are shared with travelers to the same place.",
+    "as": "Posting as {nick}"
+  },
+  "share": {
+    "copy": "Copy share code",
+    "copied": "Share code copied. Send it to your travel companions.",
+    "import_": "Import a trip from a share code",
+    "importPh": "Paste the code starting with HARU1:",
+    "importBtn": "Import",
+    "bad": "Could not read the code. Make sure you copied all of it.",
+    "help": "Your companion pastes the code into “Import a trip from a share code” on the home screen to save a copy of the same itinerary."
+  },
+  "reward": {
+    "title": "You have used today’s free turns",
+    "regenBody": "Rebuilding the itinerary is free {free} time a day. Watch an ad to rebuild {n} more time.",
+    "chatBody": "You can ask {free} questions a day for free. Watch an ad to ask {n} more.",
+    "watch": "Watch an ad for {n} more",
+    "close": "Close",
+    "maxed": "No more available today. Please come back tomorrow.",
+    "failed": "The ad could not be loaded. Please try again shortly.",
+    "preview": "Ad preview · {n} s",
+    "previewNote": "The test bed shows this screen instead of a real ad. The app plays a video ad.",
+    "chatLeft": "{n} free questions left today"
+  },
+  "sponsor": {
+    "sample": {
+      "essentials": {
+        "title": "Ad space: eSIM & travel insurance",
+        "body": "Shown at the overseas-prep step, only to people heading to that country."
+      },
+      "gear": {
+        "title": "Ad space: travel gear",
+        "body": "Brand ads matching the product types recommended for this trip."
+      },
+      "packing": {
+        "title": "Ad space: packing",
+        "body": "Ads for luggage, pouches and toiletries, right when people pack."
+      },
+      "airport": {
+        "title": "Ad space: lounges & duty free",
+        "body": "Lounge passes and duty-free offers matched to the departure airport."
+      }
     }
   }
 }

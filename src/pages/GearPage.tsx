@@ -1,4 +1,5 @@
 // 여행 제품 추천 — 이번 여행의 날씨·여행지·비행 거리에 맞는 준비물 종류와 쇼핑 링크
+import { SponsorSlot } from '../components/SponsorSlot'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
@@ -68,6 +69,7 @@ export function GearPage() {
         )
       })}
       <p className="notice">{t('gear.disclosure')}</p>
+      <SponsorSlot slot="gear" trip={trip} />
       <Link to={`/trip/${trip.id}`} className="btn btn--block">
         {t('report.back')}
       </Link>

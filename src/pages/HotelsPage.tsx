@@ -9,6 +9,7 @@ import { destName, getDestination, searchDestinations } from '../lib/destination
 import { ENV } from '../lib/env'
 import {
   filterSortHotels,
+  isWellRated,
   HOTEL_PARTNERS,
   hotelPartnerUrl,
   HotelSearchError,
@@ -51,7 +52,7 @@ export function HotelsPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [unsupported, setUnsupported] = useState(false)
-  const [sort, setSort] = useState<HotelSort>('recommended')
+  const [sort, setSort] = useState<HotelSort>('value')
   const [minStars, setMinStars] = useState(0)
   const [freeCancelOnly, setFreeCancelOnly] = useState(false)
 
@@ -184,7 +185,7 @@ export function HotelsPage() {
             <p className="muted small">{t('hotels.unsupported')}</p>
           ) : (
             <div className="chips">
-              {(['recommended', 'price', 'rating'] as HotelSort[]).map((s) => (
+              {(['value', 'price', 'rating', 'recommended'] as HotelSort[]).map((s) => (
                 <button key={s} type="button" className={`chip chip--sm${sort === s ? ' is-on' : ''}`} onClick={() => setSort(s)} data-testid={`hotel-sort-${s}`}>
                   {t(`hotels.sort.${s}`)}
                 </button>
@@ -207,7 +208,12 @@ export function HotelsPage() {
           )}
           {!unsupported && shown.length === 0 && <p className="muted small">{t('hotels.empty')}</p>}
           {shown.map((h) => (
-            <article key={h.id} className="card hotel" data-testid="hotel-card">
+            <article key={h.id} className="card hotel" data-testid="hotel-card" data-best={sort === 'value' && h === shown[0] && isWellRated(h) ? '1' : undefined}>
+              {sort === 'value' && h === shown[0] && isWellRated(h) && (
+                <span className="badge badge--best" data-testid="hotel-best">
+                  {t('hotels.best')}
+                </span>
+              )}
               <div className="hotel__img" style={h.imageUrl ? { backgroundImage: `url(${h.imageUrl})` } : { background: `linear-gradient(135deg, hsl(${h.hue} 45% 62%), hsl(${(h.hue + 40) % 360} 50% 42%))` }} aria-hidden="true">
                 {!h.imageUrl && <span>{h.name.slice(0, 1)}</span>}
                 {h.source === 'sample' && <span className="badge hotel__badge">{t('common.sample')}</span>}

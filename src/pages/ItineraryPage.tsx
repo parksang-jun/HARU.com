@@ -1,3 +1,6 @@
+import { RewardGate } from '../components/RewardGate'
+import { SponsorSlot } from '../components/SponsorSlot'
+import { loadRewards, remaining, rewardsActive, saveRewards, spend, type RewardState } from '../lib/rewards'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Share } from '@capacitor/share'
@@ -17,7 +20,7 @@ import { recommendGear } from '../lib/gear'
 import { hasMeals, loadMealPicks, saveMealPicks, togglePick, type MealPicks } from '../lib/meals'
 import { getRepo } from '../lib/repo'
 import { loadJson, loadPref, saveJson, savePref } from '../lib/storage'
-import { formatTemps, getTripWeather, ICONS, needsRainPlan, packingList, tipsFor, weatherKey, type DayWeather, type TripWeather } from '../lib/weather'
+import { formatTemps, getTripWeather, ICONS, needsExtraLayer, needsRainPlan, outfitFor, packingList, tipsFor, weatherKey, type DayWeather, type TripWeather } from '../lib/weather'
 import { flightRoute, hotelKey, isAbroad, isPrepDone, prepKeys as prepKeysFor, staySegments, type StaySegment } from '../lib/plan'
 
 
@@ -104,8 +107,16 @@ export function ItineraryPage() {
   }
   const segmentFor = (city: string, date: string) => segments.find((s) => s.city === city && s.checkIn <= date && date < s.checkOut) ?? segments.find((s) => s.city === city)
 
-  const regenerate = async () => {
+  const [gate, setGate] = useState<RewardState | null>(null)
+  const regenerate = async (granted?: RewardState) => {
     if (!trip) return
+    // 다시 만들기는 하루 무료 횟수가 있다 (처음 생성이 실패해 일정이 없을 때는 제한하지 않는다)
+    const metered = rewardsActive() && Boolean(trip.itinerary)
+    const rw = metered ? (granted ?? (await loadRewards())) : null
+    if (rw && remaining(rw, 'regen') <= 0) {
+      setGate(rw)
+      return
+    }
     setBusy(true)
     setError(null)
     try {
@@ -116,6 +127,7 @@ export function ItineraryPage() {
       void saveMealPicks(trip.id, {})
       setTrip({ ...trip, itinerary: it })
       setDayIdx(0)
+      if (rw) await saveRewards(spend(rw, 'regen'))
     } catch (e) {
       setError(e instanceof AiError && e.code === 'limit' ? t('chat.limit') : t('setup.errGeneric'))
     } finally {
@@ -146,7 +158,7 @@ export function ItineraryPage() {
     return (
       <>
         <p className="alert">{t('itin.error')}</p>
-        <button type="button" className="btn btn--primary" onClick={regenerate} disabled={busy}>
+        <button type="button" className="btn btn--primary" onClick={() => regenerate()} disabled={busy}>
           {busy ? t('setup.generating') : t('itin.regenerate')}
         </button>
       </>
@@ -328,6 +340,22 @@ export function ItineraryPage() {
           </div>
         )}
 
+        <div className="prep__row">
+          {check('tips')}
+          <Link to={`/trip/${trip.id}/tips`} className="plan__row" data-testid="prep-tips">
+            <span className="plan__icon" aria-hidden="true">
+              ✦
+            </span>
+            <span className="plan__text">
+              <strong>{t('tips.open')}</strong>
+              <span className="xs muted">{t('tips.openSub')}</span>
+            </span>
+            <span className="plan__go" aria-hidden="true">
+              ›
+            </span>
+          </Link>
+        </div>
+
         {abroad && (
           <div className="prep__row">
             {check('essentials')}
@@ -342,10 +370,31 @@ export function ItineraryPage() {
             </button>
           </div>
         )}
+        {abroad && <SponsorSlot slot="essentials" trip={trip} />}
         <Link to={`/trip/${trip.id}/report`} className="btn btn--primary btn--block" data-testid="report-open">
           {t('report.open')}
         </Link>
       </section>
+
+      {gate && (
+        <RewardGate
+          kind="regen"
+          state={gate}
+          onClose={() => setGate(null)}
+          onGranted={(next) => {
+            setGate(null)
+            void regenerate(next)
+          }}
+        />
+      )}
+      <nav className="tools" aria-label={t('tools.title')} data-testid="tools">
+        {(['map', 'edit', 'packing', 'budget', 'talk'] as const).map((k) => (
+          <Link key={k} to={`/trip/${trip.id}/${k}`} className="tools__item" data-testid={`tool-${k}`}>
+            <span aria-hidden="true">{{ map: '🗺️', edit: '✏️', packing: '🧳', budget: '💰', talk: '💬' }[k]}</span>
+            {t(`tools.${k === 'budget' ? 'ledger' : k}`)}
+          </Link>
+        ))}
+      </nav>
 
       <div className="day-tabs" role="tablist" data-testid="day-tabs">
         {trip.itinerary.days.map((d, i) => (
@@ -370,7 +419,7 @@ export function ItineraryPage() {
           <button type="button" className="btn btn--sm btn--ghost" onClick={share}>
             {t('itin.share')}
           </button>
-          <button type="button" className="btn btn--sm btn--ghost" onClick={regenerate} disabled={busy}>
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => regenerate()} disabled={busy} data-testid="regenerate">
             {busy ? '…' : t('itin.regenerate')}
           </button>
         </div>
@@ -392,6 +441,10 @@ export function ItineraryPage() {
               <strong>{t(`weather.cond.${wx.condition}`)}</strong> <span data-testid="day-weather-temp">{formatTemps(wx, locale)}</span>
             </p>
             {wx.rainPct !== null && <p className="xs muted">{t(wx.source === 'forecast' ? 'weather.rainForecast' : 'weather.rainNormal', { n: wx.rainPct })}</p>}
+            <p className="small wx__outfit" data-testid="day-outfit">
+              <span className="muted">{t('outfit.label')}</span> {t(`outfit.${outfitFor(wx)}`)}
+              {needsExtraLayer(wx) && <span className="xs muted"> · {t('outfit.extra')}</span>}
+            </p>
             {tipsFor(wx).length > 0 && (
               <div className="chips wx__tips">
                 {tipsFor(wx).map((tip) => (

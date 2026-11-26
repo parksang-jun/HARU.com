@@ -153,11 +153,17 @@ export function buildMockHotels(q: HotelQuery, locale: Locale): Hotel[] {
 }
 
 // ---------- 정렬·필터 ----------
-export type HotelSort = 'recommended' | 'price' | 'rating'
+export type HotelSort = 'value' | 'recommended' | 'price' | 'rating'
+
+/** '평점 좋은 곳'의 기준: 평점 8.0 이상, 후기 수를 알면 30개 이상 */
+export const GOOD_SCORE = 8
+export const isWellRated = (h: Hotel): boolean => (h.reviewScore ?? 0) >= GOOD_SCORE && (h.reviewCount === undefined || h.reviewCount >= 30)
 
 export function filterSortHotels(list: Hotel[], opts: { sort: HotelSort; minStars: number; freeCancelOnly: boolean }): Hotel[] {
   const filtered = list.filter((h) => h.stars >= opts.minStars && (!opts.freeCancelOnly || h.freeCancel))
   if (opts.sort === 'price') return [...filtered].sort((a, b) => a.pricePerNight - b.pricePerNight)
+  // 평점 좋은 곳 중 최저가: 기준을 넘는 숙소를 싼 순서로 먼저, 나머지는 그 뒤에 싼 순서로
+  if (opts.sort === 'value') return [...filtered].sort((a, b) => Number(isWellRated(b)) - Number(isWellRated(a)) || a.pricePerNight - b.pricePerNight)
   if (opts.sort === 'rating') return [...filtered].sort((a, b) => (b.reviewScore ?? 0) - (a.reviewScore ?? 0))
   // 추천: 평점 대비 가격(가성비) + 원래 순서 가중
   return [...filtered].sort((a, b) => score(b) - score(a))
