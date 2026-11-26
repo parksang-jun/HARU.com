@@ -246,6 +246,13 @@ export function FlightsPage() {
             </>
           ) : cabinFares.length > 0 ? (
             <>
+              <div className="card card--flat list" data-testid="cabin-exact">
+                <p className="small">{t('flights.exactNote', { cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}</p>
+                <button type="button" className="btn btn--primary btn--block" onClick={() => openPartner('aviasales', lastQuery)} data-testid="cabin-exact-go">
+                  {t('flights.exactGo', { cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}
+                </button>
+              </div>
+              <h3>{t('flights.refTitle')}</h3>
               <p className="notice" data-testid="cabin-fares-note">
                 {t('flights.fareNote', { cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}
               </p>
@@ -254,6 +261,8 @@ export function FlightsPage() {
                 if (!list.length) return null
                 const a = leg === 'out' ? lastQuery.from : lastQuery.to
                 const b = leg === 'out' ? lastQuery.to : lastQuery.from
+                const want = leg === 'out' ? lastQuery.depart : (lastQuery.return ?? lastQuery.depart)
+                const diff = (d: string) => Math.round((Date.parse(`${d}T00:00:00Z`) - Date.parse(`${want}T00:00:00Z`)) / 86_400_000)
                 return (
                   <div key={leg} className="list" data-testid={`cabin-fares-${leg}`}>
                     <h3 className="small" style={{ fontWeight: 700 }}>
@@ -264,7 +273,10 @@ export function FlightsPage() {
                         <div className="row">
                           <div>
                             <div className="small" style={{ fontWeight: 700 }}>
-                              {formatDate(f.depart)}
+                              {formatDate(f.depart)}{' '}
+                              <span className="xs flight__diff" data-testid="fare-diff">
+                                {diff(f.depart) === 0 ? t('flights.diffSame') : t(diff(f.depart) > 0 ? 'flights.diffLater' : 'flights.diffEarlier', { n: Math.abs(diff(f.depart)) })}
+                              </span>
                             </div>
                             <div className="xs muted">
                               {t('flights.oneWay')} · {f.stops === 0 ? t('flights.nonstop') : t('flights.stops', { n: f.stops })}
@@ -275,7 +287,7 @@ export function FlightsPage() {
                         </div>
                         <div className="row">
                           <div className="price">{formatMoney(f.price, f.currency)}</div>
-                          <button type="button" className="btn btn--primary btn--sm" onClick={() => openPartner('aviasales', { ...lastQuery, from: a, to: b, depart: f.depart, return: undefined })}>
+                          <button type="button" className="btn btn--sm" onClick={() => openPartner('aviasales', { ...lastQuery, from: a, to: b, depart: f.depart, return: undefined })}>
                             {t('flights.fareCheck')}
                           </button>
                         </div>

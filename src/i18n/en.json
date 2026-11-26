@@ -312,11 +312,17 @@
     "altRound": "Nearby dates · out {depart}, back {back}",
     "altOne": "Nearby date · departs {depart}",
     "cabinNote": "{cabin} fares cannot be looked up in the app. Check the same search on the sites below.",
-    "fareNote": "Recently found one-way {cabin} fares, shown separately for each direction. A round-trip ticket may be priced differently. Check flight numbers and times on the booking site.",
+    "fareNote": "Recently found one-way {cabin} fares on this route. Dates may differ from yours, so treat them as a price guide. A round-trip ticket may be priced differently.",
     "fareGate": "via {gate}",
-    "fareCheck": "Check price",
+    "fareCheck": "See this date",
     "legOut": "Outbound",
-    "legBack": "Return"
+    "legBack": "Return",
+    "exactNote": "The app may have no {cabin} fare recorded for your exact dates. Check the real price on the booking site.",
+    "exactGo": "See {cabin} prices for my dates",
+    "refTitle": "For reference: recent fares this month",
+    "diffSame": "your date",
+    "diffLater": "{n} d after your date",
+    "diffEarlier": "{n} d before your date"
   },
   "hotels": {
     "title": "Hotels",

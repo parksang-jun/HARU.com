@@ -312,11 +312,17 @@
     "altRound": "鄰近日期票價 · {depart} 出發，{back} 回程",
     "altOne": "鄰近日期票價 · {depart} 出發",
     "cabinNote": "App 內無法查詢{cabin}票價，請在下方網站以相同條件查詢。",
-    "fareNote": "這是近期搜尋到的{cabin}單程票價，去程與回程分開顯示，來回一起訂價格可能不同。航班與時間請在訂票網站確認。",
+    "fareNote": "這是此航線近期搜尋到的{cabin}單程票價。日期可能與你選的不同，請當作行情參考。來回一起訂價格可能不同。",
     "fareGate": "販售處 {gate}",
-    "fareCheck": "查看價格",
+    "fareCheck": "查看這個日期",
     "legOut": "去程",
-    "legBack": "回程"
+    "legBack": "回程",
+    "exactNote": "App 可能沒有你所選日期的{cabin}票價紀錄，實際價格請直接在訂票網站確認。",
+    "exactGo": "用所選日期查看{cabin}價格",
+    "refTitle": "參考：本月近期票價",
+    "diffSame": "所選日期",
+    "diffLater": "比所選日期晚{n}天",
+    "diffEarlier": "比所選日期早{n}天"
   },
   "hotels": {
     "title": "飯店",
