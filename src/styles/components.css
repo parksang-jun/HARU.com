@@ -1817,3 +1817,45 @@ a.chip {
   display: flex;
   justify-content: flex-end;
 }
+
+/* ── 광고: 스폰서 칸 · 보상형 안내 창 (v0.8) ───── */
+.sponsor {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px dashed var(--color-sponsored);
+  border-radius: var(--radius-m);
+  background: var(--color-sponsored-soft);
+  font-size: 0.9rem;
+}
+.sponsor__head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.sponsor p {
+  margin: 0;
+}
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(31, 36, 48, 0.55);
+}
+.gate__box {
+  width: min(100%, 360px);
+  display: grid;
+  gap: 10px;
+}
+.gate__preview {
+  margin: 0;
+  padding: 36px 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-m);
+}

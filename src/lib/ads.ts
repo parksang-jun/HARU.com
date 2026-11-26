@@ -1,4 +1,4 @@
-// AdMob 배너 — 네이티브 앱에서 표시(기본 켜짐, VITE_ADMOB_ENABLED=false 로 끔). 전면광고는 쓰지 않음(신뢰 우선)
+// AdMob 배너·보상형 광고 — 네이티브 앱에서 표시(기본 켜짐, VITE_ADMOB_ENABLED=false 로 끔). 전면광고는 쓰지 않음(신뢰 우선)
 import { Capacitor } from '@capacitor/core'
 import { ENV } from './env'
 
@@ -77,4 +77,22 @@ export async function hideBanner(): Promise<void> {
   if (!m || !bannerShown) return
   await m.AdMob.hideBanner()
   document.documentElement.style.setProperty('--banner-h', '0px')
+}
+
+/** 보상형 광고를 보여 주고, 끝까지 봐서 보상을 받았으면 true (네이티브 전용 — 실기기 미검증) */
+export async function showRewarded(): Promise<boolean> {
+  const m = await load()
+  if (!m) return false
+  await initAds()
+  const adId = Capacitor.getPlatform() === 'ios' ? ENV.admobRewardedIos : ENV.admobRewardedAndroid
+  try {
+    if (bannerShown) await m.AdMob.hideBanner()
+    await m.AdMob.prepareRewardVideoAd({ adId, isTesting: import.meta.env.DEV })
+    const item = await m.AdMob.showRewardVideoAd()
+    return Boolean(item)
+  } catch {
+    return false
+  } finally {
+    if (bannerShown) await m.AdMob.resumeBanner().catch(() => undefined)
+  }
 }

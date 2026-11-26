@@ -1,3 +1,6 @@
+import { RewardGate } from '../components/RewardGate'
+import { SponsorSlot } from '../components/SponsorSlot'
+import { loadRewards, remaining, rewardsActive, saveRewards, spend, type RewardState } from '../lib/rewards'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Share } from '@capacitor/share'
@@ -104,8 +107,16 @@ export function ItineraryPage() {
   }
   const segmentFor = (city: string, date: string) => segments.find((s) => s.city === city && s.checkIn <= date && date < s.checkOut) ?? segments.find((s) => s.city === city)
 
-  const regenerate = async () => {
+  const [gate, setGate] = useState<RewardState | null>(null)
+  const regenerate = async (granted?: RewardState) => {
     if (!trip) return
+    // 다시 만들기는 하루 무료 횟수가 있다 (처음 생성이 실패해 일정이 없을 때는 제한하지 않는다)
+    const metered = rewardsActive() && Boolean(trip.itinerary)
+    const rw = metered ? (granted ?? (await loadRewards())) : null
+    if (rw && remaining(rw, 'regen') <= 0) {
+      setGate(rw)
+      return
+    }
     setBusy(true)
     setError(null)
     try {
@@ -116,6 +127,7 @@ export function ItineraryPage() {
       void saveMealPicks(trip.id, {})
       setTrip({ ...trip, itinerary: it })
       setDayIdx(0)
+      if (rw) await saveRewards(spend(rw, 'regen'))
     } catch (e) {
       setError(e instanceof AiError && e.code === 'limit' ? t('chat.limit') : t('setup.errGeneric'))
     } finally {
@@ -146,7 +158,7 @@ export function ItineraryPage() {
     return (
       <>
         <p className="alert">{t('itin.error')}</p>
-        <button type="button" className="btn btn--primary" onClick={regenerate} disabled={busy}>
+        <button type="button" className="btn btn--primary" onClick={() => regenerate()} disabled={busy}>
           {busy ? t('setup.generating') : t('itin.regenerate')}
         </button>
       </>
@@ -358,11 +370,23 @@ export function ItineraryPage() {
             </button>
           </div>
         )}
+        {abroad && <SponsorSlot slot="essentials" trip={trip} />}
         <Link to={`/trip/${trip.id}/report`} className="btn btn--primary btn--block" data-testid="report-open">
           {t('report.open')}
         </Link>
       </section>
 
+      {gate && (
+        <RewardGate
+          kind="regen"
+          state={gate}
+          onClose={() => setGate(null)}
+          onGranted={(next) => {
+            setGate(null)
+            void regenerate(next)
+          }}
+        />
+      )}
       <nav className="tools" aria-label={t('tools.title')} data-testid="tools">
         {(['map', 'edit', 'packing', 'budget', 'talk'] as const).map((k) => (
           <Link key={k} to={`/trip/${trip.id}/${k}`} className="tools__item" data-testid={`tool-${k}`}>
@@ -395,7 +419,7 @@ export function ItineraryPage() {
           <button type="button" className="btn btn--sm btn--ghost" onClick={share}>
             {t('itin.share')}
           </button>
-          <button type="button" className="btn btn--sm btn--ghost" onClick={regenerate} disabled={busy}>
+          <button type="button" className="btn btn--sm btn--ghost" onClick={() => regenerate()} disabled={busy} data-testid="regenerate">
             {busy ? '…' : t('itin.regenerate')}
           </button>
         </div>

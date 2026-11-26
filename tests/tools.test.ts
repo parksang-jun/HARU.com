@@ -151,3 +151,32 @@ describe('여행자 톡', () => {
     expect(ago('2026-12-30T12:00:00Z', now)).toEqual({ unit: 'day', n: 2 })
   })
 })
+
+import { canWatch, emptyRewards, grant, remaining, REWARD_RULES, spend } from '../src/lib/rewards'
+import { pickSponsor, type Sponsor } from '../src/lib/sponsors'
+
+describe('보상형 광고 횟수', () => {
+  it('무료 횟수를 쓰고, 광고를 보면 더 받고, 하루 광고 수에 상한이 있다', () => {
+    let s = emptyRewards('2027-01-01')
+    expect(remaining(s, 'regen')).toBe(REWARD_RULES.regen.free)
+    s = spend(s, 'regen')
+    expect(remaining(s, 'regen')).toBe(0)
+    s = grant(s, 'regen')
+    expect(remaining(s, 'regen')).toBe(REWARD_RULES.regen.perAd)
+    s = grant(spend(s, 'regen'), 'regen')
+    expect(canWatch(s, 'regen')).toBe(false)
+    expect(grant(s, 'regen')).toBe(s)
+    expect(remaining(s, 'chat')).toBe(REWARD_RULES.chat.free) // 종류별로 따로 센다
+  })
+})
+
+describe('스폰서 칸', () => {
+  const ad = (id: string, countries: string[], slot: Sponsor['slot'] = 'essentials'): Sponsor => ({ id, slot, advertiser: 'A', title: 't', body: '', cta: '', link: 'https://a.example', countries })
+  it('여행지 나라에 맞춘 광고를 먼저 고르고, 없으면 전체 대상, 그것도 없으면 비운다', () => {
+    const list = [ad('all', []), ad('jp', ['JP']), ad('gear', [], 'gear')]
+    expect(pickSponsor(list, 'essentials', ['JP'])?.id).toBe('jp')
+    expect(pickSponsor(list, 'essentials', ['TH'])?.id).toBe('all')
+    expect(pickSponsor([ad('jp', ['JP'])], 'essentials', ['TH'])).toBeNull()
+    expect(pickSponsor(list, 'airport', ['JP'])).toBeNull()
+  })
+})

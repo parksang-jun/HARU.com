@@ -796,5 +796,37 @@
     "importBtn": "Import",
     "bad": "Could not read the code. Make sure you copied all of it.",
     "help": "Your companion pastes the code into “Import a trip from a share code” on the home screen to save a copy of the same itinerary."
+  },
+  "reward": {
+    "title": "You have used today’s free turns",
+    "regenBody": "Rebuilding the itinerary is free {free} time a day. Watch an ad to rebuild {n} more time.",
+    "chatBody": "You can ask {free} questions a day for free. Watch an ad to ask {n} more.",
+    "watch": "Watch an ad for {n} more",
+    "close": "Close",
+    "maxed": "No more available today. Please come back tomorrow.",
+    "failed": "The ad could not be loaded. Please try again shortly.",
+    "preview": "Ad preview · {n} s",
+    "previewNote": "The test bed shows this screen instead of a real ad. The app plays a video ad.",
+    "chatLeft": "{n} free questions left today"
+  },
+  "sponsor": {
+    "sample": {
+      "essentials": {
+        "title": "Ad space: eSIM & travel insurance",
+        "body": "Shown at the overseas-prep step, only to people heading to that country."
+      },
+      "gear": {
+        "title": "Ad space: travel gear",
+        "body": "Brand ads matching the product types recommended for this trip."
+      },
+      "packing": {
+        "title": "Ad space: packing",
+        "body": "Ads for luggage, pouches and toiletries, right when people pack."
+      },
+      "airport": {
+        "title": "Ad space: lounges & duty free",
+        "body": "Lounge passes and duty-free offers matched to the departure airport."
+      }
+    }
   }
 }

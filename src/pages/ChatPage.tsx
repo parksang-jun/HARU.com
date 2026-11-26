@@ -1,3 +1,5 @@
+import { RewardGate } from '../components/RewardGate'
+import { loadRewards, remaining, rewardsActive, saveRewards, spend, type RewardState } from '../lib/rewards'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
@@ -36,9 +38,19 @@ export function ChatPage() {
     endRef.current?.scrollIntoView({ block: 'end' })
   }, [messages, busy])
 
-  const send = async () => {
+  const [gate, setGate] = useState<RewardState | null>(null)
+  const [left, setLeft] = useState<number | null>(null)
+  useEffect(() => {
+    if (rewardsActive()) void loadRewards().then((s) => setLeft(remaining(s, 'chat')))
+  }, [])
+  const send = async (granted?: RewardState) => {
     const q = input.trim()
     if (!q || busy) return
+    const rw = rewardsActive() ? (granted ?? (await loadRewards())) : null
+    if (rw && remaining(rw, 'chat') <= 0) {
+      setGate(rw)
+      return
+    }
     setInput('')
     setError(null)
     setBusy(true)
@@ -53,6 +65,11 @@ export function ChatPage() {
         ? await repo.addMessage(tripId, { role: 'assistant', content: answer })
         : { id: `${Date.now()}a`, role: 'assistant', content: answer, createdAt: new Date().toISOString() }
       setMessages((m) => [...m, aiMsg])
+      if (rw) {
+        const next = spend(rw, 'chat')
+        await saveRewards(next)
+        setLeft(remaining(next, 'chat'))
+      }
     } catch (e) {
       setError(e instanceof AiError && e.code === 'limit' ? t('chat.limit') : t('chat.error'))
     } finally {
@@ -79,9 +96,26 @@ export function ChatPage() {
             {error}
           </div>
         )}
+        {left !== null && (
+          <p className="xs muted" data-testid="chat-left" data-left={left}>
+            {t('reward.chatLeft', { n: left })}
+          </p>
+        )}
         <p className="notice">{t('chat.disclosure')}</p>
         <div ref={endRef} style={{ height: 64 }} />
       </div>
+      {gate && (
+        <RewardGate
+          kind="chat"
+          state={gate}
+          onClose={() => setGate(null)}
+          onGranted={(next) => {
+            setGate(null)
+            setLeft(remaining(next, 'chat'))
+            void send(next)
+          }}
+        />
+      )}
       <form
         className="chat-input"
         onSubmit={(e) => {

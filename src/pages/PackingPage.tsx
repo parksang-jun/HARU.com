@@ -1,4 +1,5 @@
 // 짐 싸기 체크리스트 — 기본 준비물 + 날씨·여행 맞춤 + 직접 추가
+import { SponsorSlot } from '../components/SponsorSlot'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
@@ -101,6 +102,7 @@ export function PackingPage() {
       <Link to={`/trip/${trip.id}/gear`} className="btn btn--block">
         {t('prep.gear')}
       </Link>
+      <SponsorSlot slot="packing" trip={trip} />
       <Link to={`/trip/${trip.id}`} className="btn btn--block btn--ghost">
         {t('report.back')}
       </Link>

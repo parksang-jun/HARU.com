@@ -13,6 +13,8 @@ export const ENV = {
   mockAi: bool(e.VITE_MOCK_AI as string | undefined, true) || !(e.VITE_SUPABASE_URL as string | undefined),
   admobEnabled: bool(e.VITE_ADMOB_ENABLED as string | undefined, true),
   admobBannerAndroid: (e.VITE_ADMOB_BANNER_ANDROID as string | undefined) || 'ca-app-pub-3940256099942544/6300978111',
+  admobRewardedAndroid: (e.VITE_ADMOB_REWARDED_ANDROID as string | undefined) || 'ca-app-pub-3940256099942544/5224354917',
+  admobRewardedIos: (e.VITE_ADMOB_REWARDED_IOS as string | undefined) || 'ca-app-pub-3940256099942544/1712485313',
   admobBannerIos: (e.VITE_ADMOB_BANNER_IOS as string | undefined) || 'ca-app-pub-3940256099942544/2934735716',
   affiliate: {
     klook: (e.VITE_AFF_KLOOK_QS as string | undefined) ?? '',
