@@ -1884,3 +1884,8 @@ a.chip {
   font-size: var(--text-xs, 0.75rem);
   font-weight: 700;
 }
+
+.flight__diff {
+  color: var(--color-primary);
+  font-weight: 700;
+}
