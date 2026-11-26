@@ -56,36 +56,39 @@ Deno.serve(async (req) => {
   // 비즈니스석: 편명·시각이 있는 운임 데이터는 일반석뿐이다. 대신 '최근에 검색된 비즈니스 운임'(날짜·가격·경유·판매처)을 돌려준다
   if (q.cabin === 'business') {
     try {
-      const p = new URLSearchParams({
-        origin: q.from,
-        destination: q.to,
-        currency,
-        market,
-        trip_class: '1',
-        period_type: 'month',
-        beginning_of_period: `${q.depart.slice(0, 7)}-01`,
-        one_way: q.return ? 'false' : 'true',
-        sorting: 'price',
-        limit: '300',
-        show_to_affiliates: 'true',
-      })
-      const res = await fetch(`${LATEST}?${p}`, { headers: { 'X-Access-Token': TOKEN } })
-      if (!res.ok) {
-        console.error('travelpayouts latest error', res.status, await res.text())
-        return json({ error: 'upstream_error', status: res.status }, 502)
-      }
-      const data = (await res.json()) as { data?: unknown[] }
-      await bumpUsage(user.id, 'search')
       type Fare = { depart_date?: string; return_date?: string; value?: number }
       const day = (iso: string) => Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / 86_400_000
-      const gap = (f: Fare) => Math.abs(day(f.depart_date as string) - day(q.depart)) + (q.return && f.return_date ? Math.abs(day(f.return_date) - day(q.return)) : 0)
-      const fares = ((Array.isArray(data.data) ? data.data : []) as Fare[])
-        .filter((f) => typeof f.depart_date === 'string' && typeof f.value === 'number' && Boolean(f.return_date) === Boolean(q.return))
-        // 앞뒤 7일 안의 날짜만
-        .filter((f) => Math.abs(day(f.depart_date as string) - day(q.depart)) <= 7 && (!q.return || Math.abs(day(f.return_date as string) - day(q.return)) <= 7))
-        .sort((a, b) => gap(a) - gap(b) || (a.value ?? 0) - (b.value ?? 0))
-        .slice(0, 10)
-      return json({ offers: [], fares, currency: currency.toUpperCase(), source: 'travelpayouts' })
+      // 이 데이터의 비즈니스 운임은 대부분 편도 기록이고 노선당 한 달에 몇 건뿐이다 (실측: ICN→NYC 편도 3건·왕복 0건).
+      // 가는 편·오는 편을 각각 편도로 조회해, 날짜 범위로 거르지 않고 그 달 안에서 가까운 날짜 순으로 돌려준다
+      const leg = async (origin: string, destination: string, date: string): Promise<Fare[] | number> => {
+        const p = new URLSearchParams({
+          origin,
+          destination,
+          currency,
+          market,
+          trip_class: '1',
+          period_type: 'month',
+          beginning_of_period: `${date.slice(0, 7)}-01`,
+          one_way: 'true',
+          sorting: 'price',
+          limit: '300',
+          show_to_affiliates: 'true',
+        })
+        const res = await fetch(`${LATEST}?${p}`, { headers: { 'X-Access-Token': TOKEN } })
+        if (!res.ok) {
+          console.error('travelpayouts latest error', res.status, await res.text())
+          return res.status
+        }
+        const data = (await res.json()) as { data?: unknown[] }
+        return ((Array.isArray(data.data) ? data.data : []) as Fare[])
+          .filter((f) => typeof f.depart_date === 'string' && typeof f.value === 'number')
+          .sort((a, b) => Math.abs(day(a.depart_date as string) - day(date)) - Math.abs(day(b.depart_date as string) - day(date)) || (a.value ?? 0) - (b.value ?? 0))
+          .slice(0, 6)
+      }
+      const [out, back] = await Promise.all([leg(q.from, q.to, q.depart), q.return ? leg(q.to, q.from, q.return) : Promise.resolve([] as Fare[])])
+      if (typeof out === 'number') return json({ error: 'upstream_error', status: out }, 502)
+      await bumpUsage(user.id, 'search')
+      return json({ offers: [], fares: out, faresBack: typeof back === 'number' ? [] : back, currency: currency.toUpperCase(), source: 'travelpayouts' })
     } catch (e) {
       console.error('search-flights (business) failed', e)
       return json({ error: 'search_failed', detail: String(e).slice(0, 200) }, 502)

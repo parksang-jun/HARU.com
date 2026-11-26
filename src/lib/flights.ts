@@ -320,8 +320,9 @@ function delay(ms: number) {
 /** 최근에 검색된 좌석 등급별 운임 한 건 — 편명·시각 없이 날짜·가격·경유·판매처만 있다 */
 export interface CabinFare {
   id: string
+  /** 가는 편(out) / 오는 편(back) — 각각 편도 운임 */
+  leg: 'out' | 'back'
   depart: string // YYYY-MM-DD
-  return?: string
   price: number // 전체 인원, 표시 통화
   currency: string
   stops: number
@@ -338,15 +339,15 @@ interface RemoteFare {
   found_at?: string
 }
 
-export function normalizeCabinFares(raw: unknown, q: FlightQuery, currency: string): CabinFare[] {
+export function normalizeCabinFares(raw: unknown, q: FlightQuery, currency: string, leg: CabinFare['leg'] = 'out'): CabinFare[] {
   if (!Array.isArray(raw)) return []
   const out: CabinFare[] = []
   ;(raw as RemoteFare[]).forEach((r, i) => {
     if (typeof r.depart_date !== 'string' || typeof r.value !== 'number' || r.value <= 0) return
     out.push({
-      id: `fare-${i}`,
+      id: `fare-${leg}-${i}`,
+      leg,
       depart: r.depart_date.slice(0, 10),
-      return: r.return_date ? r.return_date.slice(0, 10) : undefined,
       price: Math.round(r.value * q.adults),
       currency,
       stops: Number(r.number_of_changes) || 0,
@@ -369,7 +370,7 @@ export async function searchCabinFares(q: FlightQuery, locale: Locale): Promise<
     const status = (error as { context?: Response }).context?.status
     throw new FlightSearchError(status === 429 ? 'limit' : 'unavailable')
   }
-  return normalizeCabinFares(data?.fares, q, currency)
+  return [...normalizeCabinFares(data?.fares, q, currency, 'out'), ...normalizeCabinFares(data?.faresBack, q, currency, 'back')]
 }
 
 /** 실제 운임 데이터(Travelpayouts 캐시)는 일반석만 있다. 다른 좌석 등급은 제휴 검색 링크로 안내한다 */
