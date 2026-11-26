@@ -5,7 +5,7 @@ import { BookTabs } from '../components/BookTabs'
 import { SearchSelect, type SelectItem } from '../components/SearchSelect'
 import { useI18n } from '../i18n/context'
 import { airlineName, airportLabel, airportName, getAirport, HOME_AIRPORT_KEY, searchAirports } from '../lib/airports'
-import { defaultHomeAirport, destName, REGIONS, type Region } from '../lib/destinations'
+import { REGIONS, type Region, countryName, defaultHomeAirport, destName, getDestination } from '../lib/destinations'
 import { ENV } from '../lib/env'
 import { dealBookUrl, fetchBusinessDeals, type FlightDeal } from '../lib/flightDeals'
 import { logAffiliateClick } from '../lib/logger'
@@ -51,7 +51,7 @@ export function BusinessDealsPage() {
   }, [from, locale])
 
   const airportItems = useCallback(
-    (q: string): SelectItem[] => searchAirports(q, locale).map((a) => ({ value: a.code, label: airportLabel(a.code, locale), sub: airportName(a.code, 'en') })),
+    (q: string): SelectItem[] => searchAirports(q, locale).map((a) => ({ value: a.code, label: airportLabel(a.code, locale), sub: airportName(a.code, 'en'), group: countryName(getDestination(a.cityId)?.country ?? '', locale) })),
     [locale],
   )
 

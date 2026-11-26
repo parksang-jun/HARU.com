@@ -93,6 +93,8 @@ Deno.serve(async (req) => {
     const gap = (r: Row) => Math.abs(day(r.departure_at ?? q.depart) - day(q.depart)) + (q.return && r.return_at ? Math.abs(day(r.return_at) - day(q.return)) : 0)
     const nearby = ((Array.isArray(data2.data) ? data2.data : []) as Row[])
       .filter((r) => typeof r.departure_at === 'string' && (!q.return || typeof r.return_at === 'string'))
+      // 앞뒤 7일 안의 날짜만 '가까운 날짜'로 본다
+      .filter((r) => Math.abs(day(r.departure_at as string) - day(q.depart)) <= 7 && (!q.return || Math.abs(day(r.return_at as string) - day(q.return)) <= 7))
       .sort((a, b) => gap(a) - gap(b) || (a.price ?? 0) - (b.price ?? 0))
       .slice(0, 10)
     return json({ offers: nearby, currency: currency.toUpperCase(), source: 'travelpayouts', nearby: true })

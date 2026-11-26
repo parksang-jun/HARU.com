@@ -219,3 +219,12 @@ export function defaultHomeAirport(locale: Locale): string {
   if (locale === 'zh-TW') return 'TPE'
   return 'ICN'
 }
+
+/** 나라 이름 (기기 언어 데이터 사용 — 없으면 코드 그대로) */
+export function countryName(code: string, locale: string): string {
+  try {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code
+  } catch {
+    return code
+  }
+}

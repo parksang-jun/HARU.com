@@ -6,13 +6,14 @@ import { SearchSelect, type SelectItem } from '../components/SearchSelect'
 import { Stepper } from '../components/Stepper'
 import { useI18n } from '../i18n/context'
 import { airlineName, airportLabel, airportName, getAirport, HOME_AIRPORT_KEY, searchAirports } from '../lib/airports'
-import { defaultHomeAirport, destName } from '../lib/destinations'
+import { countryName, defaultHomeAirport, destName, getDestination } from '../lib/destinations'
 import { ENV } from '../lib/env'
 import {
   CABINS,
   FlightSearchError,
   flightPartnersFor,
   flightPartnerUrl,
+  liveCabinSupported,
   searchFlights,
   sortFlights,
   validateFlightQuery,
@@ -60,7 +61,7 @@ export function FlightsPage() {
 
   const airportItems = useCallback(
     (q: string): SelectItem[] =>
-      searchAirports(q, locale).map((a) => ({ value: a.code, label: airportLabel(a.code, locale), sub: airportName(a.code, 'en') })),
+      searchAirports(q, locale).map((a) => ({ value: a.code, label: airportLabel(a.code, locale), sub: airportName(a.code, 'en'), group: countryName(getDestination(a.cityId)?.country ?? '', locale) })),
     [locale],
   )
 
@@ -236,7 +237,13 @@ export function FlightsPage() {
             </button>
           </div>
 
-          {shown.length === 0 && <p className="muted small">{t('flights.empty')}</p>}
+          {!liveCabinSupported(lastQuery) ? (
+            <p className="notice" data-testid="cabin-note">
+              {t('flights.cabinNote', { cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}
+            </p>
+          ) : (
+            shown.length === 0 && <p className="muted small">{t('flights.empty')}</p>
+          )}
           {shown.map((o) => (
             <article key={o.id} className="card flight" data-testid="flight-offer">
               {o.altDepart && (

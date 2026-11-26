@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
           show_to_affiliates: 'true',
         })
         const res = await fetch(`${ENDPOINT}?${params}`, { headers: { 'X-Access-Token': TOKEN } })
-        if (!res.ok) throw new Error(`travelpayouts ${res.status}`)
+        if (!res.ok) throw new Error(`travelpayouts ${res.status} ${(await res.text()).slice(0, 150)}`)
         const data = (await res.json()) as { data?: unknown[] }
         return Array.isArray(data.data) ? data.data : []
       }),
@@ -62,6 +62,6 @@ Deno.serve(async (req) => {
     return json({ deals: results.flat(), currency: currency.toUpperCase(), source: 'travelpayouts' })
   } catch (e) {
     console.error('flight-deals failed', e)
-    return json({ error: 'upstream_error' }, 502)
+    return json({ error: 'upstream_error', detail: String(e).slice(0, 200) }, 502)
   }
 })

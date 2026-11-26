@@ -5,7 +5,7 @@ import { BookTabs } from '../components/BookTabs'
 import { SearchSelect, type SelectItem } from '../components/SearchSelect'
 import { Stepper } from '../components/Stepper'
 import { useI18n } from '../i18n/context'
-import { destName, getDestination, searchDestinations } from '../lib/destinations'
+import { countryName, destName, getDestination, searchDestinations } from '../lib/destinations'
 import { ENV } from '../lib/env'
 import {
   filterSortHotels,
@@ -58,7 +58,7 @@ export function HotelsPage() {
 
   const destItems = useCallback(
     (q: string): SelectItem[] =>
-      searchDestinations(q).map((d) => ({ value: d.id, label: destName(d.id, locale), sub: d.name.en === destName(d.id, locale) ? d.country : `${d.name.en} · ${d.country}` })),
+      searchDestinations(q).map((d) => ({ value: d.id, label: destName(d.id, locale), sub: d.name.en === destName(d.id, locale) ? d.country : `${d.name.en} · ${d.country}`, group: countryName(d.country, locale) })),
     [locale],
   )
 

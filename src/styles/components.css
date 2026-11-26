@@ -1871,3 +1871,16 @@ a.chip {
   color: var(--color-primary);
   font-weight: 700;
 }
+
+.picker__list {
+  max-height: 50vh;
+}
+.picker__group {
+  position: sticky;
+  top: 0;
+  padding: 8px 8px 4px;
+  background: var(--color-surface);
+  color: var(--color-ink-3);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 700;
+}

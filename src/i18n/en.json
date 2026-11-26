@@ -310,7 +310,8 @@
     "noticeSample": "Sample fares for demo — not live prices. The final price is shown on the partner site.",
     "noticeLive": "Recent fares found by partners in the last 48 hours. Prices and seats change; the final price is shown on the partner site.",
     "altRound": "Nearby dates · out {depart}, back {back}",
-    "altOne": "Nearby date · departs {depart}"
+    "altOne": "Nearby date · departs {depart}",
+    "cabinNote": "{cabin} fares cannot be looked up in the app. Check the same search on the sites below."
   },
   "hotels": {
     "title": "Hotels",
