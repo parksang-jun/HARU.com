@@ -249,29 +249,41 @@ export function FlightsPage() {
               <p className="notice" data-testid="cabin-fares-note">
                 {t('flights.fareNote', { cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}
               </p>
-              {cabinFares.map((f) => (
-                <article key={f.id} className="card flight" data-testid="cabin-fare">
-                  <div className="row">
-                    <div>
-                      <div className="small" style={{ fontWeight: 700 }}>
-                        {formatDate(f.depart)}
-                        {f.return ? ` – ${formatDate(f.return)}` : ''}
-                      </div>
-                      <div className="xs muted">
-                        {f.stops === 0 ? t('flights.nonstop') : t('flights.stops', { n: f.stops })}
-                        {f.gate ? ` · ${t('flights.fareGate', { gate: f.gate })}` : ''}
-                      </div>
-                    </div>
-                    <span className="badge badge--cat">{t(`flights.cabinOpt.${lastQuery.cabin}`)}</span>
+              {(['out', 'back'] as const).map((leg) => {
+                const list = cabinFares.filter((f) => f.leg === leg)
+                if (!list.length) return null
+                const a = leg === 'out' ? lastQuery.from : lastQuery.to
+                const b = leg === 'out' ? lastQuery.to : lastQuery.from
+                return (
+                  <div key={leg} className="list" data-testid={`cabin-fares-${leg}`}>
+                    <h3 className="small" style={{ fontWeight: 700 }}>
+                      {t(leg === 'out' ? 'flights.legOut' : 'flights.legBack')} · {a} → {b}
+                    </h3>
+                    {list.map((f) => (
+                      <article key={f.id} className="card flight" data-testid="cabin-fare">
+                        <div className="row">
+                          <div>
+                            <div className="small" style={{ fontWeight: 700 }}>
+                              {formatDate(f.depart)}
+                            </div>
+                            <div className="xs muted">
+                              {t('flights.oneWay')} · {f.stops === 0 ? t('flights.nonstop') : t('flights.stops', { n: f.stops })}
+                              {f.gate ? ` · ${t('flights.fareGate', { gate: f.gate })}` : ''}
+                            </div>
+                          </div>
+                          <span className="badge badge--cat">{t(`flights.cabinOpt.${lastQuery.cabin}`)}</span>
+                        </div>
+                        <div className="row">
+                          <div className="price">{formatMoney(f.price, f.currency)}</div>
+                          <button type="button" className="btn btn--primary btn--sm" onClick={() => openPartner('aviasales', { ...lastQuery, from: a, to: b, depart: f.depart, return: undefined })}>
+                            {t('flights.fareCheck')}
+                          </button>
+                        </div>
+                      </article>
+                    ))}
                   </div>
-                  <div className="row">
-                    <div className="price">{formatMoney(f.price, f.currency)}</div>
-                    <button type="button" className="btn btn--primary btn--sm" onClick={() => openPartner('aviasales', { ...lastQuery, depart: f.depart, return: f.return })}>
-                      {t('flights.fareCheck')}
-                    </button>
-                  </div>
-                </article>
-              ))}
+                )
+              })}
             </>
           ) : (
             <p className="notice" data-testid="cabin-note">

@@ -225,6 +225,6 @@ describe('비즈니스석 최근 운임', () => {
   it('실제 응답 형식을 날짜·가격·경유·판매처로 바꾼다 (인원수만큼 곱함)', () => {
     const q = { from: 'ICN', to: 'JFK', depart: '2026-12-17', return: '2026-12-21', adults: 2, cabin: 'business' as const }
     const raw = [{ depart_date: '2026-12-16T10:00:00+09:00', return_date: '2026-12-21T12:00:00-05:00', value: 4200000, number_of_changes: 1, gate: 'Trip.com', found_at: '2026-11-26T09:22:50Z' }, { depart_date: 'x' }]
-    expect(normalizeCabinFares(raw, q, 'KRW')).toEqual([{ id: 'fare-0', depart: '2026-12-16', return: '2026-12-21', price: 8400000, currency: 'KRW', stops: 1, gate: 'Trip.com', foundAt: '2026-11-26T09:22:50Z' }])
+    expect(normalizeCabinFares(raw, q, 'KRW', 'back')).toEqual([{ id: 'fare-back-0', leg: 'back', depart: '2026-12-16', price: 8400000, currency: 'KRW', stops: 1, gate: 'Trip.com', foundAt: '2026-11-26T09:22:50Z' }])
   })
 })
