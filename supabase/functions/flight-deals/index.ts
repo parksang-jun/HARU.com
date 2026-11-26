@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
           limit: '1000',
           show_to_affiliates: 'true',
         })
-        const res = await fetch(`${ENDPOINT}?${params}`, { headers: { 'X-Access-Token': TOKEN, 'Accept-Encoding': 'gzip, deflate' } })
+        const res = await fetch(`${ENDPOINT}?${params}`, { headers: { 'X-Access-Token': TOKEN } })
         if (!res.ok) throw new Error(`travelpayouts ${res.status}`)
         const data = (await res.json()) as { data?: unknown[] }
         return Array.isArray(data.data) ? data.data : []
