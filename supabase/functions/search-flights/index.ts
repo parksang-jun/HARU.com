@@ -7,6 +7,7 @@ import { corsHeaders, json } from '../_shared/cors.ts'
 const TOKEN = Deno.env.get('TRAVELPAYOUTS_TOKEN') ?? ''
 const CAP = Number(Deno.env.get('SEARCH_DAILY_CAP') ?? '60')
 const ENDPOINT = 'https://api.travelpayouts.com/aviasales/v3/prices_for_dates'
+const LATEST = 'https://api.travelpayouts.com/aviasales/v3/get_latest_prices'
 
 const IATA = /^[A-Z]{3}$/
 const DATE = /^\d{4}-\d{2}-\d{2}$/
@@ -51,6 +52,45 @@ Deno.serve(async (req) => {
   const market = MARKET[body.locale ?? 'en'] ?? 'us'
 
   if (!(await underCap(user.id, 'search', CAP))) return json({ error: 'daily_limit' }, 429)
+
+  // 비즈니스석: 편명·시각이 있는 운임 데이터는 일반석뿐이다. 대신 '최근에 검색된 비즈니스 운임'(날짜·가격·경유·판매처)을 돌려준다
+  if (q.cabin === 'business') {
+    try {
+      const p = new URLSearchParams({
+        origin: q.from,
+        destination: q.to,
+        currency,
+        market,
+        trip_class: '1',
+        period_type: 'month',
+        beginning_of_period: `${q.depart.slice(0, 7)}-01`,
+        one_way: q.return ? 'false' : 'true',
+        sorting: 'price',
+        limit: '300',
+        show_to_affiliates: 'true',
+      })
+      const res = await fetch(`${LATEST}?${p}`, { headers: { 'X-Access-Token': TOKEN } })
+      if (!res.ok) {
+        console.error('travelpayouts latest error', res.status, await res.text())
+        return json({ error: 'upstream_error', status: res.status }, 502)
+      }
+      const data = (await res.json()) as { data?: unknown[] }
+      await bumpUsage(user.id, 'search')
+      type Fare = { depart_date?: string; return_date?: string; value?: number }
+      const day = (iso: string) => Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / 86_400_000
+      const gap = (f: Fare) => Math.abs(day(f.depart_date as string) - day(q.depart)) + (q.return && f.return_date ? Math.abs(day(f.return_date) - day(q.return)) : 0)
+      const fares = ((Array.isArray(data.data) ? data.data : []) as Fare[])
+        .filter((f) => typeof f.depart_date === 'string' && typeof f.value === 'number' && Boolean(f.return_date) === Boolean(q.return))
+        // 앞뒤 7일 안의 날짜만
+        .filter((f) => Math.abs(day(f.depart_date as string) - day(q.depart)) <= 7 && (!q.return || Math.abs(day(f.return_date as string) - day(q.return)) <= 7))
+        .sort((a, b) => gap(a) - gap(b) || (a.value ?? 0) - (b.value ?? 0))
+        .slice(0, 10)
+      return json({ offers: [], fares, currency: currency.toUpperCase(), source: 'travelpayouts' })
+    } catch (e) {
+      console.error('search-flights (business) failed', e)
+      return json({ error: 'search_failed', detail: String(e).slice(0, 200) }, 502)
+    }
+  }
 
   const params = new URLSearchParams({
     origin: q.from,

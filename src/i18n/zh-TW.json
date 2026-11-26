@@ -311,7 +311,10 @@
     "noticeLive": "合作夥伴近 48 小時內找到的票價。價格與座位隨時變動，最終價格請以合作網站為準。",
     "altRound": "鄰近日期票價 · {depart} 出發，{back} 回程",
     "altOne": "鄰近日期票價 · {depart} 出發",
-    "cabinNote": "App 內無法查詢{cabin}票價，請在下方網站以相同條件查詢。"
+    "cabinNote": "App 內無法查詢{cabin}票價，請在下方網站以相同條件查詢。",
+    "fareNote": "這是近期搜尋到的{cabin}票價，航班與時間請在訂票網站確認。",
+    "fareGate": "販售處 {gate}",
+    "fareCheck": "查看價格"
   },
   "hotels": {
     "title": "飯店",

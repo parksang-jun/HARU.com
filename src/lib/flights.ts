@@ -317,6 +317,61 @@ function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
+/** 최근에 검색된 좌석 등급별 운임 한 건 — 편명·시각 없이 날짜·가격·경유·판매처만 있다 */
+export interface CabinFare {
+  id: string
+  depart: string // YYYY-MM-DD
+  return?: string
+  price: number // 전체 인원, 표시 통화
+  currency: string
+  stops: number
+  gate?: string // 운임을 찾은 판매처
+  foundAt?: string
+}
+
+interface RemoteFare {
+  depart_date?: string
+  return_date?: string
+  value?: number
+  number_of_changes?: number
+  gate?: string
+  found_at?: string
+}
+
+export function normalizeCabinFares(raw: unknown, q: FlightQuery, currency: string): CabinFare[] {
+  if (!Array.isArray(raw)) return []
+  const out: CabinFare[] = []
+  ;(raw as RemoteFare[]).forEach((r, i) => {
+    if (typeof r.depart_date !== 'string' || typeof r.value !== 'number' || r.value <= 0) return
+    out.push({
+      id: `fare-${i}`,
+      depart: r.depart_date.slice(0, 10),
+      return: r.return_date ? r.return_date.slice(0, 10) : undefined,
+      price: Math.round(r.value * q.adults),
+      currency,
+      stops: Number(r.number_of_changes) || 0,
+      gate: typeof r.gate === 'string' && r.gate ? r.gate : undefined,
+      foundAt: r.found_at,
+    })
+  })
+  return out
+}
+
+/** 비즈니스석의 최근 운임 (실서비스 전용 — 목업은 일반 검색 결과에 등급이 반영된다) */
+export async function searchCabinFares(q: FlightQuery, locale: Locale): Promise<CabinFare[]> {
+  if (ENV.mockAi || q.cabin !== 'business') return []
+  const sb = getSupabase()
+  if (!sb) throw new FlightSearchError('unavailable')
+  await ensureSession()
+  const currency = displayCurrency(locale)
+  const { data, error } = await sb.functions.invoke('search-flights', { body: { query: q, currency, locale } })
+  if (error) {
+    const status = (error as { context?: Response }).context?.status
+    throw new FlightSearchError(status === 429 ? 'limit' : 'unavailable')
+  }
+  return normalizeCabinFares(data?.fares, q, currency)
+}
+
 /** 실제 운임 데이터(Travelpayouts 캐시)는 일반석만 있다. 다른 좌석 등급은 제휴 검색 링크로 안내한다 */
 export function liveCabinSupported(q: Pick<FlightQuery, 'cabin'>): boolean {
   return ENV.mockAi || q.cabin === 'economy'
