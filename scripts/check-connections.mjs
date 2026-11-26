@@ -31,4 +31,6 @@ for (const [group, name, keys, note] of ROWS) {
 }
 console.log(`\n${ok}/${ROWS.length} 연결됨`)
 console.log('서버 비밀값(TRAVELPAYOUTS_TOKEN, AGODA_SITE_ID, AGODA_API_KEY)은 Supabase 에 있어 여기서 확인할 수 없습니다: supabase secrets list')
+if (env.VITE_AI_BUILTIN === 'true') console.log('AI: 내장 생성기 사용 (비용 없음)')
+else if (env.VITE_MOCK_AI === 'false') console.log('주의: AI 가 실제 서버를 부릅니다 — ANTHROPIC_API_KEY 가 필요하고 호출마다 비용이 듭니다. 비용 없이 쓰려면 VITE_AI_BUILTIN=true')
 if (env.VITE_MOCK_AI === 'true') console.log('주의: VITE_MOCK_AI=true — 예시 데이터로 동작 중입니다. 실제 연결을 쓰려면 false 로 바꾸세요.')
