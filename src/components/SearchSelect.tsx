@@ -24,7 +24,14 @@ export function SearchSelect({ label, value, display, placeholder, searchPlaceho
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
-  const items = useMemo(() => (open ? search(q).slice(0, 40) : []), [open, q, search])
+  // 전체 목록을 스크롤로 볼 수 있게 자르지 않는다. 묶음(나라)이 있으면 처음 나온 순서대로 모아서 보여 준다
+  const items = useMemo(() => {
+    if (!open) return []
+    const list = search(q)
+    const order: string[] = []
+    for (const it of list) if (!order.includes(it.group ?? '')) order.push(it.group ?? '')
+    return order.flatMap((g) => list.filter((it) => (it.group ?? '') === g))
+  }, [open, q, search])
 
   useEffect(() => {
     if (open) inputRef.current?.focus()
@@ -56,8 +63,13 @@ export function SearchSelect({ label, value, display, placeholder, searchPlaceho
           />
           <ul className="picker__list" role="listbox">
             {items.length === 0 && <li className="picker__empty">{emptyText}</li>}
-            {items.map((it) => (
+            {items.map((it, i) => (
               <li key={it.value}>
+                {it.group && it.group !== items[i - 1]?.group && (
+                  <div className="picker__group" data-testid="picker-group">
+                    {it.group}
+                  </div>
+                )}
                 <button
                   type="button"
                   role="option"

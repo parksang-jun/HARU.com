@@ -310,7 +310,8 @@
     "noticeSample": "示範用的範例票價，並非實際價格。最終價格請以合作網站為準。",
     "noticeLive": "合作夥伴近 48 小時內找到的票價。價格與座位隨時變動，最終價格請以合作網站為準。",
     "altRound": "鄰近日期票價 · {depart} 出發，{back} 回程",
-    "altOne": "鄰近日期票價 · {depart} 出發"
+    "altOne": "鄰近日期票價 · {depart} 出發",
+    "cabinNote": "App 內無法查詢{cabin}票價，請在下方網站以相同條件查詢。"
   },
   "hotels": {
     "title": "飯店",

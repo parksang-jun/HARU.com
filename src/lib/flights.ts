@@ -317,11 +317,18 @@ function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
+/** 실제 운임 데이터(Travelpayouts 캐시)는 일반석만 있다. 다른 좌석 등급은 제휴 검색 링크로 안내한다 */
+export function liveCabinSupported(q: Pick<FlightQuery, 'cabin'>): boolean {
+  return ENV.mockAi || q.cabin === 'economy'
+}
+
 export async function searchFlights(q: FlightQuery, locale: Locale): Promise<FlightOffer[]> {
   if (ENV.mockAi) {
     await delay(450)
     return buildMockFlights(q, locale)
   }
+  // 일반석 운임을 다른 등급인 것처럼 보여 주지 않는다
+  if (!liveCabinSupported(q)) return []
   const sb = getSupabase()
   if (!sb) throw new FlightSearchError('unavailable')
   await ensureSession()
