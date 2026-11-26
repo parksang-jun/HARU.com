@@ -6,7 +6,8 @@
 3. Project Settings → API 에서 `Project URL`, `anon public key` 복사 → 앱 `.env.local` 의 `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
 
 ## 2. 스키마 적용
-SQL Editor 에 `supabase/migrations/0001_init.sql` → `0002_travel_booking.sql` 순서로 붙여넣고 실행 → 이어서 `supabase/seed.sql` 실행.
+터미널에서 `npx supabase link --project-ref <ref>` → `npx supabase db push --remote` (0001~0005 전부 적용. 0005 는 Data API 권한 — 2026-05-30 이후 만든 프로젝트에 필수).
+직접 붙여넣을 때는 SQL Editor 에 `supabase/migrations` 의 파일을 번호 순서대로 실행 → 이어서 `supabase/seed.sql` 실행.
 (CLI 사용 시: `supabase link --project-ref <ref>` → `supabase db push` → `psql ... -f supabase/seed.sql`)
 
 시드의 쿠폰 8건은 `is_sample = true` 입니다. 출시 전 삭제:
