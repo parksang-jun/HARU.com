@@ -144,7 +144,8 @@
     "planTitle": "Flights & hotels for this trip",
     "flightsTo": "Flights to {city}",
     "hotelsIn": "Hotels in {city}",
-    "findHotels": "Find hotels"
+    "findHotels": "Find hotels",
+    "reviews": "Ratings & reviews"
   },
   "cat": {
     "sight": "Sight",
@@ -330,7 +331,8 @@
     "sort": {
       "recommended": "Recommended",
       "price": "Lowest price",
-      "rating": "Top rated"
+      "rating": "Top rated",
+      "value": "Cheapest well-rated"
     },
     "freeCancel": "Free cancellation",
     "breakfast": "Breakfast included",
@@ -352,7 +354,8 @@
     "noticeLive": "Prices from partners, per room per night, before taxes and fees. Final price on the partner site.",
     "viewReal": "See real hotels in {area}",
     "viewRealCity": "See real hotels",
-    "sampleTop": "These are sample listings for testing, so no hotel with these names exists. The button opens real hotel results for the same area and dates."
+    "sampleTop": "These are sample listings for testing, so no hotel with these names exists. The button opens real hotel results for the same area and dates.",
+    "best": "Cheapest rated 8.0+"
   },
   "deals2": {
     "title": "Business class deals",

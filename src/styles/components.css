@@ -1859,3 +1859,9 @@ a.chip {
   background: var(--color-surface-2);
   border-radius: var(--radius-m);
 }
+
+.badge--best {
+  justify-self: start;
+  background: var(--color-success);
+  color: #fff;
+}

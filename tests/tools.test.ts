@@ -180,3 +180,14 @@ describe('스폰서 칸', () => {
     expect(pickSponsor(list, 'airport', ['JP'])).toBeNull()
   })
 })
+
+import { filterSortHotels, type Hotel } from '../src/lib/hotels'
+
+describe('숙소: 평점 좋은 곳 중 최저가', () => {
+  const h = (id: string, price: number, score?: number, count?: number): Hotel => ({ id, name: id, stars: 3, pricePerNight: price, currency: 'KRW', hue: 0, source: 'sample', reviewScore: score, reviewCount: count })
+  it('평점 8.0 이상(후기 30개 이상)인 숙소를 싼 순서로 먼저 보여 준다', () => {
+    const list = [h('cheap-bad', 50, 6.9), h('good-mid', 90, 8.4, 500), h('good-cheap', 70, 8.1, 120), h('few-reviews', 40, 9.5, 3), h('no-score', 30)]
+    const out = filterSortHotels(list, { sort: 'value', minStars: 0, freeCancelOnly: false }).map((x) => x.id)
+    expect(out).toEqual(['good-cheap', 'good-mid', 'no-score', 'few-reviews', 'cheap-bad'])
+  })
+})

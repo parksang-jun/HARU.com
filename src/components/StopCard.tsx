@@ -78,6 +78,11 @@ export function StopCard({ stop, tripId, country = 'KR', onFindHotels }: Props) 
               {t('itin.reserve')} · {t(`partner.${stop.reserve.provider}`)}
             </button>
           )}
+          {stop.category !== 'stay' && (
+            <button type="button" className="btn btn--sm btn--ghost" onClick={() => openExternal(googleMapsSearchUrl(`${stop.name.en || name} ${stop.area}`.trim()))} data-testid="stop-reviews">
+              {t('itin.reviews')}
+            </button>
+          )}
           <button type="button" className="btn btn--sm btn--ghost" onClick={() => setMapsOpen((v) => !v)} aria-expanded={mapsOpen}>
             {t('itin.map')}
           </button>

@@ -144,7 +144,8 @@
     "planTitle": "這趟旅程的機票與飯店",
     "flightsTo": "飛往{city}的機票",
     "hotelsIn": "{city}的飯店",
-    "findHotels": "找飯店"
+    "findHotels": "找飯店",
+    "reviews": "查看評分·評論"
   },
   "cat": {
     "sight": "景點",
@@ -330,7 +331,8 @@
     "sort": {
       "recommended": "推薦",
       "price": "價格最低",
-      "rating": "評分最高"
+      "rating": "評分最高",
+      "value": "高評價中最便宜"
     },
     "freeCancel": "免費取消",
     "breakfast": "含早餐",
@@ -352,7 +354,8 @@
     "noticeLive": "合作夥伴提供的價格（每間每晚，未含稅費）。最終價格請以合作網站為準。",
     "viewReal": "查看{area}的實際飯店",
     "viewRealCity": "查看實際飯店",
-    "sampleTop": "以下為測試用的範例清單，並沒有同名的飯店。點按鈕會前往同一區域、同一日期的實際飯店搜尋結果。"
+    "sampleTop": "以下為測試用的範例清單，並沒有同名的飯店。點按鈕會前往同一區域、同一日期的實際飯店搜尋結果。",
+    "best": "評分8.0以上最低價"
   },
   "deals2": {
     "title": "商務艙特價",
