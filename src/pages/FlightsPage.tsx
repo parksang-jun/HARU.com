@@ -14,6 +14,8 @@ import {
   flightPartnersFor,
   flightPartnerUrl,
   liveCabinSupported,
+  searchCabinFares,
+  type CabinFare,
   searchFlights,
   sortFlights,
   validateFlightQuery,
@@ -65,6 +67,7 @@ export function FlightsPage() {
     [locale],
   )
 
+  const [cabinFares, setCabinFares] = useState<CabinFare[]>([])
   const run = useCallback(
     async (q: FlightQuery) => {
       const invalid = validateFlightQuery(q)
@@ -76,8 +79,9 @@ export function FlightsPage() {
       setBusy(true)
       setResults(null)
       try {
-        const list = await searchFlights(q, locale)
+        const [list, fares] = await Promise.all([searchFlights(q, locale), searchCabinFares(q, locale)])
         setResults(list)
+        setCabinFares(fares)
         setLastQuery(q)
         void savePref(HOME_AIRPORT_KEY, q.from)
       } catch (e) {
@@ -220,29 +224,59 @@ export function FlightsPage() {
             <h2>
               {destName(getAirport(lastQuery.from)?.cityId ?? '', locale)} → {destName(getAirport(lastQuery.to)?.cityId ?? '', locale)}
             </h2>
-            <span className="xs muted">{t('flights.count', { n: shown.length })}</span>
+            {liveCabinSupported(lastQuery) && <span className="xs muted">{t('flights.count', { n: shown.length })}</span>}
           </div>
           <p className="xs muted">
             {formatDate(lastQuery.depart)}
             {lastQuery.return ? ` – ${formatDate(lastQuery.return)}` : ''} · {t('flights.paxCabin', { n: lastQuery.adults, cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}
           </p>
-          <div className="chips">
-            {(['price', 'duration', 'depart'] as FlightSort[]).map((s) => (
-              <button key={s} type="button" className={`chip chip--sm${sort === s ? ' is-on' : ''}`} onClick={() => setSort(s)}>
-                {t(`flights.sort.${s}`)}
-              </button>
-            ))}
-            <button type="button" className={`chip chip--sm${nonstopOnly ? ' is-on' : ''}`} onClick={() => setNonstopOnly((v) => !v)} data-testid="nonstop">
-              {t('flights.nonstopOnly')}
-            </button>
-          </div>
-
-          {!liveCabinSupported(lastQuery) ? (
+          {liveCabinSupported(lastQuery) ? (
+            <>
+              <div className="chips">
+                {(['price', 'duration', 'depart'] as FlightSort[]).map((s) => (
+                  <button key={s} type="button" className={`chip chip--sm${sort === s ? ' is-on' : ''}`} onClick={() => setSort(s)}>
+                    {t(`flights.sort.${s}`)}
+                  </button>
+                ))}
+                <button type="button" className={`chip chip--sm${nonstopOnly ? ' is-on' : ''}`} onClick={() => setNonstopOnly((v) => !v)} data-testid="nonstop">
+                  {t('flights.nonstopOnly')}
+                </button>
+              </div>
+              {shown.length === 0 && <p className="muted small">{t('flights.empty')}</p>}
+            </>
+          ) : cabinFares.length > 0 ? (
+            <>
+              <p className="notice" data-testid="cabin-fares-note">
+                {t('flights.fareNote', { cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}
+              </p>
+              {cabinFares.map((f) => (
+                <article key={f.id} className="card flight" data-testid="cabin-fare">
+                  <div className="row">
+                    <div>
+                      <div className="small" style={{ fontWeight: 700 }}>
+                        {formatDate(f.depart)}
+                        {f.return ? ` – ${formatDate(f.return)}` : ''}
+                      </div>
+                      <div className="xs muted">
+                        {f.stops === 0 ? t('flights.nonstop') : t('flights.stops', { n: f.stops })}
+                        {f.gate ? ` · ${t('flights.fareGate', { gate: f.gate })}` : ''}
+                      </div>
+                    </div>
+                    <span className="badge badge--cat">{t(`flights.cabinOpt.${lastQuery.cabin}`)}</span>
+                  </div>
+                  <div className="row">
+                    <div className="price">{formatMoney(f.price, f.currency)}</div>
+                    <button type="button" className="btn btn--primary btn--sm" onClick={() => openPartner('aviasales', { ...lastQuery, depart: f.depart, return: f.return })}>
+                      {t('flights.fareCheck')}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </>
+          ) : (
             <p className="notice" data-testid="cabin-note">
               {t('flights.cabinNote', { cabin: t(`flights.cabinOpt.${lastQuery.cabin}`) })}
             </p>
-          ) : (
-            shown.length === 0 && <p className="muted small">{t('flights.empty')}</p>
           )}
           {shown.map((o) => (
             <article key={o.id} className="card flight" data-testid="flight-offer">
@@ -294,7 +328,7 @@ export function FlightsPage() {
               ))}
             </div>
           </div>
-          <p className="notice">{ENV.mockAi ? t('flights.noticeSample') : t('flights.noticeLive')}</p>
+          {(liveCabinSupported(lastQuery) || cabinFares.length > 0) && <p className="notice">{ENV.mockAi ? t('flights.noticeSample') : t('flights.noticeLive')}</p>}
           <p className="notice">{t('itin.affiliateDisclosure')}</p>
         </section>
       )}

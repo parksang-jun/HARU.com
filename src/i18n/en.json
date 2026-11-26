@@ -311,7 +311,10 @@
     "noticeLive": "Recent fares found by partners in the last 48 hours. Prices and seats change; the final price is shown on the partner site.",
     "altRound": "Nearby dates · out {depart}, back {back}",
     "altOne": "Nearby date · departs {depart}",
-    "cabinNote": "{cabin} fares cannot be looked up in the app. Check the same search on the sites below."
+    "cabinNote": "{cabin} fares cannot be looked up in the app. Check the same search on the sites below.",
+    "fareNote": "Recently found {cabin} fares. Check flight numbers and times on the booking site.",
+    "fareGate": "via {gate}",
+    "fareCheck": "Check price"
   },
   "hotels": {
     "title": "Hotels",
