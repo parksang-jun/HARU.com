@@ -1865,3 +1865,9 @@ a.chip {
   background: var(--color-success);
   color: #fff;
 }
+
+.flight__alt {
+  margin: 0 0 6px;
+  color: var(--color-primary);
+  font-weight: 700;
+}

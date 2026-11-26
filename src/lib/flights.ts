@@ -42,6 +42,9 @@ export interface FlightOffer {
   baggage: boolean // 위탁 수하물 포함 여부(추정)
   source: 'sample' | 'travelpayouts'
   bookUrl?: string // 실데이터일 때 파트너가 제공한 딥링크
+  /** 검색한 날짜의 운임 기록이 없어 대신 보여 주는 가까운 날짜 (YYYY-MM-DD) */
+  altDepart?: string
+  altReturn?: string
 }
 
 export type FlightPartner = 'trip' | 'skyscanner' | 'aviasales' | 'google' | 'naver'
@@ -288,6 +291,12 @@ export function normalizeRemoteOffers(raw: unknown, q: FlightQuery, currency: st
       currency,
       baggage: !getAirline(r.airline)?.lcc,
       source: 'travelpayouts',
+    }
+    const depDate = r.departure_at?.slice(0, 10)
+    const retDate = r.return_at?.slice(0, 10)
+    if (depDate && (depDate !== q.depart || (q.return && retDate && retDate !== q.return))) {
+      offer.altDepart = depDate
+      if (q.return && retDate) offer.altReturn = retDate
     }
     const ret = localHHMM(r.return_at)
     if (q.return && ret) {
