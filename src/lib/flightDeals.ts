@@ -2,7 +2,7 @@
 // 라이브: Edge Function `flight-deals` → Travelpayouts `get_latest_prices`(trip_class=1, 목적지 생략 = 전 노선)
 // 할인율 = 노선 거리 기반 "평소 비즈니스 운임 추정치" 대비 (API 가 정가를 주지 않으므로 화면에 "추정 정가 대비" 표기)
 import type { Locale } from '../i18n'
-import { airportDestination, airlinesOf, bestAirportFor, getAirline } from './airports'
+import { airlinesOf, airportDestination, bestAirportFor, codeDestination, getAirline } from './airports'
 import { appendQuery } from './affiliate'
 import { DESTINATIONS, type Region } from './destinations'
 import { ENV } from './env'
@@ -101,22 +101,24 @@ export function normalizeRemoteDeals(raw: unknown, fromCode: string, today: stri
   const best = new Map<string, FlightDeal>()
   for (const r of raw as RemoteDeal[]) {
     if (typeof r.value !== 'number' || !r.destination || !r.depart_date) continue
-    const lead = daysFrom(today, r.depart_date)
+    // 날짜가 시각까지 붙어 올 수 있다 (2026-12-02T17:15:00+09:00)
+    const departDay = r.depart_date.slice(0, 10)
+    const lead = daysFrom(today, departDay)
     if (lead < 0 || lead > maxDays) continue
-    const dst = airportDestination(r.destination) ?? DESTINATIONS.find((d) => d.airports.includes(r.destination!))
+    const dst = codeDestination(r.destination) ?? DESTINATIONS.find((d) => d.airports.includes(r.destination!))
     if (!dst) continue
     const km = distanceKm(from.lat, from.lng, dst.lat, dst.lng)
     const usual = fromUsd(typicalBusinessUsd(km, Boolean(r.return_date)), currency)
     const discountPct = Math.round((1 - r.value / usual) * 100)
     if (discountPct < 10) continue
     const deal: FlightDeal = {
-      id: `tp-${r.destination}-${r.depart_date}`,
+      id: `tp-${r.destination}-${departDay}`,
       from: fromCode,
-      to: r.destination,
+      to: dst.airports[0] ?? r.destination,
       cityId: dst.id,
       region: dst.region,
-      depart: r.depart_date,
-      return: r.return_date || undefined,
+      depart: departDay,
+      return: r.return_date ? r.return_date.slice(0, 10) : undefined,
       stops: Number(r.number_of_changes) || 0,
       price: Math.round(r.value),
       usualPrice: usual,

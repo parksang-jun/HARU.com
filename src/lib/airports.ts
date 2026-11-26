@@ -272,3 +272,15 @@ export function airlineName(code: string, locale: Locale): string {
 export function airlinesOf(country: string): Airline[] {
   return AIRLINES.filter((a) => a.country === country)
 }
+
+/** 공항이 여럿인 도시의 "도시 코드" → 여행지 (운임 데이터는 공항 대신 도시 코드로 올 때가 많다) */
+const CITY_CODES: Record<string, string> = {
+  SEL: 'seoul', TYO: 'tokyo', OSA: 'osaka', SPK: 'sapporo', TPE: 'taipei', SHA: 'shanghai', BJS: 'beijing', BKK: 'bangkok',
+  PAR: 'paris', LON: 'london', ROM: 'rome', MIL: 'milan', BER: 'berlin', IST: 'istanbul', REK: 'reykjavik',
+  NYC: 'newyork', CHI: 'chicago', YTO: 'toronto',
+}
+
+/** 공항 코드 또는 도시 코드 → 여행지 */
+export function codeDestination(code: string): Destination | undefined {
+  return airportDestination(code) ?? (CITY_CODES[code] ? getDestination(CITY_CODES[code]) : undefined)
+}
