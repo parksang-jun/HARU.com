@@ -21,6 +21,8 @@ import { MapPage } from './pages/MapPage'
 import { LedgerPage } from './pages/LedgerPage'
 import { PackingPage } from './pages/PackingPage'
 import { TalkPage } from './pages/TalkPage'
+import { MoneyPage } from './pages/MoneyPage'
+import { PhrasesPage } from './pages/PhrasesPage'
 import { TripSetupPage } from './pages/TripSetupPage'
 
 export default function App() {
@@ -45,6 +47,8 @@ export default function App() {
         <Route path="/trip/:id/budget" element={<LedgerPage />} />
         <Route path="/trip/:id/packing" element={<PackingPage />} />
         <Route path="/trip/:id/talk" element={<TalkPage />} />
+        <Route path="/trip/:id/money" element={<MoneyPage />} />
+        <Route path="/trip/:id/phrases" element={<PhrasesPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/flights" element={<FlightsPage />} />
         <Route path="/flights/deals" element={<BusinessDealsPage />} />

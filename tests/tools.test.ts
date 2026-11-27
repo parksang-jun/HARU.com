@@ -228,3 +228,56 @@ describe('비즈니스석 최근 운임', () => {
     expect(normalizeCabinFares(raw, q, 'KRW', 'back')).toEqual([{ id: 'fare-back-0', leg: 'back', depart: '2026-12-16', price: 8400000, currency: 'KRW', stops: 1, gate: 'Trip.com', foundAt: '2026-11-26T09:22:50Z' }])
   })
 })
+
+import { cashShare, estimateBudget } from '../src/lib/budget'
+import { PHRASE_KEYS, PHRASES, phraseLang } from '../src/lib/phrases'
+import { approxRates, convert, parseRates } from '../src/lib/rates'
+
+describe('환율', () => {
+  it('두 가지 응답 형식을 모두 해석한다', () => {
+    const a = parseRates({ base: 'USD', date: '2026-11-26', rates: { KRW: 1400, jpy: 150, BAD: -1 } }, 'USD')
+    expect(a).toEqual({ base: 'USD', date: '2026-11-26', live: true, rates: { KRW: 1400, JPY: 150, USD: 1 } })
+    const b = parseRates([{ date: '2026-11-26', base: 'USD', quote: 'KRW', rate: 1400 }, { date: '2026-11-26', base: 'USD', quote: 'VND', rate: 25400 }], 'USD')
+    expect(b?.rates).toEqual({ KRW: 1400, VND: 25400, USD: 1 })
+    expect(parseRates({ message: 'not found' }, 'USD')).toBeNull()
+    expect(parseRates(null, 'USD')).toBeNull()
+  })
+  it('기준 통화를 거쳐 환산하고, 없는 통화는 null', () => {
+    const r = parseRates({ rates: { KRW: 1400, JPY: 140 } }, 'USD')!
+    expect(convert(1000, 'JPY', 'KRW', r)).toBeCloseTo(10000)
+    expect(convert(5, 'KRW', 'KRW', r)).toBe(5)
+    expect(convert(1, 'XXX', 'KRW', r)).toBeNull()
+    expect(approxRates('KRW').live).toBe(false)
+    expect(approxRates('KRW').rates.KRW).toBe(1)
+  })
+})
+
+describe('예산 추정', () => {
+  const trip = (budget: 'saver' | 'standard' | 'premium', cities = ['tokyo']) => ({ params: { ...params, cities, budget, travelers: 'couple' as const, startDate: '2027-04-10', endDate: '2027-04-13' } })
+  it('인원·일수·박수·객실 수를 반영하고 합계가 맞는다', () => {
+    const e = estimateBudget(trip('standard'))
+    expect([e.people, e.days, e.nights, e.rooms]).toEqual([2, 4, 3, 1])
+    expect(e.totalUsd).toBe(Object.values(e.lines).reduce((a, b) => a + b, 0))
+    expect(e.onTripUsd).toBe(e.totalUsd - e.lines.stay)
+  })
+  it('예산 등급이 높을수록 커진다', () => {
+    expect(estimateBudget(trip('saver')).totalUsd).toBeLessThan(estimateBudget(trip('standard')).totalUsd)
+    expect(estimateBudget(trip('standard')).totalUsd).toBeLessThan(estimateBudget(trip('premium')).totalUsd)
+  })
+  it('현금 위주 나라는 환전 비율이 높다', () => {
+    expect(cashShare('JP')).toBeGreaterThan(cashShare('SG'))
+    expect(cashShare('ZZ')).toBe(0.4)
+  })
+})
+
+describe('여행 회화', () => {
+  it('모든 언어에 13개 문장이 빠짐없이 있다', () => {
+    for (const lang of Object.keys(PHRASES) as (keyof typeof PHRASES)[]) for (const k of PHRASE_KEYS) expect(PHRASES[lang][k], `${lang}.${k}`).toBeTruthy()
+  })
+  it('나라에 맞는 언어를 고르고, 준비되지 않은 곳은 영어로 대신한다', () => {
+    expect(phraseLang('JP')).toEqual({ lang: 'ja', fallback: false })
+    expect(phraseLang('CN').lang).toBe('zh-Hans')
+    expect(phraseLang('TW').lang).toBe('zh-Hant')
+    expect(phraseLang('TR')).toEqual({ lang: 'en', fallback: true })
+  })
+})

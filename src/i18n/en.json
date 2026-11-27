@@ -674,7 +674,9 @@
     "edit": "Edit itinerary",
     "ledger": "Expenses & split",
     "packing": "Packing list",
-    "talk": "Traveler talk"
+    "talk": "Traveler talk",
+    "money": "Rates & budget",
+    "phrases": "Phrases"
   },
   "map": {
     "title": "Map & route",
@@ -745,7 +747,9 @@
     "transfer": "{from} → {to}",
     "paidBy": "Paid by {payer} · {among}",
     "remove": "Remove",
-    "local": "Expenses are stored on this device only."
+    "local": "Expenses are stored on this device only.",
+    "homeTotal": "about {amount} in your currency",
+    "vsBudget": "{pct}% of the expected on-trip spend ({budget})"
   },
   "packing": {
     "title": "Packing list",
@@ -849,6 +853,84 @@
         "title": "Ad space: lounges & duty free",
         "body": "Lounge passes and duty-free offers matched to the departure airport."
       }
+    }
+  },
+  "ready": {
+    "title": "Haru got these ready",
+    "sub": "Built automatically from your itinerary and stays. Tap to check.",
+    "weather": "Daily weather and what to wear",
+    "packing": "Packing list",
+    "money": "Exchange rate, expected spend, cash to exchange",
+    "tips": "Country tips and emergency numbers",
+    "phrases": "Basic local phrases",
+    "airport": "Departure airport guide",
+    "map": "Daily route and plan check",
+    "ledger": "Expenses & split"
+  },
+  "money": {
+    "title": "Rates & budget",
+    "sub": "Get a feel for what this trip will cost.",
+    "rate": "Exchange rate",
+    "live": "as of {date}",
+    "approx": "Approximate",
+    "swap": "Swap direction",
+    "rateNote": "Central-bank reference rates (updated daily). Real exchange and card rates include fees and are worse. Exchange rates: Frankfurter (frankfurter.dev)",
+    "approxNote": "Live rates could not be loaded, so approximate values are used. For reference only.",
+    "noRate": "Could not load the {cur} rate.",
+    "domestic": "A domestic trip, so no currency exchange is needed.",
+    "budget": "Expected spend",
+    "estimate": "Estimate",
+    "budgetBasis": "{people} people · {days} days · {nights} nights ({rooms} room(s)) · {tier} budget",
+    "line": {
+      "stay": "Stay",
+      "food": "Food",
+      "transit": "Local transport",
+      "activity": "Tickets & activities",
+      "extra": "Buffer & souvenirs"
+    },
+    "total": "Total (flights not included)",
+    "budgetNote": "A rough figure from the destination’s price level and your budget choice. Real costs may differ.",
+    "cash": "Cash to exchange",
+    "cashHome": "about {amount}",
+    "cashWhy": {
+      "cash": "Cash is widely used in {country}, so about 60% of on-trip spend is set as cash.",
+      "card": "Cards and mobile pay work well in {country}, so only about 20% of on-trip spend is set as cash.",
+      "mixed": "About 40% of on-trip spend is set as cash."
+    }
+  },
+  "phrases": {
+    "title": "Phrases",
+    "sub": "Tap a phrase to show it large to a local.",
+    "fallback": "Local-language phrases for this country are not ready yet, so English is shown.",
+    "note": "Basic phrases. Wording can vary by region and situation.",
+    "tapClose": "Tap to close",
+    "lang": {
+      "ja": "Japanese",
+      "zh-Hant": "Chinese (Traditional)",
+      "zh-Hans": "Chinese (Simplified)",
+      "th": "Thai",
+      "vi": "Vietnamese",
+      "en": "English",
+      "fr": "French",
+      "es": "Spanish",
+      "it": "Italian",
+      "de": "German",
+      "ko": "Korean"
+    },
+    "k": {
+      "hello": "Hello",
+      "thanks": "Thank you",
+      "sorry": "Sorry / Excuse me",
+      "yes": "Yes",
+      "no": "No",
+      "howMuch": "How much is it?",
+      "toilet": "Where is the restroom?",
+      "thisOne": "This one, please",
+      "bill": "The check, please",
+      "help": "Please help me",
+      "english": "Do you speak English?",
+      "water": "Water, please",
+      "station": "Where is the station?"
     }
   }
 }

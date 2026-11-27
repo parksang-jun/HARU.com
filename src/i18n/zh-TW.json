@@ -674,7 +674,9 @@
     "edit": "編輯行程",
     "ledger": "記帳·分帳",
     "packing": "行李清單",
-    "talk": "旅人聊聊"
+    "talk": "旅人聊聊",
+    "money": "匯率·預算",
+    "phrases": "旅遊會話"
   },
   "map": {
     "title": "地圖·路線",
@@ -745,7 +747,9 @@
     "transfer": "{from} → {to}",
     "paidBy": "{payer}付款 · {among}",
     "remove": "刪除",
-    "local": "記帳資料只儲存在這台裝置上。"
+    "local": "記帳資料只儲存在這台裝置上。",
+    "homeTotal": "約合本國貨幣 {amount}",
+    "vsBudget": "已使用預估當地花費 {budget} 的 {pct}%"
   },
   "packing": {
     "title": "行李清單",
@@ -849,6 +853,84 @@
         "title": "機場貴賓室·免稅店廣告版位",
         "body": "放置符合出發機場的貴賓室使用券與免稅店優惠廣告。"
       }
+    }
+  },
+  "ready": {
+    "title": "Haru 幫你準備好了",
+    "sub": "根據行程與住宿自動產生，點一下即可查看。",
+    "weather": "每日天氣與穿搭",
+    "packing": "行李清單",
+    "money": "匯率·預估花費·建議換匯金額",
+    "tips": "各國小撇步與緊急電話",
+    "phrases": "當地語言基本會話",
+    "airport": "出發機場指南",
+    "map": "每日路線與行程檢查",
+    "ledger": "記帳·分帳"
+  },
+  "money": {
+    "title": "匯率·預算",
+    "sub": "先估一下這趟旅程會花多少。",
+    "rate": "匯率",
+    "live": "{date} 的匯率",
+    "approx": "概略匯率",
+    "swap": "切換方向",
+    "rateNote": "這是央行參考匯率（每日更新一次）。實際換匯與刷卡含手續費，會比較不利。匯率：Frankfurter (frankfurter.dev)",
+    "approxNote": "無法取得實際匯率，改以概略值計算，僅供參考。",
+    "noRate": "無法取得 {cur} 匯率。",
+    "domestic": "國內旅遊不需要換匯。",
+    "budget": "預估花費",
+    "estimate": "估算",
+    "budgetBasis": "{people}人 · {days}天 · {nights}晚（{rooms}間房）· 預算 {tier}",
+    "line": {
+      "stay": "住宿",
+      "food": "餐費",
+      "transit": "當地交通",
+      "activity": "門票·體驗",
+      "extra": "預備金·紀念品"
+    },
+    "total": "合計（不含機票）",
+    "budgetNote": "依目的地物價與你選的預算估算，實際費用可能不同。",
+    "cash": "建議換匯金額",
+    "cashHome": "約 {amount}",
+    "cashWhy": {
+      "cash": "{country}使用現金的地方很多，因此以當地花費的約60%作為現金。",
+      "card": "{country}刷卡與行動支付很方便，因此只以當地花費的約20%作為現金。",
+      "mixed": "以當地花費的約40%作為現金。"
+    }
+  },
+  "phrases": {
+    "title": "旅遊會話",
+    "sub": "點一下句子就能放大給當地人看。",
+    "fallback": "這個國家的當地語言會話尚未準備好，先以英文顯示。",
+    "note": "這些是基本句子，用法可能因地區與情境而不同。",
+    "tapClose": "點一下關閉",
+    "lang": {
+      "ja": "日文",
+      "zh-Hant": "中文（繁體）",
+      "zh-Hans": "中文（簡體）",
+      "th": "泰文",
+      "vi": "越南文",
+      "en": "英文",
+      "fr": "法文",
+      "es": "西班牙文",
+      "it": "義大利文",
+      "de": "德文",
+      "ko": "韓文"
+    },
+    "k": {
+      "hello": "你好",
+      "thanks": "謝謝",
+      "sorry": "不好意思",
+      "yes": "是",
+      "no": "不是",
+      "howMuch": "多少錢？",
+      "toilet": "洗手間在哪裡？",
+      "thisOne": "我要這個",
+      "bill": "請結帳",
+      "help": "請幫幫我",
+      "english": "你會說英文嗎？",
+      "water": "請給我水",
+      "station": "車站在哪裡？"
     }
   }
 }
