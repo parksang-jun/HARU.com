@@ -390,7 +390,11 @@
     "perPersonOw": "One way, per person",
     "compare": "Compare",
     "noticeSample": "Sample deals for demo — not live prices. Discounts are estimated against typical business fares for the route.",
-    "noticeLive": "Business fares found by partners recently. Discounts are estimated against typical fares for the route; seats are limited and prices change — the final price is on the partner site."
+    "noticeLive": "Business fares found by partners recently. Discounts are estimated against typical fares for the route; seats are limited and prices change — the final price is on the partner site.",
+    "homeTitle": "Business deals",
+    "homeAll": "See all",
+    "homeFrom": "From {airport} · recently found fares",
+    "homeEmpty": "No deals to show right now."
   },
   "weather": {
     "cond": {
