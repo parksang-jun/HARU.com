@@ -1,6 +1,7 @@
 // 비즈니스석 특가·땡처리 — 출발지 기준 가까운 출발일(기본 45일 이내) 비즈니스 운임을 할인율 순으로 모음
 // 라이브: Edge Function `flight-deals` → Travelpayouts `get_latest_prices`(trip_class=1, 목적지 생략 = 전 노선)
 // 할인율 = 노선 거리 기반 "평소 비즈니스 운임 추정치" 대비 (API 가 정가를 주지 않으므로 화면에 "추정 정가 대비" 표기)
+import { loadJson, saveJson } from './storage'
 import type { Locale } from '../i18n'
 import { airlinesOf, airportDestination, bestAirportFor, codeDestination, getAirline } from './airports'
 import { appendQuery } from './affiliate'
@@ -165,4 +166,17 @@ export async function fetchBusinessDeals(fromCode: string, locale: Locale, today
   const { data, error } = await sb.functions.invoke('flight-deals', { body: { from: fromCode, currency, locale } })
   if (error) throw error
   return normalizeRemoteDeals(data?.deals, fromCode, today, currency)
+}
+
+const HOME_CACHE_KEY = 'bizDeals:home'
+const HOME_CACHE_MS = 3 * 3600_000
+
+/** 홈 화면용 특가 — 같은 출발지로 3시간 안에 다시 열면 저장해 둔 목록을 쓴다 (하루 조회 한도를 아끼기 위해) */
+export async function homeBusinessDeals(fromCode: string, locale: Locale, now: number = Date.now()): Promise<FlightDeal[]> {
+  const cached = await loadJson<{ at: number; from: string; deals: FlightDeal[] } | null>(HOME_CACHE_KEY, null)
+  const today = new Date(now).toISOString().slice(0, 10)
+  if (cached && cached.from === fromCode && now - cached.at < HOME_CACHE_MS && Array.isArray(cached.deals)) return cached.deals.filter((d) => d.depart >= today)
+  const deals = await fetchBusinessDeals(fromCode, locale, today)
+  await saveJson(HOME_CACHE_KEY, { at: now, from: fromCode, deals: deals.slice(0, 20) })
+  return deals
 }

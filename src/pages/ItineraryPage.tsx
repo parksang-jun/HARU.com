@@ -387,10 +387,36 @@ export function ItineraryPage() {
           }}
         />
       )}
+      <section className="card ready" data-testid="ready">
+        <h2>{t('ready.title')}</h2>
+        <p className="xs muted">{t('ready.sub')}</p>
+        <ul className="ready__list">
+          {(
+            [
+              ['weather', null],
+              ['packing', 'packing'],
+              ['money', 'money'],
+              ['tips', 'tips'],
+              ...(abroad ? ([['phrases', 'phrases']] as const) : []),
+              ...(flight ? ([['airport', 'airport']] as const) : []),
+              ['map', 'map'],
+              ['ledger', 'budget'],
+            ] as readonly (readonly [string, string | null])[]
+          ).map(([k, path]) => (
+            <li key={k} data-testid="ready-item">
+              <span className="ready__ok" aria-hidden="true">
+                ✓
+              </span>
+              {path ? <Link to={`/trip/${trip.id}/${path}`}>{t(`ready.${k}`)}</Link> : <span>{t(`ready.${k}`)}</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <nav className="tools" aria-label={t('tools.title')} data-testid="tools">
-        {(['map', 'edit', 'packing', 'budget', 'talk'] as const).map((k) => (
+        {(['map', 'edit', 'packing', 'money', 'budget', 'phrases', 'talk'] as const).map((k) => (
           <Link key={k} to={`/trip/${trip.id}/${k}`} className="tools__item" data-testid={`tool-${k}`}>
-            <span aria-hidden="true">{{ map: '🗺️', edit: '✏️', packing: '🧳', budget: '💰', talk: '💬' }[k]}</span>
+            <span aria-hidden="true">{{ map: '🗺️', edit: '✏️', packing: '🧳', money: '💱', budget: '💰', phrases: '🗣️', talk: '💬' }[k]}</span>
             {t(`tools.${k === 'budget' ? 'ledger' : k}`)}
           </Link>
         ))}

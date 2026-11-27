@@ -1,4 +1,7 @@
 // 가계부·정산 — 지출 기록과 1/N 정산 (이 기기에만 저장)
+import { estimateBudget } from '../lib/budget'
+import { displayCurrency } from '../lib/fx'
+import { approxRates, convert, loadRates, type Rates } from '../lib/rates'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
@@ -8,7 +11,9 @@ import { useTrip } from '../lib/useTrip'
 
 export function LedgerPage() {
   const { id } = useParams<{ id: string }>()
-  const { t, formatMoney } = useI18n()
+  const { t, locale, formatMoney } = useI18n()
+  const home = displayCurrency(locale)
+  const [rates, setRates] = useState<Rates>(() => approxRates('USD'))
   const [trip] = useTrip(id)
   const [ledger, setLedger] = useState<Ledger>(EMPTY_LEDGER)
   const [member, setMember] = useState('')
@@ -25,6 +30,10 @@ export function LedgerPage() {
   useEffect(() => {
     if (currencies.length > 1) setCurrency(currencies[1])
   }, [currencies])
+
+  useEffect(() => {
+    if (currencies.length) void loadRates('USD', [home, ...currencies]).then(setRates)
+  }, [currencies, home])
 
   if (trip === undefined) return <p className="muted">{t('common.loading')}</p>
   if (!trip) return <p className="alert">{t('itin.error')}</p>
@@ -140,6 +149,31 @@ export function LedgerPage() {
             </li>
           ))}
         </ul>
+        {(() => {
+          // 여러 통화로 쓴 돈을 우리 돈으로 합쳐서, 예상 현지 지출과 견준다
+          const parts = totals(ledger).map((x) => convert(x.total, x.currency, home, rates))
+          if (!parts.length || parts.some((v) => v === null)) return null
+          const sum = (parts as number[]).reduce((a, b) => a + b, 0)
+          const est = estimateBudget(trip)
+          const budget = convert(est.onTripUsd, 'USD', home, rates)
+          return (
+            <div className="ledger__sum" data-testid="ledger-home-total">
+              <p className="small">
+                <strong>{t('ledger.homeTotal', { amount: formatMoney(sum, home) })}</strong>
+              </p>
+              {budget ? (
+                <>
+                  <div className="prep__bar" aria-hidden="true">
+                    <span style={{ width: `${Math.min(100, (sum / budget) * 100)}%` }} />
+                  </div>
+                  <p className="xs muted" data-testid="ledger-vs-budget">
+                    {t('ledger.vsBudget', { budget: formatMoney(budget, home), pct: Math.round((sum / budget) * 100) })}
+                  </p>
+                </>
+              ) : null}
+            </div>
+          )
+        })()}
         {totals(ledger).map((x) => (
           <p key={x.currency} className="small" data-testid="ledger-total">
             {t('ledger.total')}: <strong>{formatMoney(x.total, x.currency)}</strong>

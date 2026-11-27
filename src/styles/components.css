@@ -1884,3 +1884,93 @@ a.chip {
   font-size: var(--text-xs, 0.75rem);
   font-weight: 700;
 }
+
+.flight__diff {
+  color: var(--color-primary);
+/* 홈: 비즈니스 특가 미리보기 */
+.home-deals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.home-deal {
+  display: grid;
+  gap: 2px;
+  padding: 12px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-m);
+  background: var(--color-surface);
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+.home-deal__city {
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-deal__price {
+  font-size: 0.95rem;
+}
+.home-deal__pct {
+  justify-self: start;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ── v0.9: 자동 준비 · 환율·예산 · 회화 ───────── */
+.tools {
+  grid-template-columns: repeat(4, 1fr);
+}
+.ready__list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 0.92rem;
+}
+.ready__list li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.ready__ok {
+  color: var(--color-success);
+  font-weight: 700;
+}
+.money__one {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.money__total {
+  padding-top: 8px;
+  border-top: 1px solid var(--color-line);
+}
+.phrase {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.phrase__text {
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+.phrase__big {
+  text-align: center;
+  padding: 28px 18px;
+}
+.phrase__big strong {
+  font-size: 2rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
